@@ -178,7 +178,9 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDe
       };
     case ZodTypes.literal:
       const parsedType = typeof def.value;
-      if (parsedType !== 'bigint' && parsedType !== 'number' && parsedType !== 'boolean' && parsedType !== 'string') throw 'Unsupported literal type';
+      if (parsedType !== 'bigint' && parsedType !== 'number' && parsedType !== 'boolean' && parsedType !== 'string') {
+        return {};
+      }
       return {
         type: parsedType === 'bigint' ? 'integer' : parsedType,
         const: def.value,
