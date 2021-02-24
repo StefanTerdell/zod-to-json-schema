@@ -13,7 +13,6 @@ const toJsonSchema = (schemas: Record<string, Schema<any>>, pathing: 'full' | 'p
   const base: JSONSchema7 = {
     $schema: 'http://json-schema.org/draft-07/schema#',
   };
-
   if (Object.keys(schemas).length === 1) {
     if (flatten) {
       return {
@@ -42,7 +41,6 @@ const toJsonSchema = (schemas: Record<string, Schema<any>>, pathing: 'full' | 'p
     };
   }
 };
-
 export default toJsonSchema;
 export { toJsonSchema };
 
@@ -55,9 +53,7 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDe
       visited.push({ def: schemaDef, path });
     }
   }
-
   const def: ZodDef = schemaDef as any;
-
   switch (def.t) {
     case ZodTypes.string:
       return {
@@ -102,7 +98,6 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDe
         ),
         additionalProperties: !def.params.strict,
       };
-
       const required = Object.entries(def.shape())
         .filter(
           ([key, value]) =>
@@ -111,15 +106,15 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDe
             (value._def.t !== 'union' || !value._def.options.find((x) => x._def.t === 'undefined'))
         )
         .map(([key]) => key);
-
-      if (required.length) result.required = required;
-
+      if (required.length) {
+        result.required = required;
+      }
       return result;
     case ZodTypes.union:
       const options = def.options.filter((x) => x._def.t !== 'undefined');
-
-      if (options.length === 1) return parse(options[0]._def, path, visited); // likely union with undefined, and thus probably optional object property
-
+      if (options.length === 1) {
+        return parse(options[0]._def, path, visited); // likely union with undefined, and thus probably optional object property
+      }
       // This blocks tries to look ahead a bit to produce nicer looking schemas with type joining instead of anyOf.
       // Might get a bit complex when I get to validations so dont count on it sticking around.
       if (options.every((x) => ['string', 'number', 'bigint', 'boolean', 'null'].includes(x._def.t))) {
@@ -127,7 +122,6 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDe
         const types = options
           .reduce((types, option) => (types.includes(option._def.t) ? types : [...types, option._def.t]), [] as string[])
           .map((x) => (x === 'bigint' ? 'integer' : x));
-
         return {
           type: types.length > 1 ? types : types[0],
         };
@@ -145,9 +139,8 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDe
           };
         }
       }
-
-      // Fallback to verbose anyOf. This will always work schematically but it does get quite ugly at times.
       return {
+        // Fallback to verbose anyOf. This will always work schematically but it does get quite ugly at times.
         anyOf: options.map((x, i) => parse(x._def, [...path, i.toString()], visited)),
       };
     case ZodTypes.intersection:
@@ -162,7 +155,6 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDe
           };
         }
       }
-
       return right;
     case ZodTypes.tuple:
       return {
