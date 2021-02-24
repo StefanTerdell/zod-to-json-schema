@@ -7,6 +7,9 @@
     "test": "jest",
     "dev": "jest --watch"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "zod",
     "json",
