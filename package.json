@@ -7,8 +7,13 @@
     "test": "jest",
     "dev": "jest --watch"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "zod",
+    "json",
+    "schema",
+    "conversion"
+  ],
+  "author": "Stefan Terdell",
   "license": "ISC",
   "dependencies": {
     "@types/json-schema": "^7.0.7",
