@@ -31,9 +31,9 @@ const toJsonSchema = (schemas: Record<string, Schema<any>>, pathing: 'full' | 'p
     const visited = [];
     return {
       ...base,
-      definitions: Object.fromEntries(
-        Object.entries(schemas).map(([key, value]) => [key, parse(value._def, ['definitions', key], pathing === 'full' ? visited : 'perSchema' ? [] : null)])
-      ),
+      definitions: Object.entries(schemas)
+        .map(([key, value]) => ({ key, value: parse(value._def, ['definitions', key], pathing === 'full' ? visited : 'perSchema' ? [] : null) }))
+        .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {}),
     };
   }
 };
@@ -86,11 +86,10 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef
     case ZodTypes.object:
       const result: JSONSchema7 = {
         type: 'object',
-        properties: Object.fromEntries(
-          Object.entries(def.shape())
-            .map(([key, value]) => [key, parse(value._def, [...path, 'properties', key], visited)])
-            .filter(([, v]) => v !== undefined)
-        ),
+        properties: Object.entries(def.shape())
+          .map(([key, value]) => ({ key, value: parse(value._def, [...path, 'properties', key], visited) }))
+          .filter(({ value }) => value !== undefined)
+          .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {}),
         additionalProperties: !def.params.strict,
       };
       const required = Object.entries(def.shape())
