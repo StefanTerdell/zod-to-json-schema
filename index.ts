@@ -7,7 +7,7 @@ import { JSONSchema7 } from 'json-schema';
  * - 'full' will resolve paths between all passed schemas
  * - 'perSchema' will only resolve paths internaly
  * - 'none' will completely ignore that schemas have already been seen. This is may cause recursion errors. @default full
- * @param flatten If true and a single schema is passed, a 'definitions' property will not be created and the schema will be spread directly in the base object
+ * @param flatten If true and a single schema is passed, a 'definitions' property will not be created and the schema will be spread directly in the base object. @default false
  */
 const toJsonSchema = (schemas: Record<string, Schema<any>>, pathing: 'full' | 'perSchema' | 'none' = 'full', flatten: boolean = false): JSONSchema7 => {
   const base: JSONSchema7 = {
@@ -17,14 +17,14 @@ const toJsonSchema = (schemas: Record<string, Schema<any>>, pathing: 'full' | 'p
     if (flatten) {
       return {
         ...base,
-        ...parse(Object.values(schemas)[0]._def, [], pathing === 'none' ? undefined : []),
+        ...parse(Object.values(schemas)[0]._def, [], pathing === 'none' ? null : []),
       };
     } else {
       return {
         ...base,
         $ref: `#/definitions/${Object.keys(schemas)[0]}`,
         definitions: {
-          [Object.keys(schemas)[0]]: parse(Object.values(schemas)[0]._def, ['definitions', Object.keys(schemas)[0]], pathing === 'none' ? undefined : []),
+          [Object.keys(schemas)[0]]: parse(Object.values(schemas)[0]._def, ['definitions', Object.keys(schemas)[0]], pathing === 'none' ? null : []),
         },
       };
     }
@@ -33,22 +33,18 @@ const toJsonSchema = (schemas: Record<string, Schema<any>>, pathing: 'full' | 'p
     return {
       ...base,
       definitions: Object.fromEntries(
-        Object.entries(schemas).map(([key, value]) => [
-          key,
-          parse(value._def, ['definitions', key], pathing === 'full' ? visited : 'perSchema' ? [] : undefined),
-        ])
+        Object.entries(schemas).map(([key, value]) => [key, parse(value._def, ['definitions', key], pathing === 'full' ? visited : 'perSchema' ? [] : null)])
       ),
     };
   }
 };
 export default toJsonSchema;
 export { toJsonSchema };
-
-const parse = (schemaDef: ZodTypeDef, path: string[], visited?: { def: ZodTypeDef; path: string[] }[]): JSONSchema7 | undefined => {
+const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JSONSchema7 | null => {
   if (visited) {
-    const seen = visited.find((x) => Object.is(x.def, schemaDef));
-    if (seen) {
-      return { $ref: `#/${seen.path.join('/')}` };
+    const wasVisited = visited.find((x) => Object.is(x.def, schemaDef));
+    if (wasVisited) {
+      return { $ref: `#/${wasVisited.path.join('/')}` };
     } else {
       visited.push({ def: schemaDef, path });
     }
