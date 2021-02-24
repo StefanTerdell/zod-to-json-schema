@@ -1,0 +1,6 @@
+{
+    "compilerOptions": {
+        "allowJs": false,
+        "lib": ["ES2019"]
+    }
+}
