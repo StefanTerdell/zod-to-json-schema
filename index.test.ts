@@ -1,7 +1,6 @@
 import * as z from 'zod';
 import { JSONSchema7 } from 'json-schema';
 import { toJsonSchema } from '.';
-
 describe('Parsing a given object', () => {
   it('should return a proper json schema with some common types without validation', () => {
     const zodSchema = z.object({
@@ -18,7 +17,6 @@ describe('Parsing a given object', () => {
       numberUnion: z.union([z.literal(1), z.literal(2), z.literal(3)]),
       mixedUnion: z.union([z.literal('abc'), z.literal(123), z.object({ nowItGetsAnnoying: z.literal(true) })]),
     });
-
     const expectedJsonSchema: JSONSchema7 = {
       $schema: 'http://json-schema.org/draft-07/schema#',
       $ref: '#/definitions/zodSchema',
@@ -121,9 +119,7 @@ describe('Parsing a given object', () => {
         },
       },
     };
-
     const parsedSchema = toJsonSchema({ zodSchema });
-
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
   });
   it('should handle recurring properties with paths', () => {
@@ -133,7 +129,6 @@ describe('Parsing a given object', () => {
       address2: addressSchema,
       lotsOfAddresses: z.array(addressSchema),
     });
-
     const jsonSchema = {
       $schema: 'http://json-schema.org/draft-07/schema#',
       $ref: '#/definitions/someAddresses',
@@ -155,9 +150,7 @@ describe('Parsing a given object', () => {
         },
       },
     };
-
     const parsedSchema = toJsonSchema({ someAddresses });
-
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
 });

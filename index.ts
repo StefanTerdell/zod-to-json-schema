@@ -1,6 +1,5 @@
 import { Schema, ZodDef, ZodTypeDef, ZodTypes } from 'zod';
 import { JSONSchema7 } from 'json-schema';
-
 /**
  * @param schemas A record of the Zod schemas to be converted to Json schemas, for example {mySchema: z.object({stuff: z.any()})}
  * @param pathing Replaces already resolved schemas with a $ref.
