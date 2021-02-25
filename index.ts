@@ -1,41 +1,20 @@
 import { Schema, ZodDef, ZodTypeDef, ZodTypes } from 'zod';
 import { JSONSchema7 } from 'json-schema';
 /**
- * @param schemas A record of the Zod schemas to be converted to Json schemas, for example {mySchema: z.object({stuff: z.any()})}
- * @param pathing Replaces already resolved schemas with a $ref.
- * - 'full' will resolve paths between all passed schemas
- * - 'perSchema' will only resolve paths internaly
- * - 'none' will completely ignore that schemas have already been seen. This is may cause recursion errors. @default full
- * @param flatten If true and a single schema is passed, a 'definitions' property will not be created and the schema will be spread directly in the base object. @default false
+ * @param schema The Zod schema to be converted
+ * @param name The (optional) name of the schema. If a name is passed, the schema will be put in 'definitions' and referenced from the root.
  */
-const toJsonSchema = (schemas: Record<string, Schema<any>>, pathing: 'full' | 'perSchema' | 'none' = 'full', flatten: boolean = false): JSONSchema7 => {
-  const base: JSONSchema7 = {
-    $schema: 'http://json-schema.org/draft-07/schema#',
-  };
-  if (Object.keys(schemas).length === 1) {
-    if (flatten) {
-      return {
-        ...base,
-        ...parse(Object.values(schemas)[0]._def, [], pathing === 'none' ? null : []),
+const toJsonSchema = (schema: Schema<any>, name?: string): JSONSchema7 => {
+  return name
+    ? {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        $ref: `#/definitions/${name}`,
+        definitions: { [name]: parse(schema._def, ['definitions', name], []) },
+      }
+    : {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        ...parse(schema._def, [], []),
       };
-    } else {
-      return {
-        ...base,
-        $ref: `#/definitions/${Object.keys(schemas)[0]}`,
-        definitions: {
-          [Object.keys(schemas)[0]]: parse(Object.values(schemas)[0]._def, ['definitions', Object.keys(schemas)[0]], pathing === 'none' ? null : []),
-        },
-      };
-    }
-  } else {
-    const visited = [];
-    return {
-      ...base,
-      definitions: Object.entries(schemas)
-        .map(([key, value]) => ({ key, value: parse(value._def, ['definitions', key], pathing === 'full' ? visited : 'perSchema' ? [] : null) }))
-        .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {}),
-    };
-  }
 };
 export default toJsonSchema;
 export { toJsonSchema };
