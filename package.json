@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "jest --watch"
+    "dev": "jest --watch",
+    "build": "rimraf dist && tsc",
+    "dryrun": "jest && npm run build && npm pub --dry-run"
   },
   "files": [
     "dist"
@@ -30,6 +32,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "jest": "^26.6.3",
+    "rimraf": "^3.0.2",
     "ts-jest": "^26.5.2",
     "ts-json-schema-generator": "^0.86.1"
   },
