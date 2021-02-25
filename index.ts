@@ -29,18 +29,87 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef
   }
   const def: ZodDef = schemaDef as any;
   switch (def.t) {
-    case ZodTypes.string:
-      return {
+    case ZodTypes.string: {
+      const res: JSONSchema7 = {
         type: 'string',
       };
-    case ZodTypes.number:
-      return {
+
+      if (def.checks) {
+        for (const check of def.checks) {
+          switch (check.code) {
+            case 'invalid_string':
+              //These are all regexp based (except URL which is "new Uri()" based) and zod does not seem to expose the source regexp right now.
+              break;
+            case 'too_small':
+              res.minLength = check.minimum;
+              break;
+            case 'too_big':
+              res.maxLength = check.maximum;
+              break;
+          }
+        }
+      }
+
+      return res;
+    }
+    case ZodTypes.number: {
+      const res: JSONSchema7 = {
         type: 'number',
       };
+
+      if (def.checks) {
+        for (const check of def.checks) {
+          switch (check.code) {
+            case 'invalid_type':
+              if (check.expected === 'integer') {
+                res.type = 'integer';
+              }
+              break;
+            case 'too_small':
+              if (check.inclusive) {
+                res.minimum = check.minimum;
+              } else {
+                res.exclusiveMinimum = check.minimum;
+              }
+              break;
+            case 'too_big':
+              if (check.inclusive) {
+                res.maximum = check.maximum;
+              } else {
+                res.exclusiveMaximum = check.maximum;
+              }
+              break;
+          }
+        }
+      }
+
+      return res;
+    }
     case ZodTypes.bigint:
-      return {
+      const res: JSONSchema7 = {
         type: 'integer',
       };
+      if (def.checks) {
+        for (const check of def.checks) {
+          switch (check.code) {
+            case 'too_small':
+              if (check.inclusive) {
+                res.minimum = check.minimum;
+              } else {
+                res.exclusiveMinimum = check.minimum;
+              }
+              break;
+            case 'too_big':
+              if (check.inclusive) {
+                res.maximum = check.maximum;
+              } else {
+                res.exclusiveMaximum = check.maximum;
+              }
+              break;
+          }
+        }
+      }
+      return res;
     case ZodTypes.boolean:
       return {
         type: 'boolean',
@@ -48,6 +117,7 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef
     case ZodTypes.date:
       return {
         type: 'string',
+        format: 'date-time',
       };
     case ZodTypes.undefined:
       return {
@@ -57,11 +127,30 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef
       return {
         type: 'null',
       };
-    case ZodTypes.array:
-      return {
+    case ZodTypes.array: {
+      const res: JSONSchema7 = {
         type: 'array',
         items: parse(def.type._def, [...path, 'items'], visited),
       };
+
+      if (def.nonempty) {
+        res.minItems = 1;
+      }
+
+      if (def.checks) {
+        for (const check of def.checks) {
+          switch (check.code) {
+            case 'too_small':
+              res.minItems = check.minimum;
+              break;
+            case 'too_big':
+              res.maxItems = check.maximum;
+              break;
+          }
+        }
+      }
+      return res;
+    }
     case ZodTypes.object:
       const result: JSONSchema7 = {
         type: 'object',
@@ -88,9 +177,8 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef
       if (options.length === 1) {
         return parse(options[0]._def, path, visited); // likely union with undefined, and thus probably optional object property
       }
-      // This blocks tries to look ahead a bit to produce nicer looking schemas with type joining instead of anyOf.
-      // Might get a bit complex when I get to validations so dont count on it sticking around.
-      if (options.every((x) => ['string', 'number', 'bigint', 'boolean', 'null'].includes(x._def.t))) {
+      // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
+      if (options.every((x) => ['string', 'number', 'bigint', 'boolean', 'null'].includes(x._def.t) && (!x._def.checks || !x._def.checks.length))) {
         // all types in union are primitive, so might as well squash into {type: [...]}
         const types = options
           .reduce((types, option) => (types.includes(option._def.t) ? types : [...types, option._def.t]), [] as string[])
@@ -100,15 +188,20 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef
         };
       } else if (options.every((x) => x._def.t === 'literal')) {
         // all options literals
-        const types = options
-          .reduce((types, option) => (types.includes(typeof option._def.value) ? types : [...types, typeof option._def.value]), [])
-          .map((x) => (x === 'bigint' ? 'integer' : x));
-
+        const types = options.reduce((types, option) => {
+          let type: string = typeof option._def.value;
+          if (type === 'bigint') {
+            type = 'integer';
+          } else if (type === 'object' && option._def.value === null) {
+            type = 'null';
+          }
+          return types.includes(type) ? types : [...types, type];
+        }, []);
         if (types.every((x) => ['string', 'number', 'integer', 'boolean', 'null'].includes(x))) {
-          // all the literals are primitive
+          // all the literals are primitive, as far as null can be considered primitive
           return {
             type: types.length > 1 ? types : types[0],
-            enum: options.map((x) => x._def.value),
+            enum: options.reduce((acc, x) => (acc.includes(x._def.value) ? acc : [...acc, x._def.value]), []),
           };
         }
       }
