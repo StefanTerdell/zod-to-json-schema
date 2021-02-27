@@ -1,6 +1,8 @@
 import * as z from 'zod';
 import { JSONSchema7 } from 'json-schema';
 import { toJsonSchema } from '.';
+import Ajv from 'ajv';
+
 describe('Parsing a given object', () => {
   it('should return a proper json schema with some common types without validation', () => {
     const zodSchema = z.object({
@@ -330,5 +332,20 @@ describe('Unions', () => {
       ],
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
+  });
+});
+
+describe('Output validation', () => {
+  it('String errors should match between Z and Ajv', () => {
+    const zodSchema = z.string().min(2).max(4);
+    const jsonSchema = toJsonSchema(zodSchema);
+
+    const tooShort: z.infer<typeof zodSchema> = '-';
+
+    const zodErrors = zodSchema.safeParse(tooShort);
+
+    const validate = new Ajv().compile(jsonSchema);
+    validate(tooShort);
+    const ajvErrors = validate.errors;
   });
 });
