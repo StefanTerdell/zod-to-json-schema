@@ -46,3 +46,7 @@ Expected output:
   }
 }
 ```
+
+## Disclaimer
+
+Once I'm satisfied that this package has reached parity with Zod I will keep the major versions in lockstep with that, possibly with simultaneous minor versions of both majors 1 and 3 (zod 2 was deprecated before leaving beta). As for now though (meaning major 0 for this package), expect breaking changes to the api to appear without notice.
