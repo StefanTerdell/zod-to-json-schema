@@ -249,7 +249,15 @@ const parse = (schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef
         enum: def.values,
       };
     case ZodTypes.nativeEnum:
-      return {};
+      //Strips mirrored number keys
+      const numberValues = Object.values(def.values)
+        .filter((value) => typeof value === 'number')
+        .map(toString);
+      const actualValues = Object.values(def.values).filter((_, i) => i >= numberValues.length);
+      return {
+        type: numberValues.length === 0 ? 'string' : numberValues.length === actualValues.length ? 'number' : ['string', 'number'],
+        enum: actualValues,
+      };
     case ZodTypes.any:
       return {};
     case ZodTypes.unknown:
