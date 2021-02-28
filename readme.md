@@ -51,7 +51,7 @@ Expected output:
 
 | Version | Change                                                                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.5.2   | Changelog revisited.                                                                                                                                                      |
+| 0.6.0   | Moved `@types/json-schema` and `typescript` to dev dependencies. `@types/json-schema` is now only used for the test suites. Using `strict: true` in ts config.            |
 | 0.5.1   | First working release with all relevant Zod types present with most validations (except for string patterns due to Zod not exposing the source regexp pattern for those). |
 | < 0.5.1 | Deprecated due to broken package structure. Please be patient, I eat crayons.                                                                                             |
 
