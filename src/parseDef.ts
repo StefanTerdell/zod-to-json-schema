@@ -1,20 +1,20 @@
 import { ZodDef, ZodTypeDef, ZodTypes } from 'zod';
-import { getBigint } from './parsers/bigint';
-import { getNumber } from './parsers/number';
+import { parseBigintDef } from './parsers/bigint';
+import { parseNumberDef } from './parsers/number';
 import { parseStringDef } from './parsers/string';
-import { getUnion } from './parsers/union';
-import { getObject } from './parsers/object';
-import { getArray } from './parsers/array';
-import { getNull } from './parsers/null';
-import { getUndefined } from './parsers/undefined';
-import { getDate } from './parsers/date';
-import { getBoolean } from './parsers/boolean';
-import { getTuple } from './parsers/tuple';
-import { getRecord } from './parsers/record';
-import { getEnum } from './parsers/enum';
-import { getNativeEnum } from './parsers/nativeEnum';
-import { getLiteral } from './parsers/literal';
-import { getIntersection } from './parsers/intersection';
+import { parseUnionDef } from './parsers/union';
+import { parseObjectDef } from './parsers/object';
+import { parseArrayDef } from './parsers/array';
+import { parseNullDef } from './parsers/null';
+import { parseUndefinedDef } from './parsers/undefined';
+import { parseDateDef } from './parsers/date';
+import { parseBooleanDef } from './parsers/boolean';
+import { parseTupleDef } from './parsers/tuple';
+import { parseRecordDef } from './parsers/record';
+import { parseEnumDef } from './parsers/enum';
+import { parseNativeEnumDef } from './parsers/nativeEnum';
+import { parseLiteralDef } from './parsers/literal';
+import { parseIntersectionDef } from './parsers/intersection';
 import { JsonSchema } from './JsonSchema';
 
 export function parseDef(schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JsonSchema | undefined {
@@ -31,35 +31,35 @@ export function parseDef(schemaDef: ZodTypeDef, path: string[], visited: { def: 
     case ZodTypes.string:
       return parseStringDef(def);
     case ZodTypes.number:
-      return getNumber(def);
+      return parseNumberDef(def);
     case ZodTypes.bigint:
-      return getBigint(def);
+      return parseBigintDef(def);
     case ZodTypes.boolean:
-      return getBoolean();
+      return parseBooleanDef();
     case ZodTypes.date:
-      return getDate();
+      return parseDateDef();
     case ZodTypes.undefined:
-      return getUndefined();
+      return parseUndefinedDef();
     case ZodTypes.null:
-      return getNull();
+      return parseNullDef();
     case ZodTypes.array:
-      return getArray(def, path, visited);
+      return parseArrayDef(def, path, visited);
     case ZodTypes.object:
-      return getObject(def, path, visited);
+      return parseObjectDef(def, path, visited);
     case ZodTypes.union:
-      return getUnion(def, path, visited);
+      return parseUnionDef(def, path, visited);
     case ZodTypes.intersection:
-      return getIntersection(def, path, visited);
+      return parseIntersectionDef(def, path, visited);
     case ZodTypes.tuple:
-      return getTuple(def, path, visited);
+      return parseTupleDef(def, path, visited);
     case ZodTypes.record:
-      return getRecord(def, path, visited);
+      return parseRecordDef(def, path, visited);
     case ZodTypes.literal:
-      return getLiteral(def);
+      return parseLiteralDef(def);
     case ZodTypes.enum:
-      return getEnum(def);
+      return parseEnumDef(def);
     case ZodTypes.nativeEnum:
-      return getNativeEnum(def);
+      return parseNativeEnumDef(def);
     case ZodTypes.any:
       return {};
     case ZodTypes.unknown:

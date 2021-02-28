@@ -1,5 +1,5 @@
 import { JsonSchema } from '../../src/JsonSchema';
-import { getNativeEnum } from '../../src/parsers/nativeEnum';
+import { parseNativeEnumDef } from '../../src/parsers/nativeEnum';
 import * as z from 'zod';
 
 describe('Native enums', () => {
@@ -10,7 +10,7 @@ describe('Native enums', () => {
       val3,
     }
 
-    const parsedSchema = getNativeEnum(z.nativeEnum(MyEnum)._def);
+    const parsedSchema = parseNativeEnumDef(z.nativeEnum(MyEnum)._def);
     const jsonSchema: JsonSchema = {
       type: 'number',
       enum: [0, 1, 2],
@@ -25,7 +25,7 @@ describe('Native enums', () => {
       val3 = 'c',
     }
 
-    const parsedSchema = getNativeEnum(z.nativeEnum(MyEnum)._def);
+    const parsedSchema = parseNativeEnumDef(z.nativeEnum(MyEnum)._def);
     const jsonSchema: JsonSchema = {
       type: 'string',
       enum: ['a', 'b', 'c'],
@@ -40,7 +40,7 @@ describe('Native enums', () => {
       val3 = 'c',
     }
 
-    const parsedSchema = getNativeEnum(z.nativeEnum(MyEnum)._def);
+    const parsedSchema = parseNativeEnumDef(z.nativeEnum(MyEnum)._def);
     const jsonSchema: JsonSchema = {
       type: ['string', 'number'],
       enum: ['a', 1, 'c'],

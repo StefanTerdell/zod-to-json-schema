@@ -4,7 +4,7 @@ import { ZodObjectDef } from 'zod/lib/src/types/object';
 import { JsonSchema } from '../JsonSchema';
 import { parseDef } from '../parseDef';
 
-export function getObject(def: ZodObjectDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]) {
+export function parseObjectDef(def: ZodObjectDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]) {
   const result: JsonSchema = {
     type: 'object',
     properties: Object.entries(def.shape())

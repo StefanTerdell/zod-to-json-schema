@@ -1,6 +1,6 @@
 import { JsonSchema } from '../JsonSchema';
 
-export function getBoolean(): JsonSchema {
+export function parseBooleanDef(): JsonSchema {
   return {
     type: 'boolean',
   };

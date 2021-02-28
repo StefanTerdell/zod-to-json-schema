@@ -1,7 +1,7 @@
 import { ZodBigIntDef } from 'zod/lib/src/types/bigint';
 import { JsonSchema } from '../JsonSchema';
 
-export function getBigint(def: ZodBigIntDef): JsonSchema {
+export function parseBigintDef(def: ZodBigIntDef): JsonSchema {
   const res: JsonSchema = {
     type: 'integer',
   };

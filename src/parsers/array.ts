@@ -4,7 +4,7 @@ import { ZodArrayDef } from 'zod/lib/src/types/array';
 import { parseDef } from '../parseDef';
 import { JsonSchema } from '../JsonSchema';
 
-export function getArray(def: ZodArrayDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]) {
+export function parseArrayDef(def: ZodArrayDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]) {
   {
     const res: JsonSchema = {
       type: 'array',

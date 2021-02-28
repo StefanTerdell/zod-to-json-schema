@@ -4,7 +4,7 @@ import { ZodIntersectionDef } from 'zod/lib/src/types/intersection';
 import { JsonSchema } from '../JsonSchema';
 import { parseDef } from '../parseDef';
 
-export function getIntersection(def: ZodIntersectionDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JsonSchema {
+export function parseIntersectionDef(def: ZodIntersectionDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JsonSchema {
   const right = parseDef(def.right._def, path, visited);
   if (right.type === 'object' && typeof right.properties === 'object') {
     const left = parseDef(def.left._def, path, visited);

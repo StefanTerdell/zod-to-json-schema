@@ -1,6 +1,6 @@
 import { JsonSchema } from '../JsonSchema';
 
-export function getUndefined(): JsonSchema {
+export function parseUndefinedDef(): JsonSchema {
   return {
     not: {},
   };

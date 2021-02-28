@@ -1,6 +1,6 @@
 import { JsonSchema } from '../JsonSchema';
 
-export function getNull(): JsonSchema {
+export function parseNullDef(): JsonSchema {
   return {
     type: 'null',
   };

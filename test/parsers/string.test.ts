@@ -1,5 +1,4 @@
 import { JsonSchema } from '../../src/JsonSchema';
-
 import * as z from 'zod';
 import { parseStringDef } from '../../src/parsers/string';
 

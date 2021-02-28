@@ -1,10 +1,10 @@
 import { JsonSchema } from '../../src/JsonSchema';
-import { getUnion } from '../../src/parsers/union';
+import { parseUnionDef } from '../../src/parsers/union';
 import * as z from 'zod';
 
 describe('Unions', () => {
   it('Should be possible to get a simple type array from a union of only unvalidated primitives', () => {
-    const parsedSchema = getUnion(z.union([z.string(), z.number(), z.boolean(), z.null()])._def, [], []);
+    const parsedSchema = parseUnionDef(z.union([z.string(), z.number(), z.boolean(), z.null()])._def, [], []);
     const jsonSchema: JsonSchema = {
       type: ['string', 'number', 'boolean', 'null'],
     };
@@ -12,7 +12,7 @@ describe('Unions', () => {
   });
 
   it('Should be possible to get a simple type array with enum values from a union of literals', () => {
-    const parsedSchema = getUnion(z.union([z.literal('string'), z.literal(123), z.literal(true), z.literal(null)])._def, [], []);
+    const parsedSchema = parseUnionDef(z.union([z.literal('string'), z.literal(123), z.literal(true), z.literal(null)])._def, [], []);
     const jsonSchema: JsonSchema = {
       type: ['string', 'number', 'boolean', 'null'],
       enum: ['string', 123, true, null],
@@ -21,7 +21,7 @@ describe('Unions', () => {
   });
 
   it('Should be possible to create a union with objects, arrays and validated primitives as an anyOf', () => {
-    const parsedSchema = getUnion(
+    const parsedSchema = parseUnionDef(
       z.union([z.object({ herp: z.string(), derp: z.boolean() }), z.array(z.number()), z.string().min(3), z.number()])._def,
       [],
       []

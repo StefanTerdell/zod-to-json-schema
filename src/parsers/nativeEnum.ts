@@ -1,7 +1,7 @@
 import { ZodNativeEnumDef } from 'zod/lib/src/types/nativeEnum';
 import { JsonSchema } from '../JsonSchema';
 
-export function getNativeEnum(def: ZodNativeEnumDef): JsonSchema {
+export function parseNativeEnumDef(def: ZodNativeEnumDef): JsonSchema {
   const numberValues = Object.values(def.values)
     .filter((value) => typeof value === 'number')
     .map(toString);
