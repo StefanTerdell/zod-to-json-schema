@@ -49,13 +49,14 @@ Expected output:
 
 ## Changelog
 
-| Version | Change                                                                                                                               |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| 0.3.0   | Mainly project restructuing and (hopefuly) final semi-breaking change to external api (renamed main function). Added this changelog. |
-| 0.2.1   | Tiny readme update.                                                                                                                  |
-| 0.2.0   | Added native enum support.                                                                                                           |
-| 0.1.0   | Basic validations for all relevant types. Breaking change to external api.                                                           |
-| 0.0.0   | Basic parsing without validation                                                                                                     |
+| Package Version | Change                                                                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.5.1           | Fixed broken package structure 😅                                                                                                     |
+| 0.3.0           | Mainly project restructuring and (hopefuly) final semi-breaking change to external api (renamed main function). Added this changelog. |
+| 0.2.1           | Tiny readme update.                                                                                                                   |
+| 0.2.0           | Added native enum support.                                                                                                            |
+| 0.1.0           | Basic validations for all relevant types. Breaking change to external api.                                                            |
+| 0.0.0           | Basic parsing without validation                                                                                                      |
 
 ## Disclaimer and notes on versioning
 
