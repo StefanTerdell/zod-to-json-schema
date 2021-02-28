@@ -1,11 +1,11 @@
-import { JsonSchema } from '../../src/JsonSchema';
-import { parseUnionDef } from '../../src/parsers/union';
+import { JSONSchema7Type } from 'json-schema';
 import * as z from 'zod';
+import { parseUnionDef } from '../../src/parsers/union';
 
 describe('Unions', () => {
   it('Should be possible to get a simple type array from a union of only unvalidated primitives', () => {
     const parsedSchema = parseUnionDef(z.union([z.string(), z.number(), z.boolean(), z.null()])._def, [], []);
-    const jsonSchema: JsonSchema = {
+    const jsonSchema: JSONSchema7Type = {
       type: ['string', 'number', 'boolean', 'null'],
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
@@ -13,7 +13,7 @@ describe('Unions', () => {
 
   it('Should be possible to get a simple type array with enum values from a union of literals', () => {
     const parsedSchema = parseUnionDef(z.union([z.literal('string'), z.literal(123), z.literal(true), z.literal(null)])._def, [], []);
-    const jsonSchema: JsonSchema = {
+    const jsonSchema: JSONSchema7Type = {
       type: ['string', 'number', 'boolean', 'null'],
       enum: ['string', 123, true, null],
     };
@@ -26,7 +26,7 @@ describe('Unions', () => {
       [],
       []
     );
-    const jsonSchema: JsonSchema = {
+    const jsonSchema: JSONSchema7Type = {
       anyOf: [
         {
           type: 'object',

@@ -1,5 +1,5 @@
+import { JSONSchema7Type } from 'json-schema';
 import * as z from 'zod';
-import { JsonSchema } from '../src/JsonSchema';
 import { parseDef } from '../src/parseDef';
 
 describe('Basic parsing', () => {
@@ -18,7 +18,7 @@ describe('Basic parsing', () => {
       numberUnion: z.union([z.literal(1), z.literal(2), z.literal(3)]),
       mixedUnion: z.union([z.literal('abc'), z.literal(123), z.object({ nowItGetsAnnoying: z.literal(true) })]),
     });
-    const expectedJsonSchema: JsonSchema = {
+    const expectedJsonSchema: JSONSchema7Type = {
       type: 'object',
       properties: {
         requiredString: {

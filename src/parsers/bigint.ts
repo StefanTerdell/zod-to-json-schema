@@ -1,8 +1,12 @@
 import { ZodBigIntDef } from 'zod/lib/src/types/bigint';
-import { JsonSchema } from '../JsonSchema';
+import { JsonSchema7NumberType } from './number';
 
-export function parseBigintDef(def: ZodBigIntDef): JsonSchema {
-  const res: JsonSchema = {
+export type JsonSchema7BigintType = JsonSchema7NumberType & {
+  type: 'integer';
+};
+
+export function parseBigintDef(def: ZodBigIntDef): JsonSchema7BigintType {
+  const res: JsonSchema7BigintType = {
     type: 'integer',
   };
   if (def.checks) {

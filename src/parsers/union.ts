@@ -1,9 +1,27 @@
 import { ZodTypeDef } from 'zod';
 import { ZodUnionDef } from 'zod/lib/src/types/union';
-import { JsonSchema } from '../JsonSchema';
-import { parseDef } from '../parseDef';
+import { JsonSchema7Type, parseDef } from '../parseDef';
 
-export function parseUnionDef(def: ZodUnionDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JsonSchema {
+type JsonSchema7Primitive = 'string' | 'number' | 'integer' | 'boolean' | 'null';
+
+export type JsonSchema7PrimitiveUnionType =
+  | {
+      type: JsonSchema7Primitive | JsonSchema7Primitive[];
+    }
+  | {
+      type: JsonSchema7Primitive | JsonSchema7Primitive[];
+      enum: (string | number | bigint | boolean | null)[];
+    };
+
+export type JsonSchema7AnyOfType = {
+  anyOf: JsonSchema7Type[];
+};
+
+export function parseUnionDef(
+  def: ZodUnionDef,
+  path: string[],
+  visited: { def: ZodTypeDef; path: string[] }[]
+): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | JsonSchema7Type {
   const options = def.options.filter((x) => x._def.t !== 'undefined');
   if (options.length === 1) {
     return parseDef(options[0]._def, path, visited); // likely union with undefined, and thus probably optional object property

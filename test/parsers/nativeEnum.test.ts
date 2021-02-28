@@ -1,6 +1,6 @@
-import { JsonSchema } from '../../src/JsonSchema';
-import { parseNativeEnumDef } from '../../src/parsers/nativeEnum';
+import { JSONSchema7Type } from 'json-schema';
 import * as z from 'zod';
+import { parseNativeEnumDef } from '../../src/parsers/nativeEnum';
 
 describe('Native enums', () => {
   it('should be possible to convert a basic native number enum', () => {
@@ -11,7 +11,7 @@ describe('Native enums', () => {
     }
 
     const parsedSchema = parseNativeEnumDef(z.nativeEnum(MyEnum)._def);
-    const jsonSchema: JsonSchema = {
+    const jsonSchema: JSONSchema7Type = {
       type: 'number',
       enum: [0, 1, 2],
     };
@@ -26,7 +26,7 @@ describe('Native enums', () => {
     }
 
     const parsedSchema = parseNativeEnumDef(z.nativeEnum(MyEnum)._def);
-    const jsonSchema: JsonSchema = {
+    const jsonSchema: JSONSchema7Type = {
       type: 'string',
       enum: ['a', 'b', 'c'],
     };
@@ -41,7 +41,7 @@ describe('Native enums', () => {
     }
 
     const parsedSchema = parseNativeEnumDef(z.nativeEnum(MyEnum)._def);
-    const jsonSchema: JsonSchema = {
+    const jsonSchema: JSONSchema7Type = {
       type: ['string', 'number'],
       enum: ['a', 1, 'c'],
     };
