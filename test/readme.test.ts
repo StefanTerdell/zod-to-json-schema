@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import toJsonSchema from '.';
+import zodToJsonSchema from '..';
 
 describe('The readme example', () => {
   it('should be valid', () => {
@@ -8,7 +8,7 @@ describe('The readme example', () => {
       myUnion: z.union([z.number(), z.boolean()]),
     });
 
-    const jsonSchema = toJsonSchema(mySchema, 'mySchema');
+    const jsonSchema = zodToJsonSchema(mySchema, 'mySchema');
 
     expect(jsonSchema).toStrictEqual({
       $schema: 'http://json-schema.org/draft-07/schema#',

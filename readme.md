@@ -12,14 +12,14 @@ Usage:
 
 ```typescript
 import * as z from 'zod';
-import toJsonSchema from 'zod-to-json-schema';
+import zodToJsonSchema from 'zod-to-json-schema';
 
 const mySchema = z.object({
   myString: z.string().min(5),
   myUnion: z.union([z.number(), z.boolean()]),
 });
 
-const jsonSchema = toJsonSchema(mySchema, 'mySchema');
+const jsonSchema = zodToJsonSchema(mySchema, 'mySchema');
 ```
 
 Expected output:
@@ -47,6 +47,16 @@ Expected output:
 }
 ```
 
-## Disclaimer
+## Changelog
+
+| Version | Change                                                                                                                               |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 0.3.0   | Mainly project restructuing and (hopefuly) final semi-breaking change to external api (renamed main function). Added this changelog. |
+| 0.2.1   | Tiny readme update.                                                                                                                  |
+| 0.2.0   | Added native enum support.                                                                                                           |
+| 0.1.0   | Basic validations for all relevant types. Breaking change to external api.                                                           |
+| 0.0.0   | Basic parsing without validation                                                                                                     |
+
+## Disclaimer and notes on versioning
 
 Once I'm satisfied that this package has reached parity with Zod I will keep the major versions in lockstep with that, possibly with simultaneous minor versions of both majors 1 and 3 (zod 2 was deprecated before leaving beta). As for now though (meaning major 0 for this package), expect breaking changes to the api to appear without notice.
