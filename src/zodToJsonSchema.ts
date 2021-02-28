@@ -20,7 +20,7 @@ export function zodToJsonSchema(schema: Schema<any>, name?: string): JsonSchema7
     ? {
         $schema: 'http://json-schema.org/draft-07/schema#',
         $ref: `#/definitions/${name}`,
-        definitions: { [name]: parseDef(schema._def, ['definitions', name], []) },
+        definitions: { [name]: parseDef(schema._def, ['definitions', name], []) || {} },
       }
     : {
         $schema: 'http://json-schema.org/draft-07/schema#',

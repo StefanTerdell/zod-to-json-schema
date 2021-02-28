@@ -10,6 +10,6 @@ export type JsonSchema7RecordType = {
 export function parseRecordDef(def: ZodRecordDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JsonSchema7RecordType {
   return {
     type: 'object',
-    additionalProperties: parseDef(def.valueType._def, [...path, 'additionalProperties'], visited),
+    additionalProperties: parseDef(def.valueType._def, [...path, 'additionalProperties'], visited) || {},
   };
 }

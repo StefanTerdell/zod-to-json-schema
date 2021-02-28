@@ -21,7 +21,7 @@ export function parseUnionDef(
   def: ZodUnionDef,
   path: string[],
   visited: { def: ZodTypeDef; path: string[] }[]
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | JsonSchema7Type {
+): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | JsonSchema7Type | undefined {
   const options = def.options.filter((x) => x._def.t !== 'undefined');
   if (options.length === 1) {
     return parseDef(options[0]._def, path, visited); // likely union with undefined, and thus probably optional object property
@@ -45,12 +45,12 @@ export function parseUnionDef(
         type = 'null';
       }
       return types.includes(type) ? types : [...types, type];
-    }, []);
+    }, [] as string[]);
     if (types.every((x) => ['string', 'number', 'integer', 'boolean', 'null'].includes(x))) {
       // all the literals are primitive, as far as null can be considered primitive
       return {
         type: types.length > 1 ? types : types[0],
-        enum: options.reduce((acc, x) => (acc.includes(x._def.value) ? acc : [...acc, x._def.value]), []),
+        enum: options.reduce((acc, x) => (acc.includes(x._def.value) ? acc : [...acc, x._def.value]), [] as (string | number | bigint | boolean | null)[]),
       };
     }
   }

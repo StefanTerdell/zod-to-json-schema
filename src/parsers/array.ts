@@ -4,7 +4,7 @@ import { JsonSchema7Type, parseDef } from '../parseDef';
 
 export type JsonSchema7ArrayType = {
   type: 'array';
-  items: JsonSchema7Type;
+  items?: JsonSchema7Type;
   minItems?: number;
   maxItems?: number;
 };

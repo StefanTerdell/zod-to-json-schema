@@ -3,7 +3,8 @@
         "outDir": "dist",
         "target": "ES2017",
         "declaration": true,
-        "module": "commonjs"
+        "module": "commonjs",
+        "strict": true
     },
   "exclude": ["node_modules", "dist", "**/*.test.ts", "lab.ts"]
 }

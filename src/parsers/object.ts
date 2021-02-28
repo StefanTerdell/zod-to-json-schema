@@ -23,7 +23,7 @@ export function parseObjectDef(def: ZodObjectDef, path: string[], visited: { def
       ([key, value]) =>
         Object.keys(result.properties).includes(key) &&
         value._def.t !== 'undefined' &&
-        (value._def.t !== 'union' || !value._def.options.find((x) => x._def.t === 'undefined'))
+        (value._def.t !== 'union' || !value._def.options.find((x: any) => x._def.t === 'undefined'))
     )
     .map(([key]) => key);
   if (required.length) {
