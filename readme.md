@@ -49,14 +49,11 @@ Expected output:
 
 ## Changelog
 
-| Package Version | Change                                                                                                                                |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.5.1           | Fixed broken package structure 😅                                                                                                     |
-| 0.3.0           | Mainly project restructuring and (hopefuly) final semi-breaking change to external api (renamed main function). Added this changelog. |
-| 0.2.1           | Tiny readme update.                                                                                                                   |
-| 0.2.0           | Added native enum support.                                                                                                            |
-| 0.1.0           | Basic validations for all relevant types. Breaking change to external api.                                                            |
-| 0.0.0           | Basic parsing without validation                                                                                                      |
+| Version | Change                                                                                                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.5.2   | Changelog revisited.                                                                                                                                                      |
+| 0.5.1   | First working release with all relevant Zod types present with most validations (except for string patterns due to Zod not exposing the source regexp pattern for those). |
+| < 0.5.1 | Deprecated due to broken package structure. Please be patient, I eat crayons.                                                                                             |
 
 ## Disclaimer and notes on versioning
 
