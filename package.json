@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "dev": "jest --watch",
-    "build": "rimraf dist && tsc && cp LICENSE package.json readme.md ./dist",
+    "build": "rimraf dist && tsc && node copyPackageFiles.js",
     "dryrun": "jest && npm run build && cd dist && npm pub --dry-run"
   },
   "keywords": [
