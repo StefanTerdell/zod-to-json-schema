@@ -56,6 +56,6 @@ export function parseUnionDef(
   }
   return {
     // Fallback to verbose anyOf. This will always work schematically but it does get quite ugly at times.
-    anyOf: options.map((x, i) => parseDef(x._def, [...path, i.toString()], visited)),
+    anyOf: options.map((x, i) => parseDef(x._def, [...path, 'anyOf', i.toString()], visited)),
   };
 }

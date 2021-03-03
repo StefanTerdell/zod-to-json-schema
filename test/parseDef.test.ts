@@ -145,4 +145,45 @@ describe('Pathing', () => {
 
     expect(parseDef(someAddresses._def, [], [])).toStrictEqual(jsonSchema);
   });
+
+  it('Should properly reference union participants', () => {
+    const participant = z.object({ str: z.string() });
+
+    const schema = z.object({
+      union: z.union([participant, z.string()]),
+      part: participant,
+    });
+
+    const jsonSchema = parseDef(schema._def, [], []);
+
+    const expectedJsonSchema = {
+      type: 'object',
+      properties: {
+        union: {
+          anyOf: [
+            {
+              type: 'object',
+              properties: {
+                str: {
+                  type: 'string',
+                },
+              },
+              additionalProperties: false,
+              required: ['str'],
+            },
+            {
+              type: 'string',
+            },
+          ],
+        },
+        part: {
+          $ref: '#/properties/union/anyOf/0',
+        },
+      },
+      additionalProperties: false,
+      required: ['union', 'part'],
+    };
+
+    expect(jsonSchema).toStrictEqual(expectedJsonSchema);
+  });
 });
