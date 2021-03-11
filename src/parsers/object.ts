@@ -13,12 +13,14 @@ export function parseObjectDef(def: ZodObjectDef, path: string[], visited: { def
   const result: JsonSchema7ObjectType = {
     type: 'object',
     properties: Object.entries(def.shape())
+      .filter(([, value]) => value !== undefined && value._def !== undefined)
       .map(([key, value]) => ({ key, value: parseDef(value._def, [...path, 'properties', key], visited) }))
       .filter(({ value }) => value !== undefined)
       .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {}),
     additionalProperties: !def.params.strict,
   };
   const required = Object.entries(def.shape())
+    .filter(([, value]) => value !== undefined && value._def !== undefined)
     .filter(
       ([key, value]) =>
         Object.keys(result.properties).includes(key) &&
