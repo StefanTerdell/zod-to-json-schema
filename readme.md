@@ -53,6 +53,7 @@ Expected output:
 
 | Version | Change                                                                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.6.2   | Hotfix for undefined object properties. Could crash the parser when using Pick                                                                                            |
 | 0.6.1   | Fixed bug in union pathing. `$Ref` was missing `/anyOf`                                                                                                                   |
 | 0.6.0   | Moved `@types/json-schema` and `typescript` to dev dependencies. `@types/json-schema` is now only used for the test suites. Using `strict: true` in ts config.            |
 | 0.5.1   | First working release with all relevant Zod types present with most validations (except for string patterns due to Zod not exposing the source regexp pattern for those). |
