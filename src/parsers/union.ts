@@ -1,5 +1,4 @@
-import { ZodTypeDef } from 'zod';
-import { ZodUnionDef } from 'zod/lib/src/types/union';
+import { ZodTypeDef, ZodUnionDef } from 'zod';
 import { JsonSchema7Type, parseDef } from '../parseDef';
 
 type JsonSchema7Primitive = 'string' | 'number' | 'integer' | 'boolean' | 'null';

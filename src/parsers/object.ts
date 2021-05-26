@@ -1,5 +1,4 @@
-import { ZodTypeDef } from 'zod';
-import { ZodObjectDef } from 'zod/lib/src/types/object';
+import { ZodObjectDef, ZodTypeDef } from 'zod';
 import { JsonSchema7Type, parseDef } from '../parseDef';
 
 export type JsonSchema7ObjectType = {
@@ -17,7 +16,8 @@ export function parseObjectDef(def: ZodObjectDef, path: string[], visited: { def
       .map(([key, value]) => ({ key, value: parseDef(value._def, [...path, 'properties', key], visited) }))
       .filter(({ value }) => value !== undefined)
       .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {}),
-    additionalProperties: !def.params.strict,
+    // additionalProperties: !def.params.strict,
+    additionalProperties: !def.shape,
   };
   const required = Object.entries(def.shape())
     .filter(([, value]) => value !== undefined && value._def !== undefined)

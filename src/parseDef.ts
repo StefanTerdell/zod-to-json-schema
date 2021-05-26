@@ -1,4 +1,4 @@
-import { z, ZodAny, ZodAnyDef, ZodArray, ZodBigInt, ZodBoolean, ZodDate, ZodEnum, ZodFunction, ZodIntersection, ZodLazy, ZodLiteral, ZodNativeEnum, ZodNull, ZodNumber, ZodObject, ZodPromise, ZodRecord, ZodString, ZodTuple, ZodTypeDef, ZodUndefined, ZodUnion, ZodUnknown, ZodVoid } from 'zod';
+import { z, ZodAny, ZodAnyDef, ZodArray, ZodBigInt, ZodBoolean, ZodDate, ZodDefault, ZodDefaultDef, ZodEnum, ZodFunction, ZodIntersection, ZodLazy, ZodLiteral, ZodNativeEnum, ZodNull, ZodNumber, ZodObject, ZodParsedType, ZodPromise, ZodRecord, ZodString, ZodTuple, ZodType, ZodTypeAny, ZodTypeDef, ZodUndefined, ZodUnion, ZodUnknown, ZodVoid } from 'zod';
 import { JsonSchema7ArrayType, parseArrayDef } from './parsers/array';
 import { JsonSchema7BigintType, parseBigintDef } from './parsers/bigint';
 import { JsonSchema7BooleanType, parseBooleanDef } from './parsers/boolean';
@@ -49,8 +49,9 @@ export function parseDef(schemaDef: ZodTypeDef, path: string[], visited: { def: 
       visited.push({ def: schemaDef, path });
     }
   }
-  const def = schemaDef;
-  console.log(def)
+  // for (const def of Object.values((schemaDef as any).shape())) {
+    const def: any = schemaDef as any;
+    console.log(def.shape())
   switch (def) {
     case ZodString:
       return parseStringDef(def);
@@ -95,4 +96,5 @@ export function parseDef(schemaDef: ZodTypeDef, path: string[], visited: { def: 
     default:
       return ((_: unknown) => undefined)(def);
   }
+// }
 }

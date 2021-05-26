@@ -1,5 +1,4 @@
-import { ZodTypeDef } from 'zod';
-import { ZodTupleDef } from 'zod/lib/src/types/tuple';
+import { ZodTupleDef, ZodTypeDef } from 'zod';
 import { JsonSchema7Type, parseDef } from '../parseDef';
 
 export type JsonSchema7TupleType = {

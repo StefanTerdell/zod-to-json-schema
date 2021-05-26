@@ -1,5 +1,5 @@
-import { ZodTypeDef } from 'zod';
-import { ZodRecordDef } from 'zod/lib/src/types/record';
+import { ZodRecordDef, ZodTypeDef } from 'zod';
+
 import { JsonSchema7Type, parseDef } from '../parseDef';
 
 export type JsonSchema7RecordType = {

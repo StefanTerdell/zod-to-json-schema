@@ -1,4 +1,5 @@
-import { ZodStringDef } from 'zod/lib/src/types/string';
+import { ZodStringDef } from "zod"
+
 
 export type JsonSchema7StringType = {
   type: 'string';
@@ -13,15 +14,15 @@ export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
 
   if (def.checks) {
     for (const check of def.checks) {
-      switch (check.code) {
-        case 'invalid_string':
-          //These are all regexp based (except URL which is "new Uri()" based) and zod does not seem to expose the source regexp right now.
+      switch (check.kind) {
+        case 'regex':
+          // These are all regexp based (except URL which is "new Uri()" based) and zod does not seem to expose the source regexp right now.
           break;
-        case 'too_small':
-          res.minLength = check.minimum;
+        case 'min':
+          res.minLength = check.value;
           break;
-        case 'too_big':
-          res.maxLength = check.maximum;
+        case 'max':
+          res.maxLength = check.value;
           break;
       }
     }
