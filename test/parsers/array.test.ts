@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from 'json-schema';
-import * as z from 'zod';
+import {z} from 'zod';
 import { parseArrayDef } from '../../src/parsers/array';
 
 describe('Arrays and array validations', () => {

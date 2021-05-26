@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from 'json-schema';
-import * as z from 'zod';
+import {z} from 'zod';
 import { parseNumberDef } from '../../src/parsers/number';
 describe('Number validations', () => {
   it('should be possible to describe minimum number', () => {

@@ -1,4 +1,4 @@
-import { ZodDef, ZodTypeDef, ZodTypes } from 'zod';
+import { z, ZodAny, ZodAnyDef, ZodArray, ZodBigInt, ZodBoolean, ZodDate, ZodEnum, ZodFunction, ZodIntersection, ZodLazy, ZodLiteral, ZodNativeEnum, ZodNull, ZodNumber, ZodObject, ZodPromise, ZodRecord, ZodString, ZodTuple, ZodTypeDef, ZodUndefined, ZodUnion, ZodUnknown, ZodVoid } from 'zod';
 import { JsonSchema7ArrayType, parseArrayDef } from './parsers/array';
 import { JsonSchema7BigintType, parseBigintDef } from './parsers/bigint';
 import { JsonSchema7BooleanType, parseBooleanDef } from './parsers/boolean';
@@ -49,49 +49,50 @@ export function parseDef(schemaDef: ZodTypeDef, path: string[], visited: { def: 
       visited.push({ def: schemaDef, path });
     }
   }
-  const def: ZodDef = schemaDef as any;
-  switch (def.t) {
-    case ZodTypes.string:
+  const def = schemaDef;
+  console.log(def)
+  switch (def) {
+    case ZodString:
       return parseStringDef(def);
-    case ZodTypes.number:
+    case ZodNumber:
       return parseNumberDef(def);
-    case ZodTypes.bigint:
+    case ZodBigInt:
       return parseBigintDef(def);
-    case ZodTypes.boolean:
+    case ZodBoolean:
       return parseBooleanDef();
-    case ZodTypes.date:
+    case ZodDate:
       return parseDateDef();
-    case ZodTypes.undefined:
+    case ZodUndefined:
       return parseUndefinedDef();
-    case ZodTypes.null:
+    case ZodNull:
       return parseNullDef();
-    case ZodTypes.array:
+    case ZodArray:
       return parseArrayDef(def, path, visited);
-    case ZodTypes.object:
+    case ZodObject:
       return parseObjectDef(def, path, visited);
-    case ZodTypes.union:
+    case ZodUnion:
       return parseUnionDef(def, path, visited);
-    case ZodTypes.intersection:
+    case ZodIntersection:
       return parseIntersectionDef(def, path, visited);
-    case ZodTypes.tuple:
+    case ZodTuple:
       return parseTupleDef(def, path, visited);
-    case ZodTypes.record:
+    case ZodRecord:
       return parseRecordDef(def, path, visited);
-    case ZodTypes.literal:
+    case ZodLiteral:
       return parseLiteralDef(def);
-    case ZodTypes.enum:
+    case ZodEnum:
       return parseEnumDef(def);
-    case ZodTypes.nativeEnum:
+    case ZodNativeEnum:
       return parseNativeEnumDef(def);
-    case ZodTypes.any:
-    case ZodTypes.unknown:
+    case ZodAny:
+    case ZodUnknown:
       return {};
-    case ZodTypes.function:
-    case ZodTypes.lazy:
-    case ZodTypes.promise:
-    case ZodTypes.void:
+    case ZodFunction:
+    case ZodLazy:
+    case ZodPromise:
+    case ZodVoid:
       return undefined;
     default:
-      return ((_: never) => undefined)(def);
+      return ((_: unknown) => undefined)(def);
   }
 }
