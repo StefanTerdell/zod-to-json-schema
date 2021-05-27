@@ -1,6 +1,6 @@
-import { JSONSchema7Type } from 'json-schema';
-import {z} from 'zod';
-import { parseDef } from '../src/parseDef';
+import { JSONSchema7Type } from 'json-schema'
+import { z } from 'zod'
+import { parseDef } from '../src/parseDef'
 
 describe('Basic parsing', () => {
   it('should return a proper json schema with some common types without validation', () => {
@@ -17,7 +17,7 @@ describe('Basic parsing', () => {
       numberOrNull: z.number().nullable(),
       numberUnion: z.union([z.literal(1), z.literal(2), z.literal(3)]),
       mixedUnion: z.union([z.literal('abc'), z.literal(123), z.object({ nowItGetsAnnoying: z.literal(true) })]),
-    });
+    })
     const expectedJsonSchema: JSONSchema7Type = {
       type: 'object',
       properties: {
@@ -113,20 +113,20 @@ describe('Basic parsing', () => {
         'mixedUnion',
       ],
       additionalProperties: false,
-    };
+    }
 
-    expect(parseDef(zodSchema._def, [], [])).toStrictEqual(expectedJsonSchema);
-  });
-});
+    expect(parseDef(zodSchema, [], [])).toStrictEqual(expectedJsonSchema)
+  })
+})
 
 describe('Pathing', () => {
   it('should handle recurring properties with paths', () => {
-    const addressSchema = z.object({ street: z.string(), number: z.number(), city: z.string() });
+    const addressSchema = z.object({ street: z.string(), number: z.number(), city: z.string() })
     const someAddresses = z.object({
       address1: addressSchema,
       address2: addressSchema,
       lotsOfAddresses: z.array(addressSchema),
-    });
+    })
     const jsonSchema = {
       type: 'object',
       properties: {
@@ -141,20 +141,20 @@ describe('Pathing', () => {
       },
       additionalProperties: false,
       required: ['address1', 'address2', 'lotsOfAddresses'],
-    };
+    }
 
-    expect(parseDef(someAddresses._def, [], [])).toStrictEqual(jsonSchema);
-  });
+    expect(parseDef(someAddresses, [], [])).toStrictEqual(jsonSchema)
+  })
 
   it('Should properly reference union participants', () => {
-    const participant = z.object({ str: z.string() });
+    const participant = z.object({ str: z.string() })
 
     const schema = z.object({
       union: z.union([participant, z.string()]),
       part: participant,
-    });
+    })
 
-    const jsonSchema = parseDef(schema._def, [], []);
+    const jsonSchema = parseDef(schema, [], [])
 
     const expectedJsonSchema = {
       type: 'object',
@@ -182,8 +182,8 @@ describe('Pathing', () => {
       },
       additionalProperties: false,
       required: ['union', 'part'],
-    };
+    }
 
-    expect(jsonSchema).toStrictEqual(expectedJsonSchema);
-  });
-});
+    expect(jsonSchema).toStrictEqual(expectedJsonSchema)
+  })
+})
