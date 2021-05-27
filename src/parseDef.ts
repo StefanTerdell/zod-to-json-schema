@@ -10,6 +10,7 @@ import { JsonSchema7NativeEnumType, parseNativeEnumDef } from './parsers/nativeE
 import { JsonSchema7NullType, parseNullDef } from './parsers/null'
 import { JsonSchema7NumberType, parseNumberDef } from './parsers/number'
 import { JsonSchema7ObjectType, parseObjectDef } from './parsers/object'
+import { parseNullable } from "./parsers/nullable"
 import { JsonSchema7RecordType, parseRecordDef } from './parsers/record'
 import { JsonSchema7StringType, parseStringDef } from './parsers/string'
 import { JsonSchema7TupleType, parseTupleDef } from './parsers/tuple'
@@ -47,7 +48,7 @@ export function parseDef<T>(schemaDef: any, path: string[], visited: { def: ZodT
     if (wasVisited) {
       return { $ref: `#/${wasVisited.path.join('/')}` }
     } else {
-      visited.push({ def: schemaDef._def, path })
+      visited.push({ def: schemaDef, path })
     }
   }
 
@@ -87,6 +88,11 @@ export function parseDef<T>(schemaDef: any, path: string[], visited: { def: ZodT
       return parseEnumDef(def)
     case "ZodNativeEnum":
       return parseNativeEnumDef(def)
+    case "ZodNullable":
+      return parseNullable(def)
+    case "ZodOptional":
+      return parseDef(def.innerType, path, visited)
+
     case "ZodAny":
     case "ZodUnknown":
       return {}

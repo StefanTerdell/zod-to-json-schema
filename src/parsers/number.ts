@@ -16,6 +16,9 @@ export function parseNumberDef(def: ZodNumberDef): JsonSchema7NumberType {
   if (def.checks) {
     for (const check of def.checks) {
       switch (check.kind) {
+        case "int":
+          res.type = "integer"
+          break
         case "min":
           if (!check.inclusive) {
             res.exclusiveMinimum = check.value

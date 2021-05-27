@@ -31,8 +31,8 @@ export function parseUnionDef(
   path: string[],
   visited: { def: ZodTypeDef; path: string[] }[]
 ): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | JsonSchema7Type | undefined {
-  const options = def.options//.filter((x) => x._def.t !== 'undefined')
-  // console.log(options.map(o => o.constructor.name))
+  const options = def.options.filter((x) => x.constructor.name !== 'undefined')
+  // 
   if (options.length === 1) {
     return parseDef(options[0]._def, path, visited) // likely union with undefined, and thus probably optional object property
   }
@@ -40,10 +40,10 @@ export function parseUnionDef(
   // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
   if (options.every((x) => ['ZodString', 'ZodNumber', 'ZodBigInt', 'ZodBoolean', 'ZodNull'].includes(x.constructor.name) && (!x._def.checks || !x._def.checks.length))) {
     // all types in union are primitive, so might as well squash into {type: [...]}
-    // console.log("passed every")
+    // 
     const types = options
       .reduce((types, option) => {
-        // console.log(option)
+        // 
         return types.includes(option.constructor.name) ? types : [...types, (mappings as any)[option.constructor.name]]
       }, [] as string[])
       .map((x) => (x === 'bigint' ? 'integer' : x))
@@ -51,6 +51,7 @@ export function parseUnionDef(
       type: types.length > 1 ? types : types[0],
     }
   } else if (options.every((x) => x.constructor.name === 'ZodLiteral')) {
+
     // all options literals
     const types = options.reduce((types, option) => {
       let type: string = typeof option._def.value
@@ -61,16 +62,23 @@ export function parseUnionDef(
       }
       return types.includes(type) ? types : [...types, type]
     }, [] as string[])
-    if (types.every((x) => ['ZodString', 'ZodNumber', 'ZodBigInt', 'ZodBoolean', 'ZodNull'].includes(x.constructor.name))) {
+
+    if (types.every((x) => ['string', 'number', 'bigint', 'boolean', 'null'].includes(x))) {
+
       // all the literals are primitive, as far as null can be considered primitive
       return {
         type: types.length > 1 ? types : types[0],
-        enum: options.reduce((acc, x) => (acc.includes(x._def.value) ? acc : [...acc, x._def.value]), [] as (string | number | bigint | boolean | null)[]),
+        enum: options.reduce((acc, x) => {
+          return acc.includes(x._def.value) ? acc : [...acc, x._def.value]
+        }, [] as (string | number | bigint | boolean | null)[])
+        ,
       }
     }
   }
+
   return {
     // Fallback to verbose anyOf. This will always work schematically but it does get quite ugly at times.
-    anyOf: options.map((x, i) => parseDef(x._def, [...path, 'anyOf', i.toString()], visited)),
+
+    anyOf: options.map((x, i) => parseDef(x, [...path, 'anyOf', i.toString()], visited)),
   }
 }
