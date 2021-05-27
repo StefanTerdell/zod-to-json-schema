@@ -92,7 +92,12 @@ export function parseDef<T>(schemaDef: any, path: string[], visited: { def: ZodT
       return parseNullable(def)
     case "ZodOptional":
       return parseDef(def.innerType, path, visited)
-
+    case "ZodEffects":
+      const _def: any = parseDef(def.schema, path, visited)
+      return {
+        ..._def,
+        type: (_def.type || "") + " (refinements)"
+      }
     case "ZodAny":
     case "ZodUnknown":
       return {}
