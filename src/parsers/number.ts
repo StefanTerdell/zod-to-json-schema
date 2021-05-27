@@ -31,9 +31,6 @@ export function parseNumberDef(def: ZodNumberDef): JsonSchema7NumberType {
           }
           res.maximum = check.value
           break
-        case "int":
-          res.type = 'integer'
-          break
       }
     }
   }

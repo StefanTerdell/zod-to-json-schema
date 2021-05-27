@@ -1,4 +1,4 @@
-import { ZodNonEmptyArrayDef, ZodTypeDef } from 'zod'
+import { ZodTypeDef } from 'zod'
 import { JsonSchema7ArrayType, parseArrayDef, parseNonEmptyArrayDef } from './parsers/array'
 import { JsonSchema7BigintType, parseBigintDef } from './parsers/bigint'
 import { JsonSchema7BooleanType, parseBooleanDef } from './parsers/boolean'
@@ -8,9 +8,9 @@ import { parseIntersectionDef } from './parsers/intersection'
 import { JsonSchema7LiteralType, parseLiteralDef } from './parsers/literal'
 import { JsonSchema7NativeEnumType, parseNativeEnumDef } from './parsers/nativeEnum'
 import { JsonSchema7NullType, parseNullDef } from './parsers/null'
+import { parseNullable } from "./parsers/nullable"
 import { JsonSchema7NumberType, parseNumberDef } from './parsers/number'
 import { JsonSchema7ObjectType, parseObjectDef } from './parsers/object'
-import { parseNullable } from "./parsers/nullable"
 import { JsonSchema7RecordType, parseRecordDef } from './parsers/record'
 import { JsonSchema7StringType, parseStringDef } from './parsers/string'
 import { JsonSchema7TupleType, parseTupleDef } from './parsers/tuple'
