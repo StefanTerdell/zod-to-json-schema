@@ -1,5 +1,5 @@
-import { ZodTypeDef } from 'zod'
-import { JsonSchema7ArrayType, parseArrayDef } from './parsers/array'
+import { ZodNonEmptyArrayDef, ZodTypeDef } from 'zod'
+import { JsonSchema7ArrayType, parseArrayDef, parseNonEmptyArrayDef } from './parsers/array'
 import { JsonSchema7BigintType, parseBigintDef } from './parsers/bigint'
 import { JsonSchema7BooleanType, parseBooleanDef } from './parsers/boolean'
 import { JsonSchema7DateType, parseDateDef } from './parsers/date'
@@ -41,6 +41,7 @@ export type JsonSchema7Type =
   | JsonSchema7AnyType
 
 export function parseDef<T>(schemaDef: any, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JsonSchema7Type | undefined {
+
   if (visited) {
     const wasVisited = visited.find((x) => Object.is(x.def, schemaDef))
     if (wasVisited) {
@@ -70,7 +71,8 @@ export function parseDef<T>(schemaDef: any, path: string[], visited: { def: ZodT
       return parseNullDef()
     case "ZodArray":
       return parseArrayDef(def, path, visited)
-
+    case "ZodNonEmptyArray":
+      return parseNonEmptyArrayDef(def, path, visited)
     case "ZodUnion":
       return parseUnionDef(def, path, visited)
     case "ZodIntersection":
@@ -94,6 +96,7 @@ export function parseDef<T>(schemaDef: any, path: string[], visited: { def: ZodT
     case "ZodVoid":
       return undefined
     default:
+      console.log(schemaDef.constructor.name)
       return ((_: unknown) => undefined)(schemaDef)
   }
 
