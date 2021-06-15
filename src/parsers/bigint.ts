@@ -1,5 +1,4 @@
-
-import { ZodBigInt, ZodBigIntDef } from "zod"
+import { ZodBigIntDef } from 'zod';
 import { JsonSchema7NumberType } from './number';
 
 export type JsonSchema7BigintType = JsonSchema7NumberType & {

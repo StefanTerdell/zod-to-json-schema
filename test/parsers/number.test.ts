@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from 'json-schema';
-import {z} from 'zod';
+import { z } from 'zod';
 import { parseNumberDef } from '../../src/parsers/number';
 describe('Number validations', () => {
   it('should be possible to describe minimum number', () => {
@@ -35,7 +35,9 @@ describe('Number validations', () => {
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
   it('should be possible to describe positive, negative, nonpositive and nonnegative numbers', () => {
-    const parsedSchema = parseNumberDef(z.number().positive().negative().nonpositive().nonnegative()._def);
+    const parsedSchema = parseNumberDef(
+      z.number().positive().negative().nonpositive().nonnegative()._def
+    );
     const jsonSchema: JSONSchema7Type = {
       type: 'number',
       minimum: 0,

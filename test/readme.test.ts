@@ -1,4 +1,4 @@
-import {z} from 'zod';
+import { z } from 'zod';
 import zodToJsonSchema from '..';
 
 describe('The readme example', () => {

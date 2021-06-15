@@ -1,4 +1,4 @@
-import {z} from 'zod';
+import { z } from 'zod';
 import { zodToJsonSchema } from '../src/zodToJsonSchema';
 
 describe('Root schema result after parsing', () => {
