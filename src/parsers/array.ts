@@ -41,7 +41,7 @@ export function parseNonEmptyArrayDef(
   {
     const res: JsonSchema7ArrayType = {
       type: 'array',
-      items: parseDef(def.type, [...path, 'array'], visited),
+      items: parseDef(def.type, [...path, 'items'], visited),
       minItems: 1,
     };
 
