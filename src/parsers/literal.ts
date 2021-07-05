@@ -1,4 +1,4 @@
-import { ZodLiteralDef } from 'zod/lib/src/types/literal';
+import { ZodLiteralDef } from 'zod';
 
 export type JsonSchema7LiteralType =
   | {
@@ -11,7 +11,12 @@ export type JsonSchema7LiteralType =
 
 export function parseLiteralDef(def: ZodLiteralDef): JsonSchema7LiteralType {
   const parsedType = typeof def.value;
-  if (parsedType !== 'bigint' && parsedType !== 'number' && parsedType !== 'boolean' && parsedType !== 'string') {
+  if (
+    parsedType !== 'bigint' &&
+    parsedType !== 'number' &&
+    parsedType !== 'boolean' &&
+    parsedType !== 'string'
+  ) {
     return {
       type: Array.isArray(def.value) ? 'array' : 'object',
     };

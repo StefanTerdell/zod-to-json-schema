@@ -13,7 +13,7 @@ String pattern validation (ie email, regexp etc) is not available since Zod does
 Usage:
 
 ```typescript
-import * as z from 'zod';
+import {z} from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 
 const mySchema = z.object({

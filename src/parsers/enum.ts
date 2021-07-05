@@ -1,4 +1,4 @@
-import { ZodEnumDef } from 'zod/lib/src/types/enum';
+import { ZodEnumDef } from 'zod';
 
 export type JsonSchema7EnumType = {
   type: 'string';

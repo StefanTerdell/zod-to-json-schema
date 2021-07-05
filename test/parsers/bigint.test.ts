@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from 'json-schema';
-import * as z from 'zod';
+import { z } from 'zod';
 import { parseBigintDef } from '../../src/parsers/bigint';
 
 describe('bigint', () => {

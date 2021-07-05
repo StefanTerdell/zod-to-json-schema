@@ -1,20 +1,35 @@
-import { ZodDef, ZodTypeDef, ZodTypes } from 'zod';
-import { JsonSchema7ArrayType, parseArrayDef } from './parsers/array';
+import { ZodTypeDef } from 'zod';
+import {
+  JsonSchema7ArrayType,
+  parseArrayDef,
+  parseNonEmptyArrayDef,
+} from './parsers/array';
 import { JsonSchema7BigintType, parseBigintDef } from './parsers/bigint';
 import { JsonSchema7BooleanType, parseBooleanDef } from './parsers/boolean';
 import { JsonSchema7DateType, parseDateDef } from './parsers/date';
 import { JsonSchema7EnumType, parseEnumDef } from './parsers/enum';
 import { parseIntersectionDef } from './parsers/intersection';
 import { JsonSchema7LiteralType, parseLiteralDef } from './parsers/literal';
-import { JsonSchema7NativeEnumType, parseNativeEnumDef } from './parsers/nativeEnum';
+import {
+  JsonSchema7NativeEnumType,
+  parseNativeEnumDef,
+} from './parsers/nativeEnum';
 import { JsonSchema7NullType, parseNullDef } from './parsers/null';
+import { parseNullable } from './parsers/nullable';
 import { JsonSchema7NumberType, parseNumberDef } from './parsers/number';
 import { JsonSchema7ObjectType, parseObjectDef } from './parsers/object';
 import { JsonSchema7RecordType, parseRecordDef } from './parsers/record';
 import { JsonSchema7StringType, parseStringDef } from './parsers/string';
 import { JsonSchema7TupleType, parseTupleDef } from './parsers/tuple';
-import { JsonSchema7UndefinedType, parseUndefinedDef } from './parsers/undefined';
-import { JsonSchema7AnyOfType, JsonSchema7PrimitiveUnionType, parseUnionDef } from './parsers/union';
+import {
+  JsonSchema7UndefinedType,
+  parseUndefinedDef,
+} from './parsers/undefined';
+import {
+  JsonSchema7AnyOfType,
+  JsonSchema7PrimitiveUnionType,
+  parseUnionDef,
+} from './parsers/union';
 
 type JsonSchema7AnyType = {};
 type JsonSchema7RefType = { $ref: string };
@@ -40,7 +55,11 @@ export type JsonSchema7Type =
   | JsonSchema7RefType
   | JsonSchema7AnyType;
 
-export function parseDef(schemaDef: ZodTypeDef, path: string[], visited: { def: ZodTypeDef; path: string[] }[]): JsonSchema7Type | undefined {
+export function parseDef<T>(
+  schemaDef: any,
+  path: string[],
+  visited: { def: ZodTypeDef; path: string[] }[]
+): JsonSchema7Type | undefined {
   if (visited) {
     const wasVisited = visited.find((x) => Object.is(x.def, schemaDef));
     if (wasVisited) {
@@ -49,49 +68,63 @@ export function parseDef(schemaDef: ZodTypeDef, path: string[], visited: { def: 
       visited.push({ def: schemaDef, path });
     }
   }
-  const def: ZodDef = schemaDef as any;
-  switch (def.t) {
-    case ZodTypes.string:
+
+  const def = schemaDef._def;
+  switch (schemaDef.constructor.name) {
+    case 'ZodString':
       return parseStringDef(def);
-    case ZodTypes.number:
+    case 'ZodNumber':
       return parseNumberDef(def);
-    case ZodTypes.bigint:
-      return parseBigintDef(def);
-    case ZodTypes.boolean:
-      return parseBooleanDef();
-    case ZodTypes.date:
-      return parseDateDef();
-    case ZodTypes.undefined:
-      return parseUndefinedDef();
-    case ZodTypes.null:
-      return parseNullDef();
-    case ZodTypes.array:
-      return parseArrayDef(def, path, visited);
-    case ZodTypes.object:
+    case 'ZodObject':
       return parseObjectDef(def, path, visited);
-    case ZodTypes.union:
+    case 'ZodBigInt':
+      return parseBigintDef(def);
+    case 'ZodBoolean':
+      return parseBooleanDef();
+    case 'ZodDate':
+      return parseDateDef();
+    case 'ZodUndefined':
+      return parseUndefinedDef();
+    case 'ZodNull':
+      return parseNullDef();
+    case 'ZodArray':
+      return parseArrayDef(def, path, visited);
+    case 'ZodNonEmptyArray':
+      return parseNonEmptyArrayDef(def, path, visited);
+    case 'ZodUnion':
       return parseUnionDef(def, path, visited);
-    case ZodTypes.intersection:
+    case 'ZodIntersection':
       return parseIntersectionDef(def, path, visited);
-    case ZodTypes.tuple:
+    case 'ZodTuple':
       return parseTupleDef(def, path, visited);
-    case ZodTypes.record:
+    case 'ZodRecord':
       return parseRecordDef(def, path, visited);
-    case ZodTypes.literal:
+    case 'ZodLiteral':
       return parseLiteralDef(def);
-    case ZodTypes.enum:
+    case 'ZodEnum':
       return parseEnumDef(def);
-    case ZodTypes.nativeEnum:
+    case 'ZodNativeEnum':
       return parseNativeEnumDef(def);
-    case ZodTypes.any:
-    case ZodTypes.unknown:
+    case 'ZodNullable':
+      return parseNullable(def);
+    case 'ZodOptional':
+      return parseDef(def.innerType, path, visited);
+    case 'ZodEffects':
+      const _def: any = parseDef(def.schema, path, visited);
+      return {
+        ..._def,
+        type: (_def.type || '') + ' (refinements)',
+      };
+    case 'ZodAny':
+    case 'ZodUnknown':
       return {};
-    case ZodTypes.function:
-    case ZodTypes.lazy:
-    case ZodTypes.promise:
-    case ZodTypes.void:
+    case 'ZodFunction':
+    case 'ZodLazy':
+    case 'ZodPromise':
+    case 'ZodVoid':
       return undefined;
     default:
-      return ((_: never) => undefined)(def);
+      console.log(schemaDef.constructor.name);
+      return ((_: unknown) => undefined)(schemaDef);
   }
 }

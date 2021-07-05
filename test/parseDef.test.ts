@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from 'json-schema';
-import * as z from 'zod';
+import { z } from 'zod';
 import { parseDef } from '../src/parseDef';
 
 describe('Basic parsing', () => {
@@ -16,7 +16,11 @@ describe('Basic parsing', () => {
       optionalNumber: z.number().optional(),
       numberOrNull: z.number().nullable(),
       numberUnion: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-      mixedUnion: z.union([z.literal('abc'), z.literal(123), z.object({ nowItGetsAnnoying: z.literal(true) })]),
+      mixedUnion: z.union([
+        z.literal('abc'),
+        z.literal(123),
+        z.object({ nowItGetsAnnoying: z.literal(true) }),
+      ]),
     });
     const expectedJsonSchema: JSONSchema7Type = {
       type: 'object',
@@ -115,13 +119,17 @@ describe('Basic parsing', () => {
       additionalProperties: false,
     };
 
-    expect(parseDef(zodSchema._def, [], [])).toStrictEqual(expectedJsonSchema);
+    expect(parseDef(zodSchema, [], [])).toStrictEqual(expectedJsonSchema);
   });
 });
 
 describe('Pathing', () => {
   it('should handle recurring properties with paths', () => {
-    const addressSchema = z.object({ street: z.string(), number: z.number(), city: z.string() });
+    const addressSchema = z.object({
+      street: z.string(),
+      number: z.number(),
+      city: z.string(),
+    });
     const someAddresses = z.object({
       address1: addressSchema,
       address2: addressSchema,
@@ -132,18 +140,25 @@ describe('Pathing', () => {
       properties: {
         address1: {
           type: 'object',
-          properties: { street: { type: 'string' }, number: { type: 'number' }, city: { type: 'string' } },
+          properties: {
+            street: { type: 'string' },
+            number: { type: 'number' },
+            city: { type: 'string' },
+          },
           additionalProperties: false,
           required: ['street', 'number', 'city'],
         },
         address2: { $ref: '#/properties/address1' },
-        lotsOfAddresses: { type: 'array', items: { $ref: '#/properties/address1' } },
+        lotsOfAddresses: {
+          type: 'array',
+          items: { $ref: '#/properties/address1' },
+        },
       },
       additionalProperties: false,
       required: ['address1', 'address2', 'lotsOfAddresses'],
     };
 
-    expect(parseDef(someAddresses._def, [], [])).toStrictEqual(jsonSchema);
+    expect(parseDef(someAddresses, [], [])).toStrictEqual(jsonSchema);
   });
 
   it('Should properly reference union participants', () => {
@@ -154,7 +169,7 @@ describe('Pathing', () => {
       part: participant,
     });
 
-    const jsonSchema = parseDef(schema._def, [], []);
+    const jsonSchema = parseDef(schema, [], []);
 
     const expectedJsonSchema = {
       type: 'object',

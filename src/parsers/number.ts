@@ -1,4 +1,4 @@
-import { ZodNumberDef } from 'zod/lib/src/types/number';
+import { ZodNumberDef } from 'zod';
 
 export type JsonSchema7NumberType = {
   type: 'number' | 'integer';
@@ -15,25 +15,21 @@ export function parseNumberDef(def: ZodNumberDef): JsonSchema7NumberType {
 
   if (def.checks) {
     for (const check of def.checks) {
-      switch (check.code) {
-        case 'invalid_type':
-          if (check.expected === 'integer') {
-            res.type = 'integer';
-          }
+      switch (check.kind) {
+        case 'int':
+          res.type = 'integer';
           break;
-        case 'too_small':
-          if (check.inclusive) {
-            res.minimum = check.minimum;
-          } else {
-            res.exclusiveMinimum = check.minimum;
+        case 'min':
+          if (!check.inclusive) {
+            res.exclusiveMinimum = check.value;
           }
+          res.minimum = check.value;
           break;
-        case 'too_big':
-          if (check.inclusive) {
-            res.maximum = check.maximum;
-          } else {
-            res.exclusiveMaximum = check.maximum;
+        case 'max':
+          if (!check.inclusive) {
+            res.exclusiveMaximum = check.value;
           }
+          res.maximum = check.value;
           break;
       }
     }
