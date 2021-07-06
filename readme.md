@@ -53,10 +53,10 @@ Expected output:
 
 | Version | Change                                                                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 3.0.0 | Compatible with Zod 3.2.0. Huge props to [Mr Hammad Masif](https://github.com/mrhammadasif) for his work on this.
+| 3.0.1   | Fixed a typo in the readme                                                                                                                                                |
+| 3.0.0   | Compatible with Zod 3.2.0. Huge props to [Mr Hammad Asif](https://github.com/mrhammadasif) for his work on this.                                                          |
 | 0.6.2   | Hotfix for undefined object properties. Could crash the parser when using Pick                                                                                            |
 | 0.6.1   | Fixed bug in union pathing. `$Ref` was missing `/anyOf`                                                                                                                   |
 | 0.6.0   | Moved `@types/json-schema` and `typescript` to dev dependencies. `@types/json-schema` is now only used for the test suites. Using `strict: true` in ts config.            |
 | 0.5.1   | First working release with all relevant Zod types present with most validations (except for string patterns due to Zod not exposing the source regexp pattern for those). |
 | < 0.5.1 | Deprecated due to broken package structure. Please be patient, I eat crayons.                                                                                             |
-
