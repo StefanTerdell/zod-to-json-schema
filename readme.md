@@ -13,7 +13,7 @@ String pattern validation (ie email, regexp etc) is not available since Zod does
 Usage:
 
 ```typescript
-import {z} from 'zod';
+import { z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 
 const mySchema = z.object({
@@ -53,12 +53,10 @@ Expected output:
 
 | Version | Change                                                                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.0.0 | Compatible with Zod 3.2.0. Huge props to [Mr Hammad Masif](https://github.com/mrhammadasif) for his work on this.
 | 0.6.2   | Hotfix for undefined object properties. Could crash the parser when using Pick                                                                                            |
 | 0.6.1   | Fixed bug in union pathing. `$Ref` was missing `/anyOf`                                                                                                                   |
 | 0.6.0   | Moved `@types/json-schema` and `typescript` to dev dependencies. `@types/json-schema` is now only used for the test suites. Using `strict: true` in ts config.            |
 | 0.5.1   | First working release with all relevant Zod types present with most validations (except for string patterns due to Zod not exposing the source regexp pattern for those). |
 | < 0.5.1 | Deprecated due to broken package structure. Please be patient, I eat crayons.                                                                                             |
 
-## Disclaimer and notes on versioning
-
-Once I'm satisfied that this package has reached parity with Zod I will keep the major versions in lockstep with that, possibly with simultaneous minor versions of both majors 1 and 3 (zod 2 was deprecated before leaving beta). As for now though (meaning major 0 for this package), expect breaking changes to the api to appear without notice.
