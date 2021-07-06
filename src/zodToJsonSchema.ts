@@ -22,8 +22,6 @@ function zodToJsonSchema<T extends string>(
   definitions: Record<T, JsonSchema7Type>;
 };
 function zodToJsonSchema(schema: ZodSchema<any>, name?: string) {
-  // console.log(schema)
-
   return name === undefined
     ? {
         $schema: 'http://json-schema.org/draft-07/schema#',

@@ -124,7 +124,6 @@ export function parseDef<T>(
     case 'ZodVoid':
       return undefined;
     default:
-      console.log(schemaDef.constructor.name);
       return ((_: unknown) => undefined)(schemaDef);
   }
 }

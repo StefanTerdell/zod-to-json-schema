@@ -1,5 +1,4 @@
 import { ZodArrayDef, ZodNonEmptyArrayDef, ZodTypeDef } from 'zod';
-// import { ZodArrayDef } from 'zod/lib/src/types/array';
 import { JsonSchema7Type, parseDef } from '../parseDef';
 
 export type JsonSchema7ArrayType = {
@@ -19,8 +18,6 @@ export function parseArrayDef(
       type: 'array',
       items: parseDef(def.type, [...path, 'array'], visited),
     };
-
-    // if(def.type._def)
 
     if (def.minLength) {
       res.minItems = def.minLength.value;
@@ -44,8 +41,6 @@ export function parseNonEmptyArrayDef(
       items: parseDef(def.type, [...path, 'items'], visited),
       minItems: 1,
     };
-
-    // if(def.type._def)
 
     if (def.minLength) {
       res.minItems = def.minLength.value;

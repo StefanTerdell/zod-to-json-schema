@@ -30,11 +30,8 @@ export function parseObjectDef(
   };
   const required = Object.entries(def.shape())
     .filter(([, value]) => value !== undefined && value._def !== undefined)
-    .filter(([key, value]) => {
+    .filter(([, value]) => {
       return !value.isOptional();
-      // return Object.keys(result.properties).includes(key) &&
-      //   value.constructor.name !== 'ZodUndefined' &&
-      //   (value.constructor.name !== 'ZodUnion' || !value._def.options.find((x: any) => x.constructor.name === 'ZodUndefined'))
     })
     .map(([key]) => key);
   if (required.length) {
