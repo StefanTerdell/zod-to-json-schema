@@ -1,4 +1,4 @@
-import { ZodArrayDef, ZodNonEmptyArrayDef, ZodTypeDef } from 'zod';
+import { ZodArrayDef, ZodTypeDef } from 'zod';
 import { JsonSchema7Type, parseDef } from '../parseDef';
 
 export type JsonSchema7ArrayType = {
@@ -9,7 +9,7 @@ export type JsonSchema7ArrayType = {
 };
 
 export function parseArrayDef(
-  def: ZodArrayDef | ZodNonEmptyArrayDef,
+  def: ZodArrayDef,
   path: string[],
   visited: { def: ZodTypeDef; path: string[] }[]
 ) {
@@ -31,7 +31,7 @@ export function parseArrayDef(
 }
 
 export function parseNonEmptyArrayDef(
-  def: ZodArrayDef | ZodNonEmptyArrayDef,
+  def: ZodArrayDef,
   path: string[],
   visited: { def: ZodTypeDef; path: string[] }[]
 ) {

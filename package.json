@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Converts Zod schemas to Json Schemas",
   "main": "index.js",
   "scripts": {
@@ -16,14 +16,16 @@
     "conversion"
   ],
   "author": "Stefan Terdell",
-  "contributors": ["Hammad Asif (https://github.com/mrhammadasif)"],
+  "contributors": [
+    "Hammad Asif (https://github.com/mrhammadasif)"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/StefanTerdell/zod-to-json-schema"
   },
   "license": "ISC",
   "dependencies": {
-    "zod": "^3.2.0"
+    "zod": "^3.7.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

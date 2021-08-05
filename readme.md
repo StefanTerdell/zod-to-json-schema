@@ -53,6 +53,7 @@ Expected output:
 
 | Version | Change                                                                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.0.2   | Fixed broken type usage (NonEmptyArrayDefinition was removed from Zod)                                                                                                    |
 | 3.0.1   | Fixed a typo in the readme                                                                                                                                                |
 | 3.0.0   | Compatible with Zod 3.2.0. Huge props to [Mr Hammad Asif](https://github.com/mrhammadasif) for his work on this.                                                          |
 | 0.6.2   | Hotfix for undefined object properties. Could crash the parser when using Pick                                                                                            |
