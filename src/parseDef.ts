@@ -1,9 +1,5 @@
 import { ZodTypeDef } from 'zod';
-import {
-  JsonSchema7ArrayType,
-  parseArrayDef,
-  parseNonEmptyArrayDef,
-} from './parsers/array';
+import { JsonSchema7ArrayType, parseArrayDef } from './parsers/array';
 import { JsonSchema7BigintType, parseBigintDef } from './parsers/bigint';
 import { JsonSchema7BooleanType, parseBooleanDef } from './parsers/boolean';
 import { JsonSchema7DateType, parseDateDef } from './parsers/date';
@@ -88,9 +84,9 @@ export function parseDef<T>(
     case 'ZodNull':
       return parseNullDef();
     case 'ZodArray':
-      return parseArrayDef(def, path, visited);
+      return parseArrayDef(def, path, visited, false);
     case 'ZodNonEmptyArray':
-      return parseNonEmptyArrayDef(def, path, visited);
+      return parseArrayDef(def, path, visited, true);
     case 'ZodUnion':
       return parseUnionDef(def, path, visited);
     case 'ZodIntersection':

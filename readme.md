@@ -53,6 +53,7 @@ Expected output:
 
 | Version | Change                                                                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.0.3   | Fixed array deep pathing bug (path contained `array` instead of `items`)                                                                                                  |
 | 3.0.2   | Fixed broken type usage (NonEmptyArrayDefinition was removed from Zod)                                                                                                    |
 | 3.0.1   | Fixed a typo in the readme                                                                                                                                                |
 | 3.0.0   | Compatible with Zod 3.2.0. Huge props to [Mr Hammad Asif](https://github.com/mrhammadasif) for his work on this.                                                          |

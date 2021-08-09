@@ -11,37 +11,17 @@ export type JsonSchema7ArrayType = {
 export function parseArrayDef(
   def: ZodArrayDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
-) {
-  {
-    const res: JsonSchema7ArrayType = {
-      type: 'array',
-      items: parseDef(def.type, [...path, 'array'], visited),
-    };
-
-    if (def.minLength) {
-      res.minItems = def.minLength.value;
-    }
-    if (def.maxLength) {
-      res.maxItems = def.maxLength.value;
-    }
-
-    return res;
-  }
-}
-
-export function parseNonEmptyArrayDef(
-  def: ZodArrayDef,
-  path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { def: ZodTypeDef; path: string[] }[],
+  nonEmpty: boolean
 ) {
   {
     const res: JsonSchema7ArrayType = {
       type: 'array',
       items: parseDef(def.type, [...path, 'items'], visited),
-      minItems: 1,
     };
-
+    if (nonEmpty) {
+      res.minItems =  1
+    }
     if (def.minLength) {
       res.minItems = def.minLength.value;
     }

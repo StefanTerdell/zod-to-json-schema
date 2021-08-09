@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Converts Zod schemas to Json Schemas",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
-    "@types/json-schema": "^7.0.7",
+    "@types/json-schema": "^7.0.9",
     "ajv": "^7.1.1",
     "jest": "^26.6.3",
     "rimraf": "^3.0.2",
