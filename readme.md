@@ -8,20 +8,20 @@
 
 Does what it says on the tin! Supports all relevant schema types as well as basic string, number and array length validations.
 
-String pattern validation (ie email, regexp etc) is not available since Zod doesn't seem to expose the regexp source in any way I can find. Perhaps in later versions, though!
+Now (since 3.1.0) also supports string patterns: email, uuid, url and regex.
 
 Usage:
 
 ```typescript
-import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
+import { z } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
 
 const mySchema = z.object({
   myString: z.string().min(5),
   myUnion: z.union([z.number(), z.boolean()]),
 });
 
-const jsonSchema = zodToJsonSchema(mySchema, 'mySchema');
+const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
 ```
 
 Expected output:
@@ -53,6 +53,7 @@ Expected output:
 
 | Version | Change                                                                                                                                                                    |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.1.0   | String patterns finally supported! Fixed bugs include  broken external type, unsafe nullable parsing, bad intersection implementation, and missing support for passthrough keys in objects.                                                                                  |
 | 3.0.3   | Fixed array deep pathing bug (path contained `array` instead of `items`)                                                                                                  |
 | 3.0.2   | Fixed broken type usage (NonEmptyArrayDefinition was removed from Zod)                                                                                                    |
 | 3.0.1   | Fixed a typo in the readme                                                                                                                                                |
