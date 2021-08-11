@@ -11,17 +11,13 @@ export type JsonSchema7ArrayType = {
 export function parseArrayDef(
   def: ZodArrayDef,
   path: string[],
-  visited: Visited,
-  nonEmpty: boolean
+  visited: Visited
 ) {
   {
     const res: JsonSchema7ArrayType = {
       type: "array",
       items: parseDef(def.type, [...path, "items"], visited),
     };
-    if (nonEmpty) {
-      res.minItems = 1;
-    }
     if (def.minLength) {
       res.minItems = def.minLength.value;
     }
