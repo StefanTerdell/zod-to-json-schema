@@ -112,7 +112,7 @@ describe("String validations", () => {
     expect(ajv.validate(parsedSchema, "http://hello.com")).toEqual(true);
   });
 
-  it.only("should be possible to use regex constraint", () => {
+  it("should be possible to use regex constraint", () => {
     const parsedSchema = parseStringDef(z.string().regex(/[A-C]/)._def);
     const jsonSchema: JsonSchema7Type = {
       type: "string",
