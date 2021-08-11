@@ -1,12 +1,14 @@
-import { ZodSchema } from 'zod';
-import { JsonSchema7Type, parseDef } from './parseDef';
+import { ZodSchema } from "zod";
+import { JsonSchema7Type, parseDef } from "./parseDef";
 
 /**
  * @param schema The Zod schema to be converted
  */
-function zodToJsonSchema(schema: ZodSchema<any>):
+function zodToJsonSchema(
+  schema: ZodSchema<any>
+):
   | ({
-      $schema: 'http://json-schema.org/draft-07/schema#';
+      $schema: "http://json-schema.org/draft-07/schema#";
     } & JsonSchema7Type)
   | unknown;
 /**
@@ -17,21 +19,21 @@ function zodToJsonSchema<T extends string>(
   schema: ZodSchema<any>,
   name: T
 ): {
-  $schema: 'http://json-schema.org/draft-07/schema#';
+  $schema: "http://json-schema.org/draft-07/schema#";
   $ref: string;
   definitions: Record<T, JsonSchema7Type>;
 };
 function zodToJsonSchema(schema: ZodSchema<any>, name?: string) {
   return name === undefined
     ? {
-        $schema: 'http://json-schema.org/draft-07/schema#',
+        $schema: "http://json-schema.org/draft-07/schema#",
         ...parseDef(schema, [], []),
       }
     : {
-        $schema: 'http://json-schema.org/draft-07/schema#',
+        $schema: "http://json-schema.org/draft-07/schema#",
         $ref: `#/definitions/${name}`,
         definitions: {
-          [name]: parseDef(schema, ['definitions', name], []) || {},
+          [name]: parseDef(schema, ["definitions", name], []) || {},
         },
       };
 }

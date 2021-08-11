@@ -1,13 +1,13 @@
-import { ZodBigIntDef } from 'zod';
-import { JsonSchema7NumberType } from './number';
+import { ZodBigIntDef } from "zod";
+import { JsonSchema7NumberType } from "./number";
 
 export type JsonSchema7BigintType = JsonSchema7NumberType & {
-  type: 'integer';
+  type: "integer";
 };
 
 export function parseBigintDef(def: ZodBigIntDef): JsonSchema7BigintType {
   const res: JsonSchema7BigintType = {
-    type: 'integer',
+    type: "integer",
   };
   // TODO no checks for big int yet
   // if (def.checks) {
