@@ -1,5 +1,5 @@
-import { ZodObjectDef, ZodTypeDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
+import { ZodObjectDef } from "zod";
+import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 export type JsonSchema7ObjectType = {
   type: "object";
@@ -11,7 +11,7 @@ export type JsonSchema7ObjectType = {
 export function parseObjectDef(
   def: ZodObjectDef,
   path: string[],
-  visited: { schema: ZodTypeDef; path: string[] }[]
+  visited: Visited
 ) {
   const entries = Object.entries(def.shape()).filter(
     ([, value]) => value !== undefined && value._def !== undefined
@@ -26,7 +26,7 @@ export function parseObjectDef(
       }))
       .filter(({ value }) => value !== undefined)
       .reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {}),
-    additionalProperties: false,
+    additionalProperties: def.unknownKeys === "passthrough",
   };
   const required = Object.entries(def.shape())
     .filter(([, value]) => value !== undefined && value._def !== undefined)

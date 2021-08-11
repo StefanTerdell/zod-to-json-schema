@@ -22,6 +22,7 @@ describe("Basic parsing", () => {
         z.object({ nowItGetsAnnoying: z.literal(true) }),
       ]),
       objectOrNull: z.object({ myString: z.string() }).nullable(),
+      passthrough: z.object({ myString: z.string() }).passthrough()
     });
     const expectedJsonSchema: JSONSchema7Type = {
       type: "object",
@@ -121,6 +122,16 @@ describe("Basic parsing", () => {
             },
           ],
         },
+        passthrough: {
+          type: "object",
+          properties: {
+            myString: {
+              type: "string",
+            },
+          },
+          required: ["myString"],
+          additionalProperties: true,
+        },
       },
       required: [
         "requiredString",
@@ -134,6 +145,7 @@ describe("Basic parsing", () => {
         "numberUnion",
         "mixedUnion",
         "objectOrNull",
+        "passthrough"
       ],
       additionalProperties: false,
     };
