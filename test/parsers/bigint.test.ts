@@ -7,6 +7,7 @@ describe('bigint', () => {
     const parsedSchema = parseBigintDef(z.bigint()._def);
     const jsonSchema: JSONSchema7Type = {
       type: 'integer',
+      format: "int64"
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
