@@ -1,5 +1,5 @@
 import { ZodTypeDef, ZodUnionDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
+import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 const mappings = {
   ZodString: "string",
@@ -32,7 +32,7 @@ export type JsonSchema7AnyOfType = {
 export function parseUnionDef(
   def: ZodUnionDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: Visited
 ):
   | JsonSchema7PrimitiveUnionType
   | JsonSchema7AnyOfType

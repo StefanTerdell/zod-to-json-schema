@@ -51,22 +51,22 @@ export type JsonSchema7Type =
   | JsonSchema7RefType
   | JsonSchema7AnyType;
 
+export type Visited = { schema: ZodTypeDef; path: string[] }[];
+
 export function parseDef<T>(
-  schemaDef: any,
+  schema: any,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: Visited
 ): JsonSchema7Type | undefined {
-  if (visited) {
-    const wasVisited = visited.find((x) => Object.is(x.def, schemaDef));
-    if (wasVisited) {
-      return { $ref: `#/${wasVisited.path.join("/")}` };
-    } else {
-      visited.push({ def: schemaDef, path });
-    }
+  const wasVisited = visited.find((x) => Object.is(x.schema, schema));
+  if (wasVisited) {
+    return { $ref: `#/${wasVisited.path.join("/")}` };
+  } else {
+    visited.push({ schema, path });
   }
 
-  const def = schemaDef._def;
-  switch (schemaDef.constructor.name) {
+  const def = schema._def;
+  switch (schema.constructor.name) {
     case "ZodString":
       return parseStringDef(def);
     case "ZodNumber":
@@ -120,6 +120,6 @@ export function parseDef<T>(
     case "ZodVoid":
       return undefined;
     default:
-      return ((_: unknown) => undefined)(schemaDef);
+      return ((_: unknown) => undefined)(schema);
   }
 }

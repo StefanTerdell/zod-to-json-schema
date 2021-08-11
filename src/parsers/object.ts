@@ -11,7 +11,7 @@ export type JsonSchema7ObjectType = {
 export function parseObjectDef(
   def: ZodObjectDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: { schema: ZodTypeDef; path: string[] }[]
 ) {
   const entries = Object.entries(def.shape()).filter(
     ([, value]) => value !== undefined && value._def !== undefined

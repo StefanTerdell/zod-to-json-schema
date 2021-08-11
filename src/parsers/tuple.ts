@@ -1,5 +1,5 @@
 import { ZodTupleDef, ZodTypeDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
+import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 export type JsonSchema7TupleType = {
   type: "array";
@@ -11,7 +11,7 @@ export type JsonSchema7TupleType = {
 export function parseTupleDef(
   def: ZodTupleDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: Visited
 ): JsonSchema7TupleType {
   return {
     type: "array",

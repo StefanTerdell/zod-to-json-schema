@@ -1,6 +1,6 @@
 import { ZodRecordDef, ZodTypeDef } from "zod";
 
-import { JsonSchema7Type, parseDef } from "../parseDef";
+import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 export type JsonSchema7RecordType = {
   type: "object";
@@ -10,7 +10,7 @@ export type JsonSchema7RecordType = {
 export function parseRecordDef(
   def: ZodRecordDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[]
+  visited: Visited
 ): JsonSchema7RecordType {
   return {
     type: "object",

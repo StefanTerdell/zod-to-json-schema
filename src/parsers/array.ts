@@ -1,5 +1,5 @@
 import { ZodArrayDef, ZodTypeDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
+import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 export type JsonSchema7ArrayType = {
   type: "array";
@@ -11,7 +11,7 @@ export type JsonSchema7ArrayType = {
 export function parseArrayDef(
   def: ZodArrayDef,
   path: string[],
-  visited: { def: ZodTypeDef; path: string[] }[],
+  visited: Visited,
   nonEmpty: boolean
 ) {
   {
