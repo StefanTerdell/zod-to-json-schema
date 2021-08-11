@@ -102,7 +102,7 @@ export function parseDef<T>(
     case "ZodNativeEnum":
       return parseNativeEnumDef(def);
     case "ZodNullable":
-      return parseNullable(def);
+      return parseNullable(def, path, visited);
     case "ZodOptional":
       return parseDef(def.innerType, path, visited);
     case "ZodEffects":
