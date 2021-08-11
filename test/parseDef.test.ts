@@ -1,7 +1,8 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../src/parseDef";
-
+import Ajv from "ajv";
+const ajv = new Ajv()
 describe("Basic parsing", () => {
   it("should return a proper json schema with some common types without validation", () => {
     const zodSchema = z.object({
@@ -149,8 +150,9 @@ describe("Basic parsing", () => {
       ],
       additionalProperties: false,
     };
-
-    expect(parseDef(zodSchema, [], [])).toStrictEqual(expectedJsonSchema);
+    const parsedSchema = parseDef(zodSchema, [], [])
+    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
+    expect(ajv.validateSchema(parsedSchema!)).toEqual(true)
   });
 });
 
@@ -189,7 +191,9 @@ describe("Pathing", () => {
       required: ["address1", "address2", "lotsOfAddresses"],
     };
 
-    expect(parseDef(someAddresses, [], [])).toStrictEqual(jsonSchema);
+    const parsedSchema = parseDef(someAddresses, [], [])
+    expect(parsedSchema).toStrictEqual(jsonSchema);
+    expect(ajv.validateSchema(parsedSchema!)).toEqual(true)
   });
 
   it("Should properly reference union participants", () => {
@@ -199,8 +203,6 @@ describe("Pathing", () => {
       union: z.union([participant, z.string()]),
       part: participant,
     });
-
-    const jsonSchema = parseDef(schema, [], []);
 
     const expectedJsonSchema = {
       type: "object",
@@ -230,6 +232,8 @@ describe("Pathing", () => {
       required: ["union", "part"],
     };
 
-    expect(jsonSchema).toStrictEqual(expectedJsonSchema);
+    const parsedSchema = parseDef(schema, [], []);
+    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
+    expect(ajv.validateSchema(parsedSchema!)).toEqual(true)
   });
 });
