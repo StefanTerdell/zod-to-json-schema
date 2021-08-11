@@ -8,23 +8,25 @@ export function parseIntersectionDef(
   visited: Visited
 ): JsonSchema7Type | undefined {
   const rightDef = def.right._def;
-  if (rightDef.t === ZodParsedType.object) {
+  const leftDef = def.left._def;
+  if (
+    rightDef.t === ZodParsedType.object &&
+    leftDef.t === ZodParsedType.object
+  ) {
     const right = parseObjectDef(rightDef, path, visited);
-    const leftDef = def.left._def;
-    if (leftDef.t === ZodParsedType.object) {
-      const left = parseObjectDef(leftDef, path, visited);
-      return {
-        type: "object",
-        properties: { ...left.properties, ...right.properties },
-        required: [
-          ...(left.required || []).filter(
-            (x) => !Object.keys(right.properties).includes(x)
-          ),
-          ...(right.required || []),
-        ],
-      };
-    }
-    return right;
+    const left = parseObjectDef(leftDef, path, visited);
+    return {
+      type: "object",
+      properties: { ...left.properties, ...right.properties },
+      required: [
+        ...(left.required || []).filter(
+          (x) => !Object.keys(right.properties).includes(x)
+        ),
+        ...(right.required || []),
+      ],
+    };
   }
-  return parseDef(rightDef, path, visited);
+  return {
+    allOf: [parseDef(leftDef, path, visited), parseDef(rightDef, path, visited)],
+  };
 }
