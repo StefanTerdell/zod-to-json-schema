@@ -11,10 +11,12 @@ import {
   parseNativeEnumDef,
 } from "./parsers/nativeEnum";
 import { JsonSchema7NullType, parseNullDef } from "./parsers/null";
-import { parseNullableDef } from "./parsers/nullable";
+import { JsonSchema7NullableType, parseNullableDef } from "./parsers/nullable";
 import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number";
 import { JsonSchema7ObjectType, parseObjectDef } from "./parsers/object";
 import { JsonSchema7RecordType, parseRecordDef } from "./parsers/record";
+import { parseSetDef } from "./parsers/set";
+import { JsonSchema7MapType, parseMapDef } from "./parsers/map";
 import { JsonSchema7StringType, parseStringDef } from "./parsers/string";
 import { JsonSchema7TupleType, parseTupleDef } from "./parsers/tuple";
 import {
@@ -49,7 +51,9 @@ export type JsonSchema7Type =
   | JsonSchema7UndefinedType
   | JsonSchema7AnyOfType
   | JsonSchema7RefType
-  | JsonSchema7AnyType;
+  | JsonSchema7AnyType
+  | JsonSchema7MapType
+  | JsonSchema7NullableType;
 
 export type Visited = { schema: ZodSchema<any>; path: string[] }[];
 
@@ -105,11 +109,13 @@ export function parseDef<T>(
       return parseNullableDef(def, path, visited);
     case ZodFirstPartyTypeKind.ZodOptional:
       return parseDef(def.innerType, path, visited);
+    case ZodFirstPartyTypeKind.ZodMap:
+      return parseMapDef(def, path, visited);
+    case ZodFirstPartyTypeKind.ZodSet:
+      return parseSetDef(def, path, visited);
     case ZodFirstPartyTypeKind.ZodEffects:
     case ZodFirstPartyTypeKind.ZodAny:
     case ZodFirstPartyTypeKind.ZodUnknown:
-    case ZodFirstPartyTypeKind.ZodMap:
-    case ZodFirstPartyTypeKind.ZodSet:
     case ZodFirstPartyTypeKind.ZodDefault:
       return {};
     case ZodFirstPartyTypeKind.ZodNever:

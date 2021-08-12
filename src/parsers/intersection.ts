@@ -5,14 +5,10 @@ export function parseIntersectionDef(
   def: ZodIntersectionDef,
   path: string[],
   visited: Visited
-): JsonSchema7Type | undefined {
+): JsonSchema7Type {
   const allOf = [
-    parseDef(def.left._def, path, visited),
-    parseDef(def.right._def, path, visited),
+    parseDef(def.left._def, path, visited)!,
+    parseDef(def.right._def, path, visited)!,
   ].filter(Boolean);
-  return allOf.length === 2
-    ? { allOf }
-    : allOf.length === 1
-    ? allOf[0]
-    : undefined;
+  return allOf.length === 2 ? { allOf } : allOf.length === 1 ? allOf[0] : {};
 }
