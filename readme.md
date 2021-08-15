@@ -6,9 +6,9 @@
 
 ## Summary
 
-Does what it says on the tin! Supports all relevant schema types as well as basic string, number and array length validations.
+Does what it says on the tin; converts [Zod schemas](https://github.com/colinhacks/zod) to [JSON Schemas](https://json-schema.org/)! Supports all relevant schema types, basic string, number and array length validations and string patterns.
 
-Now (since 3.1.0) also supports string patterns: email, uuid, url and regex.
+Resolves recurring schemas with internal `$ref`s.
 
 Usage:
 
