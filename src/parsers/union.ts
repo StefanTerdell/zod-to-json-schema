@@ -1,7 +1,7 @@
-import { ZodTypeDef, ZodUnionDef } from "zod";
+import { ZodUnionDef } from "zod";
 import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
-const mappings = {
+export const primitiveMappings = {
   ZodString: "string",
   ZodNumber: "number",
   ZodBigInt: "integer",
@@ -65,7 +65,7 @@ export function parseUnionDef(
         //
         return types.includes(option.constructor.name)
           ? types
-          : [...types, (mappings as any)[option.constructor.name]];
+          : [...types, (primitiveMappings as any)[option.constructor.name]];
       }, [] as string[])
       .map((x) => (x === "bigint" ? "integer" : x));
     return {

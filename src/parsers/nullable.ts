@@ -1,6 +1,7 @@
-import { ZodNullableDef } from "zod";
+import { ZodFirstPartyTypeKind, ZodNullableDef } from "zod";
 import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 import { JsonSchema7NullType } from "./null";
+import { primitiveMappings } from "./union";
 
 export type JsonSchema7NullableType =
   | {
@@ -15,24 +16,32 @@ export function parseNullableDef(
   path: string[],
   visited: Visited
 ): JsonSchema7NullableType | undefined {
-  const type = parseDef(def.innerType, path, visited);
-
-  if (!type) return undefined;
-
   if (
-    "type" in type &&
-    typeof type.type === "string" &&
-    ["string", "number", "boolean", "integer"].includes(type.type)
+    ["ZodString", "ZodNumber", "ZodBigInt", "ZodBoolean", "ZodNull"].includes(
+      def.innerType._def.typeName
+    ) &&
+    (!def.innerType._def.checks || !def.innerType._def.checks.length)
   ) {
-    return { type: [type.type, "null"] };
-  } else {
     return {
-      anyOf: [
-        type,
-        {
-          type: "null",
-        },
+      type: [
+        primitiveMappings[
+          def.innerType._def.typeName as keyof typeof primitiveMappings
+        ],
+        "null",
       ],
     };
   }
+
+  const type = parseDef(def.innerType, [...path, 'anyOf', '0'], visited);
+
+  return type
+    ? {
+        anyOf: [
+          type,
+          {
+            type: "null",
+          },
+        ],
+      }
+    : undefined;
 }
