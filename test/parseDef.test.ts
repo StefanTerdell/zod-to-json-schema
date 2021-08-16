@@ -236,4 +236,46 @@ describe("Pathing", () => {
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true)
   });
+
+  it("Should be able to handle recursive schemas", () => 
+  {
+    interface Category {
+      name: string;
+      subcategories: Category[];
+    }
+    
+    // cast to z.ZodSchema<Category>
+    // @ts-ignore
+    const categorySchema: z.ZodSchema<Category> = z.lazy(() =>
+      z.object({
+        name: z.string(),
+        subcategories: z.array(categorySchema),
+      })
+    );
+
+    const parsedSchema = parseDef(categorySchema, [], [])
+    
+    const expectedJsonSchema =  {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "subcategories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "subcategories"
+      ],
+      "additionalProperties": false
+    }
+
+    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
+    expect(ajv.validateSchema(parsedSchema!)).toEqual(true)
+  })
 });

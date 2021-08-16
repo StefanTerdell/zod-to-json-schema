@@ -1,4 +1,4 @@
-import { ZodFirstPartyTypeKind, ZodSchema, ZodTypeDef } from "zod";
+import { ZodFirstPartyTypeKind, ZodLazy, ZodSchema, ZodTypeDef } from "zod";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
 import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean";
@@ -118,9 +118,10 @@ export function parseDef<T>(
     case ZodFirstPartyTypeKind.ZodUnknown:
     case ZodFirstPartyTypeKind.ZodDefault:
       return {};
+      case ZodFirstPartyTypeKind.ZodLazy:
+        return parseDef((schema as ZodLazy<any>)._def.getter(), path, visited)
     case ZodFirstPartyTypeKind.ZodNever:
     case ZodFirstPartyTypeKind.ZodFunction:
-    case ZodFirstPartyTypeKind.ZodLazy:
     case ZodFirstPartyTypeKind.ZodPromise:
     case ZodFirstPartyTypeKind.ZodVoid:
       return undefined;
