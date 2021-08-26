@@ -53,6 +53,7 @@ Expected output:
 
 | Version | Change                                                                                                                                                                                                                                                                                                  |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.4.2 | Fixed broken intersection parser (Thanks [Noah2610](https://github.com/Noah2610)!)
 | 3.4.1   | Fixed pathing bug for nullable items.
 | 3.4.0   | Added support for z.lazy()                                                                                                                                                                                                                                                                              |
 | 3.3.0   | Added support for catchall (additionalProperties schema on objects). Rebuilt object parser.                                                                                                                                                                                                             |
