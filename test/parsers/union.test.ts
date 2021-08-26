@@ -1,24 +1,25 @@
-import { JSONSchema7Type } from 'json-schema';
-import { z } from 'zod';
-import { parseUnionDef } from '../../src/parsers/union';
+import { JSONSchema7Type } from "json-schema";
+import { boolean, z } from "zod";
+import { parseStringDef } from "../../src/parsers/string";
+import { parseUnionDef } from "../../src/parsers/union";
 
-describe('Unions', () => {
-  it('Should be possible to get a simple type array from a union of only unvalidated primitives', () => {
+describe("Unions", () => {
+  it("Should be possible to get a simple type array from a union of only unvalidated primitives", () => {
     const parsedSchema = parseUnionDef(
       z.union([z.string(), z.number(), z.boolean(), z.null()])._def,
       [],
       []
     );
     const jsonSchema: JSONSchema7Type = {
-      type: ['string', 'number', 'boolean', 'null'],
+      type: ["string", "number", "boolean", "null"],
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
 
-  it('Should be possible to get a simple type array with enum values from a union of literals', () => {
+  it("Should be possible to get a simple type array with enum values from a union of literals", () => {
     const parsedSchema = parseUnionDef(
       z.union([
-        z.literal('string'),
+        z.literal("string"),
         z.literal(123),
         z.literal(true),
         z.literal(null),
@@ -27,13 +28,13 @@ describe('Unions', () => {
       []
     );
     const jsonSchema: JSONSchema7Type = {
-      type: ['string', 'number', 'boolean', 'null'],
-      enum: ['string', 123, true, null],
+      type: ["string", "number", "boolean", "null"],
+      enum: ["string", 123, true, null],
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
 
-  it('Should be possible to create a union with objects, arrays and validated primitives as an anyOf', () => {
+  it("Should be possible to create a union with objects, arrays and validated primitives as an anyOf", () => {
     const parsedSchema = parseUnionDef(
       z.union([
         z.object({ herp: z.string(), derp: z.boolean() }),
@@ -47,33 +48,62 @@ describe('Unions', () => {
     const jsonSchema: JSONSchema7Type = {
       anyOf: [
         {
-          type: 'object',
+          type: "object",
           properties: {
             herp: {
-              type: 'string',
+              type: "string",
             },
             derp: {
-              type: 'boolean',
+              type: "boolean",
             },
           },
-          required: ['herp', 'derp'],
+          required: ["herp", "derp"],
           additionalProperties: false,
         },
         {
-          type: 'array',
+          type: "array",
           items: {
-            type: 'number',
+            type: "number",
           },
         },
         {
-          type: 'string',
+          type: "string",
           minLength: 3,
         },
         {
-          type: 'number',
+          type: "number",
         },
       ],
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
+  });
+
+  it("should be possible to deref union schemas", () => {
+    const recurring = z.object({ foo: z.boolean() });
+
+    const union = z.union([recurring, recurring, recurring]);
+
+    const jsonSchema = parseUnionDef(union._def, [], []);
+
+    expect(jsonSchema).toStrictEqual({
+      anyOf: [
+        {
+          type: "object",
+          properties: {
+            foo: {
+              type: "boolean",
+            },
+          },
+          required: ["foo"],
+          additionalProperties: false,
+        },
+        {
+          $ref: "#/anyOf/0",
+        },
+        {
+          $ref: "#/anyOf/0",
+        },
+      ],
+    });
   });
 });
