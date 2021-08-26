@@ -80,7 +80,7 @@ export function parseDef<T>(
     case ZodFirstPartyTypeKind.ZodObject:
       return parseObjectDef(def, path, visited);
     case ZodFirstPartyTypeKind.ZodBigInt:
-      return parseBigintDef(def);
+      return parseBigintDef();
     case ZodFirstPartyTypeKind.ZodBoolean:
       return parseBooleanDef();
     case ZodFirstPartyTypeKind.ZodDate:
