@@ -20,4 +20,21 @@ describe("intersections", () => {
       ],
     });
   });
+
+  it("should be possible to deref intersections", () => {
+    const schema = z.string()
+    const intersection = z.intersection(schema, schema)
+    const jsonSchema = parseIntersectionDef(intersection._def, [], []);
+
+    expect(jsonSchema).toStrictEqual({
+      allOf: [
+        {
+          type: "string",
+        },
+        {
+          $ref: "#/allOf/0"
+        },
+      ],
+    });
+  })
 });

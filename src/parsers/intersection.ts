@@ -7,8 +7,8 @@ export function parseIntersectionDef(
   visited: Visited
 ): JsonSchema7Type {
   const allOf = [
-    parseDef(def.left, path, visited)!,
-    parseDef(def.right, path, visited)!,
+    parseDef(def.left, [...path, 'allOf', '0'], visited)!,
+    parseDef(def.right, [...path, 'allOf', '1'], visited)!,
   ].filter(Boolean);
   return allOf.length === 2 ? { allOf } : allOf.length === 1 ? allOf[0] : {};
 }
