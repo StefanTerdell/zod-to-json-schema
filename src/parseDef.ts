@@ -1,4 +1,7 @@
-import { ZodFirstPartyTypeKind, ZodLazy, ZodSchema, ZodTypeDef } from "zod";
+import {
+  ZodFirstPartyTypeKind,
+  ZodLazy, ZodSchema
+} from "zod";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
 import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean";
@@ -6,27 +9,28 @@ import { JsonSchema7DateType, parseDateDef } from "./parsers/date";
 import { JsonSchema7EnumType, parseEnumDef } from "./parsers/enum";
 import { parseIntersectionDef } from "./parsers/intersection";
 import { JsonSchema7LiteralType, parseLiteralDef } from "./parsers/literal";
+import { JsonSchema7MapType, parseMapDef } from "./parsers/map";
 import {
   JsonSchema7NativeEnumType,
-  parseNativeEnumDef,
+  parseNativeEnumDef
 } from "./parsers/nativeEnum";
 import { JsonSchema7NullType, parseNullDef } from "./parsers/null";
 import { JsonSchema7NullableType, parseNullableDef } from "./parsers/nullable";
 import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number";
 import { JsonSchema7ObjectType, parseObjectDef } from "./parsers/object";
+import { parsePromiseDef } from "./parsers/promise";
 import { JsonSchema7RecordType, parseRecordDef } from "./parsers/record";
 import { parseSetDef } from "./parsers/set";
-import { JsonSchema7MapType, parseMapDef } from "./parsers/map";
 import { JsonSchema7StringType, parseStringDef } from "./parsers/string";
 import { JsonSchema7TupleType, parseTupleDef } from "./parsers/tuple";
 import {
   JsonSchema7UndefinedType,
-  parseUndefinedDef,
+  parseUndefinedDef
 } from "./parsers/undefined";
 import {
   JsonSchema7AnyOfType,
   JsonSchema7PrimitiveUnionType,
-  parseUnionDef,
+  parseUnionDef
 } from "./parsers/union";
 
 type JsonSchema7AnyType = {};
@@ -70,7 +74,7 @@ export function parseDef<T>(
   }
 
   const def = schema._def as any;
-  const typeName: ZodFirstPartyTypeKind = def.typeName as ZodFirstPartyTypeKind;
+  const typeName: ZodFirstPartyTypeKind = def.typeName;
 
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
