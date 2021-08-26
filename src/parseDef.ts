@@ -113,16 +113,20 @@ export function parseDef<T>(
       return parseMapDef(def, path, visited);
     case ZodFirstPartyTypeKind.ZodSet:
       return parseSetDef(def, path, visited);
+    case ZodFirstPartyTypeKind.ZodLazy:
+      return parseDef((schema as ZodLazy<any>)._def.getter(), path, visited);
+    case ZodFirstPartyTypeKind.ZodPromise:
+      return parsePromiseDef(def, path, visited);
+    case ZodFirstPartyTypeKind.ZodNever:
+      return {
+        not: {},
+      };
     case ZodFirstPartyTypeKind.ZodEffects:
     case ZodFirstPartyTypeKind.ZodAny:
     case ZodFirstPartyTypeKind.ZodUnknown:
     case ZodFirstPartyTypeKind.ZodDefault:
       return {};
-      case ZodFirstPartyTypeKind.ZodLazy:
-        return parseDef((schema as ZodLazy<any>)._def.getter(), path, visited)
-    case ZodFirstPartyTypeKind.ZodNever:
     case ZodFirstPartyTypeKind.ZodFunction:
-    case ZodFirstPartyTypeKind.ZodPromise:
     case ZodFirstPartyTypeKind.ZodVoid:
       return undefined;
     default:
