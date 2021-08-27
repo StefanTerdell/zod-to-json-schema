@@ -131,4 +131,24 @@ describe("String validations", () => {
     ]);
     expect(ajv.validate(parsedSchema, "B")).toEqual(true);
   });
+
+  it("should be possible to use CUID constraint", () => {
+    const parsedSchema = parseStringDef(z.string().cuid()._def);
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      pattern: "^c[^\\s-]{8,}$",
+    };
+    expect(parsedSchema).toStrictEqual(jsonSchema);
+    ajv.validate(parsedSchema, "herpderp");
+    expect(ajv.errors).toStrictEqual([
+      {
+        instancePath: '',
+        schemaPath: '#/pattern',
+        keyword: 'pattern',
+        params: { pattern: '^c[^\\s-]{8,}$' },
+        message: 'must match pattern "^c[^\\s-]{8,}$"'
+      }
+    ]);
+    expect(ajv.validate(parsedSchema, "ckopqwooh000001la8mbi2im9")).toEqual(true);
+  });
 });

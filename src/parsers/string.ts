@@ -34,6 +34,11 @@ export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
         case "regex":
           res.pattern = check.regex.source;
           break;
+        case "cuid":
+          res.pattern = "^c[^\\s-]{8,}$";
+          break;
+        default:
+          ((youForgotOne: never) => {})(check);
       }
     }
   }
