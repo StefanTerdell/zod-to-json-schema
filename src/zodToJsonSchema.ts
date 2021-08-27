@@ -27,13 +27,13 @@ function zodToJsonSchema(schema: ZodSchema<any>, name?: string) {
   return name === undefined
     ? {
         $schema: "http://json-schema.org/draft-07/schema#",
-        ...parseDef(schema, [], []),
+        ...parseDef(schema._def, [], []),
       }
     : {
         $schema: "http://json-schema.org/draft-07/schema#",
         $ref: `#/definitions/${name}`,
         definitions: {
-          [name]: parseDef(schema, ["definitions", name], []) || {},
+          [name]: parseDef(schema._def, ["definitions", name], []) || {},
         },
       };
 }

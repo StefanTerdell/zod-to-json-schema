@@ -17,8 +17,8 @@ export function parseMapDef(
   path: string[],
   visited: Visited
 ): JsonSchema7MapType {
-  const keys = parseDef(def.keyType, path, visited) || {};
-  const values = parseDef(def.valueType, path, visited) || {};
+  const keys = parseDef(def.keyType._def, path, visited) || {};
+  const values = parseDef(def.valueType._def, path, visited) || {};
   return {
     type: "array",
     maxItems: 125,

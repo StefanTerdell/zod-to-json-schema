@@ -32,7 +32,7 @@ export function parseNullableDef(
     };
   }
 
-  const type = parseDef(def.innerType, [...path, 'anyOf', '0'], visited);
+  const type = parseDef(def.innerType._def, [...path, 'anyOf', '0'], visited);
 
   return type
     ? {

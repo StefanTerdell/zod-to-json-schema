@@ -22,7 +22,7 @@ export function parseObjectDef(
       ) => {
         if (propDef === undefined || propDef._def === undefined) return acc;
         const parsedDef = parseDef(
-          propDef,
+          propDef._def,
           [...path, "properties", propName],
           visited
         );
@@ -39,7 +39,7 @@ export function parseObjectDef(
     additionalProperties:
       def.catchall._def.typeName === "ZodNever"
         ? def.unknownKeys === "passthrough"
-        : parseDef(def.catchall, path, visited) ?? true,
+        : parseDef(def.catchall._def, [...path, 'additionalProperties'], visited) ?? true,
   };
   if (!result.required!.length) delete result.required
   return result;

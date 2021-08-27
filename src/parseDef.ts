@@ -1,7 +1,4 @@
-import {
-  ZodFirstPartyTypeKind,
-  ZodLazy, ZodSchema
-} from "zod";
+import { ZodFirstPartyTypeKind, ZodLazy, ZodSchema, ZodTypeDef } from "zod";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
 import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean";
@@ -12,7 +9,7 @@ import { JsonSchema7LiteralType, parseLiteralDef } from "./parsers/literal";
 import { JsonSchema7MapType, parseMapDef } from "./parsers/map";
 import {
   JsonSchema7NativeEnumType,
-  parseNativeEnumDef
+  parseNativeEnumDef,
 } from "./parsers/nativeEnum";
 import { JsonSchema7NullType, parseNullDef } from "./parsers/null";
 import { JsonSchema7NullableType, parseNullableDef } from "./parsers/nullable";
@@ -25,12 +22,12 @@ import { JsonSchema7StringType, parseStringDef } from "./parsers/string";
 import { JsonSchema7TupleType, parseTupleDef } from "./parsers/tuple";
 import {
   JsonSchema7UndefinedType,
-  parseUndefinedDef
+  parseUndefinedDef,
 } from "./parsers/undefined";
 import {
   JsonSchema7AnyOfType,
   JsonSchema7PrimitiveUnionType,
-  parseUnionDef
+  parseUnionDef,
 } from "./parsers/union";
 
 type JsonSchema7AnyType = {};
@@ -59,30 +56,30 @@ export type JsonSchema7Type =
   | JsonSchema7MapType
   | JsonSchema7NullableType;
 
-export type Visited = { schema: ZodSchema<any>; path: string[] }[];
+export type Visited = { def: ZodTypeDef; path: string[] }[];
 
-export function parseDef<T>(
-  schema: ZodSchema<any>,
+export function parseDef(
+  def: ZodTypeDef,
   path: string[],
   visited: Visited
 ): JsonSchema7Type | undefined {
-  const wasVisited = visited.find((x) => Object.is(x.schema, schema));
+  const wasVisited = visited.find((x) => Object.is(x.def, def));
   if (wasVisited) {
     return { $ref: `#/${wasVisited.path.join("/")}` };
   } else {
-    visited.push({ schema, path });
+    visited.push({ def, path });
   }
 
-  const def = schema._def as any;
-  const typeName: ZodFirstPartyTypeKind = def.typeName;
+  const defAny = def as any;
+  const typeName: ZodFirstPartyTypeKind = defAny.typeName;
 
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
-      return parseStringDef(def);
+      return parseStringDef(defAny);
     case ZodFirstPartyTypeKind.ZodNumber:
-      return parseNumberDef(def);
+      return parseNumberDef(defAny);
     case ZodFirstPartyTypeKind.ZodObject:
-      return parseObjectDef(def, path, visited);
+      return parseObjectDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodBigInt:
       return parseBigintDef();
     case ZodFirstPartyTypeKind.ZodBoolean:
@@ -94,33 +91,33 @@ export function parseDef<T>(
     case ZodFirstPartyTypeKind.ZodNull:
       return parseNullDef();
     case ZodFirstPartyTypeKind.ZodArray:
-      return parseArrayDef(def, path, visited);
+      return parseArrayDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodUnion:
-      return parseUnionDef(def, path, visited);
+      return parseUnionDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodIntersection:
-      return parseIntersectionDef(def, path, visited);
+      return parseIntersectionDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodTuple:
-      return parseTupleDef(def, path, visited);
+      return parseTupleDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodRecord:
-      return parseRecordDef(def, path, visited);
+      return parseRecordDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodLiteral:
-      return parseLiteralDef(def);
+      return parseLiteralDef(defAny);
     case ZodFirstPartyTypeKind.ZodEnum:
-      return parseEnumDef(def);
+      return parseEnumDef(defAny);
     case ZodFirstPartyTypeKind.ZodNativeEnum:
-      return parseNativeEnumDef(def);
+      return parseNativeEnumDef(defAny);
     case ZodFirstPartyTypeKind.ZodNullable:
-      return parseNullableDef(def, path, visited);
+      return parseNullableDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodOptional:
-      return parseDef(def.innerType, path, visited);
+      return parseDef(defAny.innerType._def, path, visited);
     case ZodFirstPartyTypeKind.ZodMap:
-      return parseMapDef(def, path, visited);
+      return parseMapDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodSet:
-      return parseSetDef(def, path, visited);
+      return parseSetDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodLazy:
-      return parseDef((schema as ZodLazy<any>)._def.getter(), path, visited);
+      return parseDef(defAny.getter()._def, path, visited);
     case ZodFirstPartyTypeKind.ZodPromise:
-      return parsePromiseDef(def, path, visited);
+      return parsePromiseDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodNever:
       return {
         not: {},

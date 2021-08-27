@@ -16,7 +16,7 @@ export function parseArrayDef(
   {
     const res: JsonSchema7ArrayType = {
       type: "array",
-      items: parseDef(def.type, [...path, "items"], visited),
+      items: parseDef(def.type._def, [...path, "items"], visited),
     };
     if (def.minLength) {
       res.minItems = def.minLength.value;

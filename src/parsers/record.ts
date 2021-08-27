@@ -15,6 +15,6 @@ export function parseRecordDef(
   return {
     type: "object",
     additionalProperties:
-      parseDef(def.valueType, [...path, "additionalProperties"], visited) || {},
+      parseDef(def.valueType._def, [...path, "additionalProperties"], visited) || {},
   };
 }

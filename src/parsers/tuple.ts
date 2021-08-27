@@ -18,7 +18,7 @@ export function parseTupleDef(
     minItems: def.items.length,
     maxItems: def.items.length,
     items: def.items
-      .map((x, i) => parseDef(x, [...path, "items", i.toString()], visited))
+      .map((x, i) => parseDef(x._def, [...path, "items", i.toString()], visited))
       .reduce(
         (acc: JsonSchema7Type[], x) => (x === undefined ? acc : [...acc, x]),
         []

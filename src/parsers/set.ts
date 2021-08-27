@@ -9,6 +9,6 @@ export function parseSetDef(
 ): JsonSchema7ArrayType {
   return {
     type: "array",
-    items: parseDef(def.valueType, [...path, "items"], visited),
+    items: parseDef(def.valueType._def, [...path, "items"], visited),
   };
 }

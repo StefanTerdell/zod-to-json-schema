@@ -6,5 +6,5 @@ export function parsePromiseDef(
   path: string[],
   visited: Visited
 ) {
-  return parseDef(def.type, path, visited);
+  return parseDef(def.type._def, path, visited);
 }
