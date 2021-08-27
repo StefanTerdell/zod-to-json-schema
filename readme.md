@@ -6,7 +6,7 @@
 
 ## Summary
 
-Does what it says on the tin; converts [Zod schemas](https://github.com/colinhacks/zod) to [JSON Schemas](https://json-schema.org/)! Supports all relevant schema types, basic string, number and array length validations and string patterns.
+Does what it says on the tin; converts [Zod schemas](https://github.com/colinhacks/zod) to [JSON schemas](https://json-schema.org/)! Supports all relevant schema types, basic string, number and array length validations and string patterns.
 
 Resolves recurring schemas with internal `$ref`s.
 
@@ -53,6 +53,7 @@ Expected output:
 
 | Version | Change                                                                                                                                                                                                                                                                                                  |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.4.3 | Fixed $ref pathing for catchall and intersection. Additional tests and code structure fixes.
 | 3.4.2 | Fixed broken intersection parser (Thanks [Noah2610](https://github.com/Noah2610)!)
 | 3.4.1   | Fixed pathing bug for nullable items.
 | 3.4.0   | Added support for z.lazy()                                                                                                                                                                                                                                                                              |
