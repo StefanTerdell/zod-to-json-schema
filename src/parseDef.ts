@@ -1,4 +1,5 @@
 import { ZodFirstPartyTypeKind, ZodLazy, ZodSchema, ZodTypeDef } from "zod";
+import { JsonSchema7AnyType, parseAnyDef } from "./parsers/any";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
 import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean";
@@ -11,6 +12,7 @@ import {
   JsonSchema7NativeEnumType,
   parseNativeEnumDef,
 } from "./parsers/nativeEnum";
+import { JsonSchema7NeverType, parseNeverDef } from "./parsers/never";
 import { JsonSchema7NullType, parseNullDef } from "./parsers/null";
 import { JsonSchema7NullableType, parseNullableDef } from "./parsers/nullable";
 import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number";
@@ -30,7 +32,6 @@ import {
   parseUnionDef,
 } from "./parsers/union";
 
-type JsonSchema7AnyType = {};
 type JsonSchema7RefType = { $ref: string };
 
 export type JsonSchema7Type =
@@ -52,8 +53,9 @@ export type JsonSchema7Type =
   | JsonSchema7UndefinedType
   | JsonSchema7AnyOfType
   | JsonSchema7RefType
-  | JsonSchema7AnyType
+  | JsonSchema7NeverType
   | JsonSchema7MapType
+  | JsonSchema7AnyType
   | JsonSchema7NullableType;
 
 export type Visited = { def: ZodTypeDef; path: string[] }[];
@@ -119,14 +121,12 @@ export function parseDef(
     case ZodFirstPartyTypeKind.ZodPromise:
       return parsePromiseDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodNever:
-      return {
-        not: {},
-      };
+      return parseNeverDef();
     case ZodFirstPartyTypeKind.ZodEffects:
     case ZodFirstPartyTypeKind.ZodAny:
     case ZodFirstPartyTypeKind.ZodUnknown:
     case ZodFirstPartyTypeKind.ZodDefault:
-      return {};
+      return parseAnyDef()
     case ZodFirstPartyTypeKind.ZodFunction:
     case ZodFirstPartyTypeKind.ZodVoid:
       return undefined;
