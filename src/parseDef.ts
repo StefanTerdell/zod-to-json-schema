@@ -31,6 +31,7 @@ import {
   JsonSchema7PrimitiveUnionType,
   parseUnionDef,
 } from "./parsers/union";
+import { parseUnknownDef } from "./parsers/unknown";
 
 type JsonSchema7RefType = { $ref: string };
 
@@ -124,7 +125,9 @@ export function parseDef(
       return parseNeverDef();
     case ZodFirstPartyTypeKind.ZodEffects:
     case ZodFirstPartyTypeKind.ZodAny:
+      return parseAnyDef();
     case ZodFirstPartyTypeKind.ZodUnknown:
+      return parseUnknownDef();
     case ZodFirstPartyTypeKind.ZodDefault:
       return parseAnyDef()
     case ZodFirstPartyTypeKind.ZodFunction:
