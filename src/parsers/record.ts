@@ -1,5 +1,4 @@
-import { ZodRecordDef, ZodTypeDef } from "zod";
-
+import { ZodRecordDef } from "zod";
 import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 export type JsonSchema7RecordType = {

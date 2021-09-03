@@ -1,14 +1,16 @@
 import { ZodSetDef } from "zod";
-import { parseDef, Visited } from "../parseDef";
-import { JsonSchema7ArrayType } from "./array";
+import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
+
+export type JsonSchema7SetType = {
+  type: "array";
+  items: JsonSchema7Type;
+};
 
 export function parseSetDef(
   def: ZodSetDef,
   path: string[],
   visited: Visited
-): JsonSchema7ArrayType {
-  return {
-    type: "array",
-    items: parseDef(def.valueType._def, [...path, "items"], visited),
-  };
+): JsonSchema7SetType | undefined {
+  const items = parseDef(def.valueType._def, [...path, "items"], visited);
+  return items ? { type: "array", items } : undefined;
 }

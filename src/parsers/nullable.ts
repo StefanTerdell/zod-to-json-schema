@@ -1,4 +1,4 @@
-import { ZodFirstPartyTypeKind, ZodNullableDef } from "zod";
+import { ZodNullableDef } from "zod";
 import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 import { JsonSchema7NullType } from "./null";
 import { primitiveMappings } from "./union";

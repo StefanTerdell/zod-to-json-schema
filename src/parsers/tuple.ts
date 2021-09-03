@@ -1,4 +1,4 @@
-import { ZodTupleDef, ZodTypeDef } from "zod";
+import { ZodTupleDef } from "zod";
 import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 export type JsonSchema7TupleType = {

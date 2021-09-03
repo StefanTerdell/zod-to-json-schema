@@ -1,5 +1,6 @@
 import { ZodMapDef } from "zod";
 import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
+
 export type JsonSchema7MapType = {
   type: "array";
   maxItems: 125;

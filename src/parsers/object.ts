@@ -17,7 +17,7 @@ export function parseObjectDef(
     type: "object",
     ...Object.entries(def.shape()).reduce(
       (
-        acc: { properties: JsonSchema7Type; required: string[] },
+        acc: { properties: Record<string, JsonSchema7Type>; required: string[] },
         [propName, propDef]
       ) => {
         if (propDef === undefined || propDef._def === undefined) return acc;

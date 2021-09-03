@@ -1,6 +1,4 @@
-import {
-  ZodFirstPartyTypeKind, ZodTypeDef
-} from "zod";
+import { ZodFirstPartyTypeKind, ZodTypeDef } from "zod";
 import { JsonSchema7AnyType, parseAnyDef } from "./parsers/any";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
@@ -9,12 +7,15 @@ import { JsonSchema7DateType, parseDateDef } from "./parsers/date";
 import { parseDefaultDef } from "./parsers/default";
 import { parseEffectsDef } from "./parsers/effects";
 import { JsonSchema7EnumType, parseEnumDef } from "./parsers/enum";
-import { parseIntersectionDef } from "./parsers/intersection";
+import {
+  JsonSchema7AllOfType,
+  parseIntersectionDef,
+} from "./parsers/intersection";
 import { JsonSchema7LiteralType, parseLiteralDef } from "./parsers/literal";
 import { JsonSchema7MapType, parseMapDef } from "./parsers/map";
 import {
   JsonSchema7NativeEnumType,
-  parseNativeEnumDef
+  parseNativeEnumDef,
 } from "./parsers/nativeEnum";
 import { JsonSchema7NeverType, parseNeverDef } from "./parsers/never";
 import { JsonSchema7NullType, parseNullDef } from "./parsers/null";
@@ -23,19 +24,15 @@ import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number";
 import { JsonSchema7ObjectType, parseObjectDef } from "./parsers/object";
 import { parsePromiseDef } from "./parsers/promise";
 import { JsonSchema7RecordType, parseRecordDef } from "./parsers/record";
-import { parseSetDef } from "./parsers/set";
+import { JsonSchema7SetType, parseSetDef } from "./parsers/set";
 import { JsonSchema7StringType, parseStringDef } from "./parsers/string";
 import { JsonSchema7TupleType, parseTupleDef } from "./parsers/tuple";
 import {
   JsonSchema7UndefinedType,
-  parseUndefinedDef
+  parseUndefinedDef,
 } from "./parsers/undefined";
-import {
-  JsonSchema7AnyOfType,
-  JsonSchema7PrimitiveUnionType,
-  parseUnionDef
-} from "./parsers/union";
-import { parseUnknownDef } from "./parsers/unknown";
+import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union";
+import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown";
 
 type JsonSchema7RefType = { $ref: string };
 
@@ -54,14 +51,16 @@ export type JsonSchema7Type = (
   | JsonSchema7ObjectType
   | JsonSchema7RecordType
   | JsonSchema7TupleType
-  | JsonSchema7PrimitiveUnionType
+  | JsonSchema7UnionType
   | JsonSchema7UndefinedType
-  | JsonSchema7AnyOfType
   | JsonSchema7RefType
   | JsonSchema7NeverType
   | JsonSchema7MapType
   | JsonSchema7AnyType
   | JsonSchema7NullableType
+  | JsonSchema7AllOfType
+  | JsonSchema7UnknownType
+  | JsonSchema7SetType
 ) & { default?: any };
 
 export type Visited = { def: ZodTypeDef; path: string[] }[];

@@ -1,4 +1,4 @@
-import { ZodUnionDef } from "zod";
+import { ZodLiteralDef, ZodUnionDef } from "zod";
 import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
 
 export const primitiveMappings = {
@@ -7,16 +7,16 @@ export const primitiveMappings = {
   ZodBigInt: "integer",
   ZodBoolean: "boolean",
   ZodNull: "null",
-};
-
+} as const;
+type ZodPrimitive = keyof typeof primitiveMappings;
 type JsonSchema7Primitive =
-  | "string"
-  | "number"
-  | "integer"
-  | "boolean"
-  | "null";
+  typeof primitiveMappings[keyof typeof primitiveMappings];
 
-export type JsonSchema7PrimitiveUnionType =
+export type JsonSchema7UnionType =
+  | JsonSchema7PrimitiveUnionType
+  | JsonSchema7AnyOfType;
+
+type JsonSchema7PrimitiveUnionType =
   | {
       type: JsonSchema7Primitive | JsonSchema7Primitive[];
     }
@@ -25,7 +25,7 @@ export type JsonSchema7PrimitiveUnionType =
       enum: (string | number | bigint | boolean | null)[];
     };
 
-export type JsonSchema7AnyOfType = {
+type JsonSchema7AnyOfType = {
   anyOf: JsonSchema7Type[];
 };
 
@@ -33,58 +33,57 @@ export function parseUnionDef(
   def: ZodUnionDef,
   path: string[],
   visited: Visited
-):
-  | JsonSchema7PrimitiveUnionType
-  | JsonSchema7AnyOfType
-  | JsonSchema7Type
-  | undefined {
+): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
   // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
+
   if (
     def.options.every(
       (x) =>
-        [
-          "ZodString",
-          "ZodNumber",
-          "ZodBigInt",
-          "ZodBoolean",
-          "ZodNull",
-        ].includes(x.constructor.name) &&
+        x._def.typeName in primitiveMappings &&
         (!x._def.checks || !x._def.checks.length)
     )
   ) {
-    // all types in union are primitive, so might as well squash into {type: [...]}
-    const types = def.options
-      .reduce(
-        (types: string[], option) =>
-          types.includes(option.constructor.name)
-            ? types
-            : [...types, (primitiveMappings as any)[option.constructor.name]],
-        []
-      )
-      .map((x) => (x === "bigint" ? "integer" : x));
+    // all types in union are primitive and lack checks, so might as well squash into {type: [...]}
+
+    const types = def.options.reduce((types: JsonSchema7Primitive[], x) => {
+      const type = primitiveMappings[x._def.typeName as ZodPrimitive]; //Can be safely casted due to row 43
+      return type && !types.includes(type) ? [...types, type] : types;
+    }, []);
+
     return {
       type: types.length > 1 ? types : types[0],
     };
-  } else if (def.options.every((x) => x.constructor.name === "ZodLiteral")) {
+  } else if (def.options.every((x) => x._def.typeName === "ZodLiteral")) {
     // all options literals
-    const types = def.options.reduce((types, option) => {
-      let type: string = typeof option._def.value;
-      if (type === "bigint") {
-        type = "integer";
-      } else if (type === "object" && option._def.value === null) {
-        type = "null";
-      }
-      return types.includes(type) ? types : [...types, type];
-    }, [] as string[]);
 
-    if (
-      types.every((x) =>
-        ["string", "number", "bigint", "boolean", "null"].includes(x)
-      )
-    ) {
+    const types = def.options.reduce(
+      (acc: JsonSchema7Primitive[], x: { _def: ZodLiteralDef }) => {
+        const type = typeof x._def.value;
+        switch (type) {
+          case "string":
+          case "number":
+          case "boolean":
+            return [...acc, type];
+          case "bigint":
+            return [...acc, "integer" as const];
+          case "object":
+            if (x._def.value === null) return [...acc, "null" as const];
+          case "symbol":
+          case "undefined":
+          case "function":
+          default:
+            return acc;
+        }
+      },
+      []
+    );
+
+    if (types.length === def.options.length) {
       // all the literals are primitive, as far as null can be considered primitive
+
+      const uniqueTypes = types.filter((x, i, a) => a.indexOf(x) === i);
       return {
-        type: types.length > 1 ? types : types[0],
+        type: uniqueTypes.length > 1 ? uniqueTypes : uniqueTypes[0],
         enum: def.options.reduce((acc, x) => {
           return acc.includes(x._def.value) ? acc : [...acc, x._def.value];
         }, [] as (string | number | bigint | boolean | null)[]),
@@ -92,10 +91,9 @@ export function parseUnionDef(
     }
   }
 
-  return {
-    // Fallback to verbose anyOf. This will always work schematically but it does get quite ugly at times.
-    anyOf: def.options.map((x, i) =>
-      parseDef(x._def, [...path, "anyOf", i.toString()], visited)
-    ),
-  };
+  const anyOf = def.options
+    .map((x, i) => parseDef(x._def, [...path, "anyOf", i.toString()], visited))
+    .filter((x): x is JsonSchema7Type => !!x);
+
+  return anyOf.length ? { anyOf } : undefined;
 }
