@@ -2,6 +2,7 @@
 
 | Version | Change                                                                                                                                                                                                                                                                                                  |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.6.1 | Realised intersection had another potential ref pathing bug. Fixed.
 | 3.6.0 | Added support for default & effects (refine). Broke out changelog.md
 | 3.5.0 | Added support for CUID string validation
 | 3.4.3 | Fixed $ref pathing for catchall and intersection. Additional tests and code structure fixes.

@@ -16,13 +16,6 @@ export function parseIntersectionDef(
     parseDef(def.right._def, [...path, "allOf", "1"], visited),
   ].filter((x): x is JsonSchema7Type => !!x);
 
-  switch (allOf.length) {
-    case 2:
-      // @ts-expect-error
-      return { allOf };
-    case 1:
-      return allOf[0];
-    default:
-      return {};
-  }
+  // @ts-expect-error
+  return allOf.length ? { allOf } : undefined;
 }
