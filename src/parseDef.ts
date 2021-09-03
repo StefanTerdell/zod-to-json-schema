@@ -1,16 +1,20 @@
-import { ZodFirstPartyTypeKind, ZodLazy, ZodSchema, ZodTypeDef } from "zod";
+import {
+  ZodFirstPartyTypeKind, ZodTypeDef
+} from "zod";
 import { JsonSchema7AnyType, parseAnyDef } from "./parsers/any";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
 import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean";
 import { JsonSchema7DateType, parseDateDef } from "./parsers/date";
+import { parseDefaultDef } from "./parsers/default";
+import { parseEffectsDef } from "./parsers/effects";
 import { JsonSchema7EnumType, parseEnumDef } from "./parsers/enum";
 import { parseIntersectionDef } from "./parsers/intersection";
 import { JsonSchema7LiteralType, parseLiteralDef } from "./parsers/literal";
 import { JsonSchema7MapType, parseMapDef } from "./parsers/map";
 import {
   JsonSchema7NativeEnumType,
-  parseNativeEnumDef,
+  parseNativeEnumDef
 } from "./parsers/nativeEnum";
 import { JsonSchema7NeverType, parseNeverDef } from "./parsers/never";
 import { JsonSchema7NullType, parseNullDef } from "./parsers/null";
@@ -24,18 +28,18 @@ import { JsonSchema7StringType, parseStringDef } from "./parsers/string";
 import { JsonSchema7TupleType, parseTupleDef } from "./parsers/tuple";
 import {
   JsonSchema7UndefinedType,
-  parseUndefinedDef,
+  parseUndefinedDef
 } from "./parsers/undefined";
 import {
   JsonSchema7AnyOfType,
   JsonSchema7PrimitiveUnionType,
-  parseUnionDef,
+  parseUnionDef
 } from "./parsers/union";
 import { parseUnknownDef } from "./parsers/unknown";
 
 type JsonSchema7RefType = { $ref: string };
 
-export type JsonSchema7Type =
+export type JsonSchema7Type = (
   | JsonSchema7StringType
   | JsonSchema7ArrayType
   | JsonSchema7NumberType
@@ -57,7 +61,8 @@ export type JsonSchema7Type =
   | JsonSchema7NeverType
   | JsonSchema7MapType
   | JsonSchema7AnyType
-  | JsonSchema7NullableType;
+  | JsonSchema7NullableType
+) & { default?: any };
 
 export type Visited = { def: ZodTypeDef; path: string[] }[];
 
@@ -124,12 +129,13 @@ export function parseDef(
     case ZodFirstPartyTypeKind.ZodNever:
       return parseNeverDef();
     case ZodFirstPartyTypeKind.ZodEffects:
+      return parseEffectsDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodAny:
       return parseAnyDef();
     case ZodFirstPartyTypeKind.ZodUnknown:
       return parseUnknownDef();
     case ZodFirstPartyTypeKind.ZodDefault:
-      return parseAnyDef()
+      return parseDefaultDef(defAny, path, visited);
     case ZodFirstPartyTypeKind.ZodFunction:
     case ZodFirstPartyTypeKind.ZodVoid:
       return undefined;
