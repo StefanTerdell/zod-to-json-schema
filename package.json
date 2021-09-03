@@ -1,13 +1,13 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "description": "Converts Zod schemas to Json Schemas",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "dev": "jest --watch",
     "build": "rimraf dist && tsc && node copyPackageFiles.js",
-    "dryrun": "jest && npm run build && cd dist && npm pub --dry-run"
+    "dryrun": "jest && npm run build && npm pub ./dist/ --dry-run"
   },
   "keywords": [
     "zod",
