@@ -1,20 +1,8 @@
-import { z, ZodSchema } from "zod";
+import { ZodSchema } from "zod";
 import { JsonSchema7Type, parseDef } from "./parseDef";
 import { $refStrategy, References } from "./References";
 
 const $schema = "http://json-schema.org/draft-07/schema#";
-
-type ZodToJsonSchemaOptions<
-  Name extends string | undefined,
-  Strategy extends $refStrategy | undefined,
-  Path extends string[] | undefined
-> =
-  | {
-      name?: Name;
-      $refStrategy?: Strategy;
-      basePath?: Path;
-    }
-  | Name;
 
 function zodToJsonSchema(schema: ZodSchema<any>): {
   $schema: typeof $schema;
@@ -29,51 +17,69 @@ function zodToJsonSchema<Name extends string>(
   definitions: Record<Name, JsonSchema7Type>;
 };
 
-function zodToJsonSchema<Name extends undefined>(
+function zodToJsonSchema<Name extends string>(
   schema: ZodSchema<any>,
-  options: ZodToJsonSchemaOptions<Name, $refStrategy, string[]>
-): {
-  $schema: typeof $schema;
-} & JsonSchema7Type;
-
-function zodToJsonSchema<
-  Name extends string,
-  $refStrategy extends "root" | "none" | undefined,
-  BasePath extends undefined
->(
-  schema: ZodSchema<any>,
-  options: ZodToJsonSchemaOptions<Name, $refStrategy, BasePath>
+  options: {
+    name: Name;
+  }
 ): {
   $schema: typeof $schema;
   $ref: `#/definitions/${Name}`;
   definitions: Record<Name, JsonSchema7Type>;
 };
 
-function zodToJsonSchema<
-  Name extends string,
-  $refStrategy extends "relative",
-  BasePath extends undefined
->(
+function zodToJsonSchema(
   schema: ZodSchema<any>,
-  options: ZodToJsonSchemaOptions<Name, $refStrategy, BasePath>
+  options: {
+    $refStrategy?: $refStrategy;
+    basePath?: string[];
+  }
 ): {
   $schema: typeof $schema;
-  $ref: `0/definitions/${Name}`;
-  definitions: Record<Name, JsonSchema7Type>;
-};
+} & JsonSchema7Type;
 
-function zodToJsonSchema<Name extends string, Path extends string[]>(
+function zodToJsonSchema<Name extends string>(
   schema: ZodSchema<any>,
-  options: ZodToJsonSchemaOptions<Name, $refStrategy, Path>
+  options: {
+    name: Name;
+    $refStrategy?: $refStrategy;
+    basePath: string[];
+  }
 ): {
   $schema: typeof $schema;
   $ref: string;
   definitions: Record<Name, JsonSchema7Type>;
 };
 
+function zodToJsonSchema<Name extends string>(
+  schema: ZodSchema<any>,
+  options: {
+    name: Name;
+    $refStrategy: "relative";
+  }
+): {
+  $schema: typeof $schema;
+  $ref: `0/definitions/${Name}`;
+  definitions: Record<Name, JsonSchema7Type>;
+};
+
+function zodToJsonSchema<Name extends string>(
+  schema: ZodSchema<any>,
+  options: {
+    name: Name;
+    $refStrategy: "root" | "none";
+  }
+): {
+  $schema: typeof $schema;
+  $ref: `#/definitions/${Name}`;
+  definitions: Record<Name, JsonSchema7Type>;
+};
+
 function zodToJsonSchema(
   schema: ZodSchema<any>,
-  options?: Partial<ZodToJsonSchemaOptions<string, $refStrategy, string[]>>
+  options?:
+    | { name?: string; $refStrategy?: $refStrategy; basePath?: string[] }
+    | string
 ) {
   if (typeof options === "object") {
     return options.name === undefined
@@ -107,11 +113,12 @@ function zodToJsonSchema(
           },
         };
   } else if (typeof options === "string") {
+    const name = options;
     return {
       $schema,
-      $ref: `#/definitions/${options}`,
+      $ref: `#/definitions/${name}`,
       definitions: {
-        [options]: parseDef(schema._def, new References()) || {},
+        [name]: parseDef(schema._def, new References()) || {},
       },
     };
   } else {
@@ -121,57 +128,6 @@ function zodToJsonSchema(
     };
   }
 }
-
-const nameOnly = zodToJsonSchema(z.any(), "hej");
-const nameOnlyOpt = zodToJsonSchema(z.any(), { name: "hej" });
-
-const noName = zodToJsonSchema(z.any());
-
-const noNamePath = zodToJsonSchema(z.any(), { basePath: ["lol"] });
-const noNameRel = zodToJsonSchema(z.any(), { $refStrategy: "relative" });
-const noNameRoot = zodToJsonSchema(z.any(), { $refStrategy: "root" });
-const noNameNone = zodToJsonSchema(z.any(), { $refStrategy: "none" });
-const noNamePathRel = zodToJsonSchema(z.any(), {
-  basePath: ["lol"],
-  $refStrategy: "relative",
-});
-const noNamePathRoot = zodToJsonSchema(z.any(), {
-  basePath: ["lol"],
-  $refStrategy: "root",
-});
-const noNamePathNone = zodToJsonSchema(z.any(), {
-  basePath: ["lol"],
-  $refStrategy: "none",
-});
-
-const namePath = zodToJsonSchema(z.any(), { name: "hej", basePath: ["lol"] });
-const nameRel = zodToJsonSchema(z.any(), {
-  name: "hej",
-  $refStrategy: "relative",
-});
-const nameRoot = zodToJsonSchema(z.any(), {
-  name: "hej",
-  $refStrategy: "root",
-});
-const nameNone = zodToJsonSchema(z.any(), {
-  name: "hej",
-  $refStrategy: "none",
-});
-const namePathRel = zodToJsonSchema(z.any(), {
-  name: "hej",
-  basePath: ["lol"],
-  $refStrategy: "relative",
-});
-const namePathRoot = zodToJsonSchema(z.any(), {
-  name: "hej",
-  basePath: ["lol"],
-  $refStrategy: "root",
-});
-const namePathNone = zodToJsonSchema(z.any(), {
-  name: "hej",
-  basePath: ["lol"],
-  $refStrategy: "none",
-});
 
 export { zodToJsonSchema };
 
