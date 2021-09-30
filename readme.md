@@ -52,7 +52,9 @@ Expected output:
 
 ## Known issues
 
-- When using `.transform()`, the return type is inferred from the supplied function. In other words, there is no schema for the return type, and there is no way to convert it in runtime. Currently the JSON schema will therefore reflect the input side of the Zod schema and not necessarily the output (the latter aka. `z.infer<>`).
-- JSON Schemas does not support any other key type than strings for objects. When using z.Record with any other key type, this will be ignored.
+- When using `.transform`, the return type is inferred from the supplied function. In other words, there is no schema for the return type, and there is no way to convert it in runtime. Currently the JSON schema will therefore reflect the input side of the Zod schema and not necessarily the output (the latter aka. `z.infer`).
+- JSON Schemas does not support any other key type than strings for objects. When using `z.record` with any other key type, this will be ignored.
 
-[Changelog](https://github.com/StefanTerdell/zod-to-json-schema/blob/master/changelog.md)
+## Changelog
+
+https://github.com/StefanTerdell/zod-to-json-schema/blob/master/changelog.md
