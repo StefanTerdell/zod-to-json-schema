@@ -20,4 +20,22 @@ describe("objects", () => {
     };
     expect(parsedSchema).toStrictEqual(expectedSchema);
   });
+
+  it("should be possible to use selective partial", () => {
+    const schema = z
+      .object({ foo: z.boolean(), bar: z.number() })
+      .partial({ foo: true });
+
+    const parsedSchema = parseObjectDef(schema._def, [], []);
+    const expectedSchema = {
+      type: "object",
+      properties: {
+        foo: { type: "boolean" },
+        bar: { type: "number" },
+      },
+      required: ["bar"],
+      additionalProperties: false,
+    };
+    expect(parsedSchema).toStrictEqual(expectedSchema);
+  });
 });
