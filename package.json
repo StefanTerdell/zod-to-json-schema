@@ -26,17 +26,17 @@
   },
   "license": "ISC",
   "dependencies": {
-    "zod": "^3.8.1"
+    "zod": "^3.9.5"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/json-schema": "^7.0.9",
-    "ajv": "^8.6.2",
+    "ajv": "^8.6.3",
     "ajv-formats": "^2.1.1",
     "jest": "^26.6.3",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.2",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.3"
   },
   "types": "index.d.ts"
 }
