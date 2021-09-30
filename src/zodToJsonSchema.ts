@@ -4,76 +4,43 @@ import { $refStrategy, References } from "./References";
 
 const $schema = "http://json-schema.org/draft-07/schema#";
 
-function zodToJsonSchema(schema: ZodSchema<any>): {
-  $schema: typeof $schema;
-} & JsonSchema7Type;
-
-function zodToJsonSchema<Name extends string>(
+function zodToJsonSchema<Name extends string | undefined = undefined>(
   schema: ZodSchema<any>,
-  name: Name
-): {
-  $schema: typeof $schema;
-  $ref: `#/definitions/${Name}`;
-  definitions: Record<Name, JsonSchema7Type>;
-};
+  name?: Name
+): Name extends string
+  ? {
+      $schema: typeof $schema;
+      $ref: `#/definitions/${Name}`;
+      definitions: Record<Name, JsonSchema7Type>;
+    }
+  : { $schema: typeof $schema } & JsonSchema7Type;
 
-function zodToJsonSchema<Name extends string>(
+function zodToJsonSchema<
+  Strategy extends "root" | "relative" | "none" | undefined = undefined,
+  BasePath extends string[] | undefined = undefined,
+  Name extends string | undefined = undefined
+>(
   schema: ZodSchema<any>,
-  options: {
-    name: Name;
-  }
-): {
-  $schema: typeof $schema;
-  $ref: `#/definitions/${Name}`;
-  definitions: Record<Name, JsonSchema7Type>;
-};
-
-function zodToJsonSchema(
-  schema: ZodSchema<any>,
-  options: {
-    $refStrategy?: $refStrategy;
-    basePath?: string[];
-  }
-): {
-  $schema: typeof $schema;
-} & JsonSchema7Type;
-
-function zodToJsonSchema<Name extends string>(
-  schema: ZodSchema<any>,
-  options: {
-    name: Name;
-    $refStrategy?: $refStrategy;
-    basePath: string[];
-  }
-): {
-  $schema: typeof $schema;
-  $ref: string;
-  definitions: Record<Name, JsonSchema7Type>;
-};
-
-function zodToJsonSchema<Name extends string>(
-  schema: ZodSchema<any>,
-  options: {
-    name: Name;
-    $refStrategy: "relative";
-  }
-): {
-  $schema: typeof $schema;
-  $ref: `0/definitions/${Name}`;
-  definitions: Record<Name, JsonSchema7Type>;
-};
-
-function zodToJsonSchema<Name extends string>(
-  schema: ZodSchema<any>,
-  options: {
-    name: Name;
-    $refStrategy: "root" | "none";
-  }
-): {
-  $schema: typeof $schema;
-  $ref: `#/definitions/${Name}`;
-  definitions: Record<Name, JsonSchema7Type>;
-};
+  options?: { name?: Name; $refStrategy?: Strategy; basePath?: BasePath }
+): Name extends string
+  ? BasePath extends string[]
+    ? {
+        $schema: typeof $schema;
+        $ref: string;
+        definitions: Record<Name, JsonSchema7Type>;
+      }
+    : Strategy extends "relative"
+    ? {
+        $schema: typeof $schema;
+        $ref: `0/definitions/${Name}`;
+        definitions: Record<Name, JsonSchema7Type>;
+      }
+    : {
+        $schema: typeof $schema;
+        $ref: `#/definitions/${Name}`;
+        definitions: Record<Name, JsonSchema7Type>;
+      }
+  : { $schema: typeof $schema } & JsonSchema7Type;
 
 function zodToJsonSchema(
   schema: ZodSchema<any>,
@@ -130,4 +97,3 @@ function zodToJsonSchema(
 }
 
 export { zodToJsonSchema };
-
