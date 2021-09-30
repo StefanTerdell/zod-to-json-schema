@@ -6,6 +6,7 @@ export type JsonSchema7NumberType = {
   exclusiveMinimum?: number;
   maximum?: number;
   exclusiveMaximum?: number;
+  multipleOf?: number
 };
 
 export function parseNumberDef(def: ZodNumberDef): JsonSchema7NumberType {
@@ -30,6 +31,9 @@ export function parseNumberDef(def: ZodNumberDef): JsonSchema7NumberType {
             res.exclusiveMaximum = check.value;
           }
           res.maximum = check.value;
+          break;
+        case "multipleOf":
+          res.multipleOf = check.value
           break;
       }
     }
