@@ -1,5 +1,6 @@
 import { ZodLiteralDef, ZodUnionDef } from "zod";
-import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
+import { JsonSchema7Type, parseDef } from "../parseDef";
+import { References } from "../References";
 
 export const primitiveMappings = {
   ZodString: "string",
@@ -31,8 +32,7 @@ type JsonSchema7AnyOfType = {
 
 export function parseUnionDef(
   def: ZodUnionDef,
-  path: string[],
-  visited: Visited
+  refs: References
 ): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
   // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
 
@@ -92,7 +92,7 @@ export function parseUnionDef(
   }
 
   const anyOf = def.options
-    .map((x, i) => parseDef(x._def, [...path, "anyOf", i.toString()], visited))
+    .map((x, i) => parseDef(x._def, refs.addToPath("anyOf", i.toString())))
     .filter((x): x is JsonSchema7Type => !!x);
 
   return anyOf.length ? { anyOf } : undefined;

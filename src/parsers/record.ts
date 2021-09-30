@@ -1,5 +1,6 @@
 import { ZodFirstPartyTypeKind, ZodRecordDef, ZodTypeAny } from "zod";
-import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
+import { JsonSchema7Type, parseDef } from "../parseDef";
+import { References } from "../References";
 import { JsonSchema7StringType, parseStringDef } from "./string";
 
 type JsonSchema7RecordPropertyNamesType = Omit<JsonSchema7StringType, "type">;
@@ -12,8 +13,7 @@ export type JsonSchema7RecordType = {
 
 export function parseRecordDef(
   def: ZodRecordDef<ZodTypeAny, ZodTypeAny>,
-  path: string[],
-  visited: Visited
+  refs: References
 ): JsonSchema7RecordType {
   if (
     def.keyType._def.typeName === ZodFirstPartyTypeKind.ZodString &&
@@ -29,22 +29,16 @@ export function parseRecordDef(
     return {
       type: "object",
       additionalProperties:
-        parseDef(
-          def.valueType._def,
-          [...path, "additionalProperties"],
-          visited
-        ) || {},
+        parseDef(def.valueType._def, refs.addToPath("additionalProperties")) ||
+        {},
       propertyNames: keyType,
     };
   } else {
     return {
       type: "object",
       additionalProperties:
-        parseDef(
-          def.valueType._def,
-          [...path, "additionalProperties"],
-          visited
-        ) || {},
+        parseDef(def.valueType._def, refs.addToPath("additionalProperties")) ||
+        {},
     };
   }
 }

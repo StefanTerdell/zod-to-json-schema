@@ -2,13 +2,14 @@ import { JSONSchema7Type } from "json-schema";
 import { boolean, z } from "zod";
 import { parseStringDef } from "../../src/parsers/string";
 import { parseUnionDef } from "../../src/parsers/union";
+import { References } from "../../src/References";
+const deref = require("json-schema-deref-sync");
 
 describe("Unions", () => {
   it("Should be possible to get a simple type array from a union of only unvalidated primitives", () => {
     const parsedSchema = parseUnionDef(
       z.union([z.string(), z.number(), z.boolean(), z.null()])._def,
-      [],
-      []
+      new References()
     );
     const jsonSchema: JSONSchema7Type = {
       type: ["string", "number", "boolean", "null"],
@@ -24,8 +25,7 @@ describe("Unions", () => {
         z.literal(true),
         z.literal(null),
       ])._def,
-      [],
-      []
+      new References()
     );
     const jsonSchema: JSONSchema7Type = {
       type: ["string", "number", "boolean", "null"],
@@ -42,8 +42,7 @@ describe("Unions", () => {
         z.string().min(3),
         z.number(),
       ])._def,
-      [],
-      []
+      new References()
     );
     const jsonSchema: JSONSchema7Type = {
       anyOf: [
@@ -83,7 +82,7 @@ describe("Unions", () => {
 
     const union = z.union([recurring, recurring, recurring]);
 
-    const jsonSchema = parseUnionDef(union._def, [], []);
+    const jsonSchema = parseUnionDef(union._def, new References());
 
     expect(jsonSchema).toStrictEqual({
       anyOf: [
@@ -105,5 +104,9 @@ describe("Unions", () => {
         },
       ],
     });
+
+    const resolvedSchema = deref(jsonSchema);
+    expect(resolvedSchema.anyOf[0]).toBe(resolvedSchema.anyOf[1]);
+    expect(resolvedSchema.anyOf[1]).toBe(resolvedSchema.anyOf[2]);
   });
 });

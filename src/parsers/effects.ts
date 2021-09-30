@@ -1,10 +1,10 @@
 import { ZodEffectsDef } from "zod";
-import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
+import { JsonSchema7Type, parseDef } from "../parseDef";
+import { References } from "../References";
 
 export function parseEffectsDef(
   _def: ZodEffectsDef,
-  path: string[],
-  visited: Visited
+  refs: References
 ): JsonSchema7Type | undefined {
-  return parseDef(_def.schema._def, path, visited);
+  return parseDef(_def.schema._def, refs);
 }

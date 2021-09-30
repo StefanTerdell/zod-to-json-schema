@@ -1,7 +1,11 @@
 import Ajv from "ajv";
+import { JSONSchema7 } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../src/parseDef";
+import { References } from "../src/References";
+import { zodToJsonSchema } from "../src/zodToJsonSchema";
 const ajv = new Ajv();
+const deref = require("json-schema-deref-sync");
 
 describe("Pathing", () => {
   it("should handle recurring properties with paths", () => {
@@ -38,7 +42,7 @@ describe("Pathing", () => {
       required: ["address1", "address2", "lotsOfAddresses"],
     };
 
-    const parsedSchema = parseDef(someAddresses._def, [], []);
+    const parsedSchema = parseDef(someAddresses._def, new References());
     expect(parsedSchema).toStrictEqual(jsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
   });
@@ -79,9 +83,14 @@ describe("Pathing", () => {
       required: ["union", "part"],
     };
 
-    const parsedSchema = parseDef(schema._def, [], []);
+    const parsedSchema = parseDef(schema._def, new References());
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+
+    const resolvedSchema = deref(expectedJsonSchema);
+    expect(resolvedSchema.properties.part).toBe(
+      resolvedSchema.properties.union.anyOf[0]
+    );
   });
 
   it("Should be able to handle recursive schemas", () => {
@@ -99,7 +108,7 @@ describe("Pathing", () => {
       })
     );
 
-    const parsedSchema = parseDef(categorySchema._def, [], []);
+    const parsedSchema = parseDef(categorySchema._def, new References());
 
     const expectedJsonSchema = {
       type: "object",
@@ -120,6 +129,9 @@ describe("Pathing", () => {
 
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+
+    const resolvedSchema = deref(parsedSchema);
+    expect(resolvedSchema.properties.subcategories.items).toBe(resolvedSchema);
   });
 
   it("Should be able to handle complex & nested recursive schemas", () => {
@@ -145,7 +157,7 @@ describe("Pathing", () => {
       category: categorySchema,
     });
 
-    const parsedSchema = parseDef(inObjectSchema._def, [], []);
+    const parsedSchema = parseDef(inObjectSchema._def, new References());
 
     const expectedJsonSchema = {
       type: "object",
@@ -186,5 +198,63 @@ describe("Pathing", () => {
 
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+  });
+
+  it("should work with relative references", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, {
+      $refStrategy: "relative",
+    });
+
+    const exptectedResult: JSONSchema7 = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        foo: {
+          type: "string",
+        },
+        bar: {
+          $ref: "1/foo",
+        },
+      },
+      required: ["foo", "bar"],
+      additionalProperties: false,
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
+
+  it("should be possible to override the base path", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, {
+     basePath: ["#", "lol", "xD"],
+    });
+
+    const exptectedResult: JSONSchema7 = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        foo: {
+          type: "string",
+        },
+        bar: {
+          $ref: "#/lol/xD/properties/foo",
+        },
+      },
+      required: ["foo", "bar"],
+      additionalProperties: false,
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
   });
 });

@@ -1,11 +1,12 @@
 import { z } from "zod";
 import { parseIntersectionDef } from "../../src/parsers/intersection";
+import { References } from "../../src/References";
 
 describe("intersections", () => {
   it("should be possible to use intersections", () => {
     const intersection = z.intersection(z.string().min(1), z.string().max(3));
 
-    const jsonSchema = parseIntersectionDef(intersection._def, [], []);
+    const jsonSchema = parseIntersectionDef(intersection._def, new References());
 
     expect(jsonSchema).toStrictEqual({
       allOf: [
@@ -22,9 +23,9 @@ describe("intersections", () => {
   });
 
   it("should be possible to deref intersections", () => {
-    const schema = z.string()
-    const intersection = z.intersection(schema, schema)
-    const jsonSchema = parseIntersectionDef(intersection._def, [], []);
+    const schema = z.string();
+    const intersection = z.intersection(schema, schema);
+    const jsonSchema = parseIntersectionDef(intersection._def, new References());
 
     expect(jsonSchema).toStrictEqual({
       allOf: [
@@ -32,9 +33,9 @@ describe("intersections", () => {
           type: "string",
         },
         {
-          $ref: "#/allOf/0"
+          $ref: "#/allOf/0",
         },
       ],
     });
-  })
+  });
 });

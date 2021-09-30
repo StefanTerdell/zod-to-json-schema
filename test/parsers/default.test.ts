@@ -1,13 +1,13 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDefaultDef } from "../../src/parsers/default";
+import { References } from "../../src/References";
 
 describe("promise", () => {
   it("should be possible to use default on objects", () => {
     const parsedSchema = parseDefaultDef(
       z.object({ foo: z.boolean() }).default({ foo: true })._def,
-      [],
-      []
+      new References()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -28,8 +28,7 @@ describe("promise", () => {
   it("should be possible to use default on primitives", () => {
     const parsedSchema = parseDefaultDef(
       z.string().default("default")._def,
-      [],
-      []
+      new References()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "string",
@@ -44,7 +43,10 @@ describe("promise", () => {
       .transform((val) => val.toUpperCase())
       .default("default");
 
-    const parsedSchema = parseDefaultDef(stringWithDefault._def, [], []);
+    const parsedSchema = parseDefaultDef(
+      stringWithDefault._def,
+      new References()
+    );
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       default: "default",

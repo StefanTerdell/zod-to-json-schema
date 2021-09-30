@@ -50,6 +50,22 @@ Expected output:
 }
 ```
 
+## Options
+
+### Schema name
+
+You can pass a string as the second parameter of the main zodToJsonSchema function. If you do, your schema will end up inside a definitions object property on the root and referenced from there. Alternatively, you can pass the name as the `name` property of the options object (see below).
+
+### Options object
+
+Instead of the schema name (or nothing), you can pass an options object as the second parameter. The following options are available:
+
+| Option                                            | Effect                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **name**?: _string_                               | Described above.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **basePath**?: string[]                           | The base path of the root reference builder. Defaults to ["#"].                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **$refStrategy**?: "root" \| "relative" \| "none" | The reference builder strategy; **"root"** resolves $refs from the root up, ie: "#/definitions/mySchema". **"relative"** uses [relative JSON pointers](https://tools.ietf.org/id/draft-handrews-relative-json-pointer-00.html) to simplify joining schemas together (be warned that not all validators etc support this). **"none"** ignores referencing all together, creating a new schema branch even on "seen" schemas. Recursive references defaults to "any", ie `{}`. Defaults to "root". |
+
 ## Known issues
 
 - When using `.transform`, the return type is inferred from the supplied function. In other words, there is no schema for the return type, and there is no way to convert it in runtime. Currently the JSON schema will therefore reflect the input side of the Zod schema and not necessarily the output (the latter aka. `z.infer`).

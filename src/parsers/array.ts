@@ -1,5 +1,6 @@
-import { ZodArrayDef, ZodTypeDef } from "zod";
-import { JsonSchema7Type, parseDef, Visited } from "../parseDef";
+import { ZodArrayDef } from "zod";
+import { JsonSchema7Type, parseDef } from "../parseDef";
+import { References } from "../References";
 
 export type JsonSchema7ArrayType = {
   type: "array";
@@ -8,15 +9,11 @@ export type JsonSchema7ArrayType = {
   maxItems?: number;
 };
 
-export function parseArrayDef(
-  def: ZodArrayDef,
-  path: string[],
-  visited: Visited
-) {
+export function parseArrayDef(def: ZodArrayDef, refs: References) {
   {
     const res: JsonSchema7ArrayType = {
       type: "array",
-      items: parseDef(def.type._def, [...path, "items"], visited),
+      items: parseDef(def.type._def, refs.addToPath("items")),
     };
     if (def.minLength) {
       res.minItems = def.minLength.value;
