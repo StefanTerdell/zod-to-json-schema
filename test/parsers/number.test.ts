@@ -34,6 +34,14 @@ describe('Number validations', () => {
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
+  it('should be possible to describe multiples of n', () => {
+    const parsedSchema = parseNumberDef(z.number().multipleOf(2)._def);
+    const jsonSchema: JSONSchema7Type = {
+      type: 'number',
+      multipleOf: 2
+    };
+    expect(parsedSchema).toStrictEqual(jsonSchema);
+  });
   it('should be possible to describe positive, negative, nonpositive and nonnegative numbers', () => {
     const parsedSchema = parseNumberDef(
       z.number().positive().negative().nonpositive().nonnegative()._def
