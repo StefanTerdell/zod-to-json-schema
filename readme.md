@@ -11,7 +11,7 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 - Supports all relevant schema types, basic string, number and array length validations and string patterns.
 - Resolves recursive and recurring schemas with internal `$ref`s.
 
-Usage:
+### Usage
 
 ```typescript
 import { z } from "zod";
@@ -25,7 +25,7 @@ const mySchema = z.object({
 const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
 ```
 
-Expected output:
+### Expected output
 
 ```json
 {
