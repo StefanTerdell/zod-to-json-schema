@@ -16,7 +16,7 @@ export function parseRecordDef(
   refs: References
 ): JsonSchema7RecordType {
   if (
-    def.keyType._def.typeName === ZodFirstPartyTypeKind.ZodString &&
+    def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodString &&
     def.keyType._def.checks?.length
   ) {
     const keyType: JsonSchema7RecordPropertyNamesType = Object.entries(
