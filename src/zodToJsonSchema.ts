@@ -28,12 +28,14 @@ function zodToJsonSchema<Name extends string | undefined = undefined>(
  * @param options.$refStrategy ("root" | "relative" | "none") The (optional) reference builder strategy. Default: "root"
  * @param options.basePath (string[]) The (optional) basePath for the root reference builder strategy. Default: [#]
  * @param options.effectStrategy ("input" | "any") The (optional) effect resolver strategy. Default: "input"
+ * @param options.definitionPath ("definitions" | "$defs") defaults to definitions.
  *
  */
 function zodToJsonSchema<
   Name extends string | undefined = undefined,
   Strategy extends "root" | "relative" | "none" | undefined = undefined,
-  BasePath extends string[] | undefined = undefined
+  BasePath extends string[] | undefined = undefined,
+  DefinitionPath extends "definitions" | "$defs" = "definitions"
 >(
   schema: ZodSchema<any>,
   options?: {
@@ -41,25 +43,23 @@ function zodToJsonSchema<
     $refStrategy?: Strategy;
     basePath?: BasePath;
     effectStrategy?: EffectStrategy;
+    definitionPath?: DefinitionPath;
   }
 ): Name extends string
   ? BasePath extends string[]
     ? {
         $schema: typeof $schema;
         $ref: string;
-        definitions: Record<Name, JsonSchema7Type>;
-      }
+      } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
     : Strategy extends "relative"
     ? {
         $schema: typeof $schema;
-        $ref: `0/definitions/${Name}`;
-        definitions: Record<Name, JsonSchema7Type>;
-      }
+        $ref: `0/${DefinitionPath}/${Name}`;
+      } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
     : {
         $schema: typeof $schema;
-        $ref: `#/definitions/${Name}`;
-        definitions: Record<Name, JsonSchema7Type>;
-      }
+        $ref: `#/${DefinitionPath}/${Name}`;
+      } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
   : { $schema: typeof $schema } & JsonSchema7Type;
 
 function zodToJsonSchema(
@@ -70,6 +70,7 @@ function zodToJsonSchema(
         $refStrategy?: $refStrategy;
         basePath?: string[];
         effectStrategy?: EffectStrategy;
+        definitionPath?: "definitions" | "$defs";
       }
     | string
 ) {
@@ -91,9 +92,9 @@ function zodToJsonSchema(
           $schema,
           $ref:
             options.$refStrategy === "relative"
-              ? `0/definitions/${options.name}`
-              : `#/definitions/${options.name}`,
-          definitions: {
+              ? `0/${options.definitionPath ?? "definitions"}/${options.name}`
+              : `#/${options.definitionPath ?? "definitions"}/${options.name}`,
+          [options.definitionPath ?? "definitions"]: {
             [options.name]:
               parseDef(
                 schema._def,
