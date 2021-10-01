@@ -1,6 +1,6 @@
 import { ZodSchema } from "zod";
 import { JsonSchema7Type, parseDef } from "./parseDef";
-import { $refStrategy, References } from "./References";
+import { $refStrategy, EffectStrategy, References } from "./References";
 
 const $schema = "http://json-schema.org/draft-07/schema#";
 
@@ -27,6 +27,7 @@ function zodToJsonSchema<Name extends string | undefined = undefined>(
  * @param options.name (string) The (optional) name of the schema. If provided, schema will be put in definitions/{name}
  * @param options.$refStrategy ("root" | "relative" | "none") The (optional) reference builder strategy. Default: "root"
  * @param options.basePath (string[]) The (optional) basePath for the root reference builder strategy. Default: [#]
+ * @param options.effectStrategy ("input" | "any") The (optional) effect resolver strategy. Default: "input"
  *
  */
 function zodToJsonSchema<
@@ -35,7 +36,12 @@ function zodToJsonSchema<
   BasePath extends string[] | undefined = undefined
 >(
   schema: ZodSchema<any>,
-  options?: { name?: Name; $refStrategy?: Strategy; basePath?: BasePath }
+  options?: {
+    name?: Name;
+    $refStrategy?: Strategy;
+    basePath?: BasePath;
+    effectStrategy?: EffectStrategy;
+  }
 ): Name extends string
   ? BasePath extends string[]
     ? {
@@ -59,7 +65,12 @@ function zodToJsonSchema<
 function zodToJsonSchema(
   schema: ZodSchema<any>,
   options?:
-    | { name?: string; $refStrategy?: $refStrategy; basePath?: string[] }
+    | {
+        name?: string;
+        $refStrategy?: $refStrategy;
+        basePath?: string[];
+        effectStrategy?: EffectStrategy;
+      }
     | string
 ) {
   if (typeof options === "object") {
@@ -71,7 +82,8 @@ function zodToJsonSchema(
             new References(
               options.basePath ?? ["#"],
               [],
-              options.$refStrategy ?? "root"
+              options.$refStrategy ?? "root",
+              options.effectStrategy
             )
           ),
         }
@@ -88,7 +100,8 @@ function zodToJsonSchema(
                 new References(
                   [...(options.basePath ?? []), "definitions", options.name],
                   [],
-                  options.$refStrategy ?? "root"
+                  options.$refStrategy ?? "root",
+                  options.effectStrategy
                 )
               ) || {},
           },
