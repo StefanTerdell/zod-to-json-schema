@@ -237,7 +237,7 @@ describe("Pathing", () => {
     });
 
     const jsonSchema = zodToJsonSchema(objectSchema, {
-     basePath: ["#", "lol", "xD"],
+      basePath: ["#", "lol", "xD"],
     });
 
     const exptectedResult: JSONSchema7 = {
@@ -256,5 +256,75 @@ describe("Pathing", () => {
     };
 
     expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
+
+  it("should be possible to opt out of $ref building", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, {
+      $refStrategy: "none",
+    });
+
+    const exptectedResult: JSONSchema7 = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        foo: {
+          type: "string",
+        },
+        bar: {
+          type: "string",
+        },
+      },
+      required: ["foo", "bar"],
+      additionalProperties: false,
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
+
+  it("When opting out of ref building and using recursive schemas, should warn and default to any", () => {
+    global.console = { ...global.console, warn: jest.fn() };
+
+    type Category = {
+      name: string;
+      subcategories: Category[];
+    };
+
+    // cast to z.ZodSchema<Category>
+    // @ts-ignore
+    const categorySchema: z.ZodSchema<Category> = z.lazy(() =>
+      z.object({
+        name: z.string(),
+        subcategories: z.array(categorySchema),
+      })
+    );
+
+    const parsedSchema = parseDef(
+      categorySchema._def,
+      new References([], [], "none")
+    );
+
+    const expectedJsonSchema = {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+        },
+        subcategories: {
+          type: "array",
+          items: {},
+        },
+      },
+      required: ["name", "subcategories"],
+      additionalProperties: false,
+    };
+
+    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
+    expect(console.warn).toBeCalledWith("Recursive reference detected at properties/subcategories/items! Defaulting to any");
   });
 });
