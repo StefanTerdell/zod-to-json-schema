@@ -72,6 +72,12 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 - JSON Schemas does not support any other key type than strings for objects. When using `z.record` with any other key type, this will be ignored.
 - Relative JSON pointers, while published alongside [JSON schema draft 2020-12](https://json-schema.org/specification.html), is not technically a part of it. Currently, most resolvers do not handle them at all.
 
+## Versioning
+
+This package _does not_ follow semantic versioning. The major and minor versions of this package instead reflects feature parity with the [Zod package](http://npmjs.com/package/zod).
+
+I will do my best to keep API-breaking changes to an absolute minimum, but new features may appear as "patches", such as introducing the options pattern in 3.9.1.
+
 ## Changelog
 
 https://github.com/StefanTerdell/zod-to-json-schema/blob/master/changelog.md
