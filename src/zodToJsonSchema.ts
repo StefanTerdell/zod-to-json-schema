@@ -4,6 +4,11 @@ import { $refStrategy, References } from "./References";
 
 const $schema = "http://json-schema.org/draft-07/schema#";
 
+/**
+ *
+ * @param schema (ZodSchema) The Zod schema to be converted to a JSON schema.
+ * @param name (string) The (optional) name of the schema. If provided, schema will be put in definitions/{name}
+ */
 function zodToJsonSchema<Name extends string | undefined = undefined>(
   schema: ZodSchema<any>,
   name?: Name
@@ -15,10 +20,19 @@ function zodToJsonSchema<Name extends string | undefined = undefined>(
     }
   : { $schema: typeof $schema } & JsonSchema7Type;
 
+/**
+ *
+ * @param schema (ZodSchema) The Zod schema to be converted to a JSON schema.
+ * @param options (Object) The (optional) options object.
+ * @param options.name (string) The (optional) name of the schema. If provided, schema will be put in definitions/{name}
+ * @param options.$refStrategy ("root" | "relative" | "none") The (optional) reference builder strategy. Default: "root"
+ * @param options.basePath (string[]) The (optional) basePath for the root reference builder strategy. Default: [#]
+ *
+ */
 function zodToJsonSchema<
+  Name extends string | undefined = undefined,
   Strategy extends "root" | "relative" | "none" | undefined = undefined,
-  BasePath extends string[] | undefined = undefined,
-  Name extends string | undefined = undefined
+  BasePath extends string[] | undefined = undefined
 >(
   schema: ZodSchema<any>,
   options?: { name?: Name; $refStrategy?: Strategy; basePath?: BasePath }
