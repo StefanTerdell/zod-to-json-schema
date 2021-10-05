@@ -99,7 +99,11 @@ function zodToJsonSchema(
               parseDef(
                 schema._def,
                 new References(
-                  [...(options.basePath ?? []), "definitions", options.name],
+                  [
+                    ...(options.basePath ?? ["#"]),
+                    options.definitionPath ?? "definitions",
+                    options.name,
+                  ],
                   [],
                   options.$refStrategy ?? "root",
                   options.effectStrategy

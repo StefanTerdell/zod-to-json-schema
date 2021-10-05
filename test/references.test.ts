@@ -327,4 +327,74 @@ describe("Pathing", () => {
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(console.warn).toBeCalledWith("Recursive reference detected at properties/subcategories/items! Defaulting to any");
   });
+
+  it("should be possible to override get proper references even when picking optional definitions path $defs", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, {
+      name: "hello",
+      definitionPath: "$defs"
+    });
+
+    const exptectedResult = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/$defs/hello",
+      $defs: {
+        hello: {
+          type: "object",
+          properties: {
+            foo: {
+              type: "string",
+            },
+            bar: {
+              $ref: "#/$defs/hello/properties/foo",
+            },
+          },
+          required: ["foo", "bar"],
+          additionalProperties: false,
+        }
+      }
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
+
+  it("should be possible to override get proper references even when picking optional definitions path definitions", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, {
+      name: "hello",
+      definitionPath: "definitions"
+    });
+
+    const exptectedResult = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/definitions/hello",
+      definitions: {
+        hello: {
+          type: "object",
+          properties: {
+            foo: {
+              type: "string",
+            },
+            bar: {
+              $ref: "#/definitions/hello/properties/foo",
+            },
+          },
+          required: ["foo", "bar"],
+          additionalProperties: false,
+        }
+      }
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
 });
