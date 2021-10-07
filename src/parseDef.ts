@@ -141,7 +141,7 @@ export function parseDef(
     case ZodFirstPartyTypeKind.ZodRecord:
       return parseRecordDef(defAny, refs);
     case ZodFirstPartyTypeKind.ZodLiteral:
-      return parseLiteralDef(defAny);
+      return parseLiteralDef(defAny, refs);
     case ZodFirstPartyTypeKind.ZodEnum:
       return parseEnumDef(defAny);
     case ZodFirstPartyTypeKind.ZodNativeEnum:

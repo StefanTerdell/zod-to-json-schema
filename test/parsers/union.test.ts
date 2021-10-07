@@ -1,6 +1,5 @@
 import { JSONSchema7Type } from "json-schema";
-import { boolean, z } from "zod";
-import { parseStringDef } from "../../src/parsers/string";
+import { z } from "zod";
 import { parseUnionDef } from "../../src/parsers/union";
 import { References } from "../../src/References";
 const deref = require("json-schema-deref-sync");
@@ -108,5 +107,15 @@ describe("Unions", () => {
     const resolvedSchema = deref(jsonSchema);
     expect(resolvedSchema.anyOf[0]).toBe(resolvedSchema.anyOf[1]);
     expect(resolvedSchema.anyOf[1]).toBe(resolvedSchema.anyOf[2]);
+  });
+
+  it("nullable primitives should come out fine", () => {
+    const union = z.union([z.string(), z.null()]);
+
+    const jsonSchema = parseUnionDef(union._def, new References());
+
+    expect(jsonSchema).toStrictEqual({
+      type: ["string", "null"],
+    });
   });
 });
