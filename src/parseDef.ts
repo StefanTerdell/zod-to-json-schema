@@ -62,20 +62,28 @@ export type JsonSchema7Type = (
   | JsonSchema7AllOfType
   | JsonSchema7UnknownType
   | JsonSchema7SetType
-) & { default?: any };
-
-const makeRelativePath = (pathA: string[], pathB: string[]) => {
-  let i = 0;
-  for (; i < pathA.length && i < pathB.length; i++) {
-    if (pathA[i] !== pathB[i]) break;
-  }
-  return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
-};
+) & { default?: any; description?: string };
 
 export function parseDef(
   def: ZodTypeDef,
   refs: References
 ): JsonSchema7Type | undefined {
+  const visited = checkIfVisited(def, refs);
+  if (visited) return visited;
+  const parsed = selectParser(def, (def as any).typeName, refs);
+  if (parsed) addMeta(def, parsed);
+  return parsed;
+}
+
+const checkIfVisited = (
+  def: ZodTypeDef,
+  refs: References
+):
+  | {
+      $ref: string;
+    }
+  | {}
+  | undefined => {
   const wasVisited = refs.visited.find((x) => Object.is(x.def, def));
   if (wasVisited) {
     switch (refs.$refStrategy) {
@@ -109,17 +117,28 @@ export function parseDef(
   } else {
     refs.visited.push({ def, path: refs.currentPath });
   }
+};
 
-  const defAny = def as any;
-  const typeName: ZodFirstPartyTypeKind = defAny.typeName;
+const makeRelativePath = (pathA: string[], pathB: string[]) => {
+  let i = 0;
+  for (; i < pathA.length && i < pathB.length; i++) {
+    if (pathA[i] !== pathB[i]) break;
+  }
+  return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
+};
 
+const selectParser = (
+  def: any,
+  typeName: ZodFirstPartyTypeKind,
+  refs: References
+): JsonSchema7Type | undefined => {
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
-      return parseStringDef(defAny);
+      return parseStringDef(def);
     case ZodFirstPartyTypeKind.ZodNumber:
-      return parseNumberDef(defAny);
+      return parseNumberDef(def);
     case ZodFirstPartyTypeKind.ZodObject:
-      return parseObjectDef(defAny, refs);
+      return parseObjectDef(def, refs);
     case ZodFirstPartyTypeKind.ZodBigInt:
       return parseBigintDef();
     case ZodFirstPartyTypeKind.ZodBoolean:
@@ -131,47 +150,52 @@ export function parseDef(
     case ZodFirstPartyTypeKind.ZodNull:
       return parseNullDef();
     case ZodFirstPartyTypeKind.ZodArray:
-      return parseArrayDef(defAny, refs);
+      return parseArrayDef(def, refs);
     case ZodFirstPartyTypeKind.ZodUnion:
-      return parseUnionDef(defAny, refs);
+      return parseUnionDef(def, refs);
     case ZodFirstPartyTypeKind.ZodIntersection:
-      return parseIntersectionDef(defAny, refs);
+      return parseIntersectionDef(def, refs);
     case ZodFirstPartyTypeKind.ZodTuple:
-      return parseTupleDef(defAny, refs);
+      return parseTupleDef(def, refs);
     case ZodFirstPartyTypeKind.ZodRecord:
-      return parseRecordDef(defAny, refs);
+      return parseRecordDef(def, refs);
     case ZodFirstPartyTypeKind.ZodLiteral:
-      return parseLiteralDef(defAny);
+      return parseLiteralDef(def);
     case ZodFirstPartyTypeKind.ZodEnum:
-      return parseEnumDef(defAny);
+      return parseEnumDef(def);
     case ZodFirstPartyTypeKind.ZodNativeEnum:
-      return parseNativeEnumDef(defAny);
+      return parseNativeEnumDef(def);
     case ZodFirstPartyTypeKind.ZodNullable:
-      return parseNullableDef(defAny, refs);
+      return parseNullableDef(def, refs);
     case ZodFirstPartyTypeKind.ZodOptional:
-      return parseDef(defAny.innerType._def, refs);
+      return parseDef(def.innerType._def, refs);
     case ZodFirstPartyTypeKind.ZodMap:
-      return parseMapDef(defAny, refs);
+      return parseMapDef(def, refs);
     case ZodFirstPartyTypeKind.ZodSet:
-      return parseSetDef(defAny, refs);
+      return parseSetDef(def, refs);
     case ZodFirstPartyTypeKind.ZodLazy:
-      return parseDef(defAny.getter()._def, refs);
+      return parseDef(def.getter()._def, refs);
     case ZodFirstPartyTypeKind.ZodPromise:
-      return parsePromiseDef(defAny, refs);
+      return parsePromiseDef(def, refs);
     case ZodFirstPartyTypeKind.ZodNever:
       return parseNeverDef();
     case ZodFirstPartyTypeKind.ZodEffects:
-      return parseEffectsDef(defAny, refs);
+      return parseEffectsDef(def, refs);
     case ZodFirstPartyTypeKind.ZodAny:
       return parseAnyDef();
     case ZodFirstPartyTypeKind.ZodUnknown:
       return parseUnknownDef();
     case ZodFirstPartyTypeKind.ZodDefault:
-      return parseDefaultDef(defAny, refs);
+      return parseDefaultDef(def, refs);
     case ZodFirstPartyTypeKind.ZodFunction:
     case ZodFirstPartyTypeKind.ZodVoid:
       return undefined;
     default:
       return ((_: never) => undefined)(typeName);
   }
-}
+};
+
+const addMeta = (def: ZodTypeDef, parsed: JsonSchema7Type): JsonSchema7Type => {
+  if (def.description) parsed.description = def.description;
+  return parsed;
+};
