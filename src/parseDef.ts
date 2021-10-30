@@ -129,7 +129,7 @@ export function parseDef(
     case ZodFirstPartyTypeKind.ZodUndefined:
       return parseUndefinedDef();
     case ZodFirstPartyTypeKind.ZodNull:
-      return parseNullDef();
+      return parseNullDef(refs);
     case ZodFirstPartyTypeKind.ZodArray:
       return parseArrayDef(defAny, refs);
     case ZodFirstPartyTypeKind.ZodUnion:
