@@ -1,19 +1,19 @@
 import { ZodTypeDef } from "zod";
 
 export class References {
-  visited: Visited;
+  items: Item[];
   currentPath: string[];
   $refStrategy: $refStrategy;
   effectStrategy: EffectStrategy;
 
   constructor(
     path: string[] = ["#"],
-    visited: Visited = [],
+    items: Item[] = [],
     $refStrategy: $refStrategy = "root",
     effectStrategy: EffectStrategy = "input"
   ) {
     this.currentPath = path;
-    this.visited = visited;
+    this.items = items;
     this.$refStrategy = $refStrategy;
     this.effectStrategy = effectStrategy;
   }
@@ -21,11 +21,11 @@ export class References {
   addToPath(...path: string[]) {
     return new References(
       [...this.currentPath, ...path],
-      this.visited,
+      this.items,
       this.$refStrategy
     );
   }
 }
-type Visited = { def: ZodTypeDef; path: string[] }[];
+export type Item = { def: ZodTypeDef; path: string[] };
 export type $refStrategy = "root" | "relative" | "none";
 export type EffectStrategy = "input" | "any";

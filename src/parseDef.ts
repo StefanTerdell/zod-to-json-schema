@@ -68,8 +68,8 @@ export function parseDef(
   def: ZodTypeDef,
   refs: References
 ): JsonSchema7Type | undefined {
-  const visited = checkIfVisited(def, refs);
-  if (visited) return visited;
+  const item = checkIfVisited(def, refs);
+  if (item) return item;
   const parsed = selectParser(def, (def as any).typeName, refs);
   if (parsed) addMeta(def, parsed);
   return parsed;
@@ -84,26 +84,24 @@ const checkIfVisited = (
     }
   | {}
   | undefined => {
-  const wasVisited = refs.visited.find((x) => Object.is(x.def, def));
-  if (wasVisited) {
+  const item = refs.items.find((x) => Object.is(x.def, def));
+  if (item) {
     switch (refs.$refStrategy) {
       case "root":
         return {
           $ref:
-            wasVisited.path.length === 0
+            item.path.length === 0
               ? ""
-              : wasVisited.path.length === 1
-              ? `${wasVisited.path[0]}/`
-              : wasVisited.path.join("/"),
+              : item.path.length === 1
+              ? `${item.path[0]}/`
+              : item.path.join("/"),
         };
       case "relative":
-        return { $ref: makeRelativePath(refs.currentPath, wasVisited.path) };
+        return { $ref: makeRelativePath(refs.currentPath, item.path) };
       case "none": {
         if (
-          wasVisited.path.length < refs.currentPath.length &&
-          wasVisited.path.every(
-            (value, index) => refs.currentPath[index] === value
-          )
+          item.path.length < refs.currentPath.length &&
+          item.path.every((value, index) => refs.currentPath[index] === value)
         ) {
           console.warn(
             `Recursive reference detected at ${refs.currentPath.join(
@@ -115,7 +113,7 @@ const checkIfVisited = (
       }
     }
   } else {
-    refs.visited.push({ def, path: refs.currentPath });
+    refs.items.push({ def, path: refs.currentPath });
   }
 };
 
