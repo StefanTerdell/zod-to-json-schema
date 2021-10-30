@@ -34,8 +34,9 @@ export function parseUnionDef(
   def: ZodUnionDef,
   refs: References
 ): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
-  // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
+  if (refs.mode === "openApi") return asAnyOf(def, refs);
 
+  // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
   if (
     def.options.every(
       (x) =>
@@ -91,9 +92,16 @@ export function parseUnionDef(
     }
   }
 
+  return asAnyOf(def, refs);
+}
+
+const asAnyOf = (
+  def: ZodUnionDef,
+  refs: References
+): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined => {
   const anyOf = def.options
     .map((x, i) => parseDef(x._def, refs.addToPath("anyOf", i.toString())))
     .filter((x): x is JsonSchema7Type => !!x);
 
   return anyOf.length ? { anyOf } : undefined;
-}
+};
