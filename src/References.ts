@@ -1,4 +1,5 @@
 import { ZodTypeDef } from "zod";
+import { JsonSchema7Type } from "./parseDef";
 
 export class References {
   items: Item[];
@@ -26,6 +27,10 @@ export class References {
     );
   }
 }
-export type Item = { def: ZodTypeDef; path: string[] };
+export type Item = {
+  def: ZodTypeDef;
+  path: string[];
+  jsonSchema: JsonSchema7Type | undefined;
+};
 export type $refStrategy = "root" | "relative" | "none";
 export type EffectStrategy = "input" | "any";
