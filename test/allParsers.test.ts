@@ -326,6 +326,7 @@ describe("All Parsers tests", () => {
       default: {
         string: "hello",
       },
+      description: "watup",
     };
     expect(jsonSchema).toStrictEqual(expectedOutput);
   });
@@ -681,6 +682,7 @@ describe("All Parsers tests", () => {
       default: {
         string: "hello",
       },
+      description: "watup",
     };
     expect(jsonSchema).toStrictEqual(expectedOutput);
   });
