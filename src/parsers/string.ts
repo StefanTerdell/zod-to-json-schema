@@ -38,7 +38,7 @@ export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
           res.pattern = "^c[^\\s-]{8,}$";
           break;
         default:
-          ((youForgotOne: never) => {})(check);
+          ((_: never) => {})(check);
       }
     }
   }
