@@ -33,7 +33,7 @@ import {
 } from "./parsers/undefined";
 import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union";
 import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown";
-import { References } from "./References";
+import { Item, References } from "./References";
 
 type JsonSchema7RefType = { $ref: string };
 
@@ -68,15 +68,18 @@ export function parseDef(
   def: ZodTypeDef,
   refs: References
 ): JsonSchema7Type | undefined {
-  const visited = checkIfVisited(def, refs);
-  if (visited) return visited;
-  const parsed = selectParser(def, (def as any).typeName, refs);
-  if (parsed) addMeta(def, parsed);
-  return parsed;
+  const item = refs.items.find((x) => Object.is(x.def, def));
+  if (item) return select$refStrategy(item, refs);
+  const newItem: Item = { def, path: refs.currentPath, jsonSchema: undefined };
+  refs.items.push(newItem);
+  const jsonSchema = selectParser(def, (def as any).typeName, refs);
+  if (jsonSchema) addMeta(def, jsonSchema);
+  newItem.jsonSchema = jsonSchema;
+  return jsonSchema;
 }
 
-const checkIfVisited = (
-  def: ZodTypeDef,
+const select$refStrategy = (
+  item: Item,
   refs: References
 ):
   | {
@@ -84,38 +87,33 @@ const checkIfVisited = (
     }
   | {}
   | undefined => {
-  const wasVisited = refs.visited.find((x) => Object.is(x.def, def));
-  if (wasVisited) {
-    switch (refs.$refStrategy) {
-      case "root":
-        return {
-          $ref:
-            wasVisited.path.length === 0
-              ? ""
-              : wasVisited.path.length === 1
-              ? `${wasVisited.path[0]}/`
-              : wasVisited.path.join("/"),
-        };
-      case "relative":
-        return { $ref: makeRelativePath(refs.currentPath, wasVisited.path) };
-      case "none": {
-        if (
-          wasVisited.path.length < refs.currentPath.length &&
-          wasVisited.path.every(
-            (value, index) => refs.currentPath[index] === value
-          )
-        ) {
-          console.warn(
-            `Recursive reference detected at ${refs.currentPath.join(
-              "/"
-            )}! Defaulting to any`
-          );
-          return {};
-        }
+  switch (refs.$refStrategy) {
+    case "root":
+      return {
+        $ref:
+          item.path.length === 0
+            ? ""
+            : item.path.length === 1
+            ? `${item.path[0]}/`
+            : item.path.join("/"),
+      };
+    case "relative":
+      return { $ref: makeRelativePath(refs.currentPath, item.path) };
+    case "none": {
+      if (
+        item.path.length < refs.currentPath.length &&
+        item.path.every((value, index) => refs.currentPath[index] === value)
+      ) {
+        console.warn(
+          `Recursive reference detected at ${refs.currentPath.join(
+            "/"
+          )}! Defaulting to any`
+        );
+        return {};
+      } else {
+        return item.jsonSchema;
       }
     }
-  } else {
-    refs.visited.push({ def, path: refs.currentPath });
   }
 };
 
@@ -195,7 +193,10 @@ const selectParser = (
   }
 };
 
-const addMeta = (def: ZodTypeDef, parsed: JsonSchema7Type): JsonSchema7Type => {
-  if (def.description) parsed.description = def.description;
-  return parsed;
+const addMeta = (
+  def: ZodTypeDef,
+  jsonSchema: JsonSchema7Type
+): JsonSchema7Type => {
+  if (def.description) jsonSchema.description = def.description;
+  return jsonSchema;
 };

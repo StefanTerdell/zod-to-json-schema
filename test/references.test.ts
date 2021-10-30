@@ -1,8 +1,6 @@
 import Ajv from "ajv";
 import { JSONSchema7 } from "json-schema";
 import { z } from "zod";
-import { parseDef } from "../src/parseDef";
-import { References } from "../src/References";
 import { zodToJsonSchema } from "../src/zodToJsonSchema";
 const ajv = new Ajv();
 const deref = require("json-schema-deref-sync");
@@ -20,6 +18,7 @@ describe("Pathing", () => {
       lotsOfAddresses: z.array(addressSchema),
     });
     const jsonSchema = {
+      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       properties: {
         address1: {
@@ -42,7 +41,7 @@ describe("Pathing", () => {
       required: ["address1", "address2", "lotsOfAddresses"],
     };
 
-    const parsedSchema = parseDef(someAddresses._def, new References());
+    const parsedSchema = zodToJsonSchema(someAddresses);
     expect(parsedSchema).toStrictEqual(jsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
   });
@@ -56,6 +55,7 @@ describe("Pathing", () => {
     });
 
     const expectedJsonSchema = {
+      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       properties: {
         union: {
@@ -83,7 +83,7 @@ describe("Pathing", () => {
       required: ["union", "part"],
     };
 
-    const parsedSchema = parseDef(schema._def, new References());
+    const parsedSchema = zodToJsonSchema(schema);
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
 
@@ -108,9 +108,10 @@ describe("Pathing", () => {
       })
     );
 
-    const parsedSchema = parseDef(categorySchema._def, new References());
+    const parsedSchema = zodToJsonSchema(categorySchema);
 
     const expectedJsonSchema = {
+      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       properties: {
         name: {
@@ -157,9 +158,10 @@ describe("Pathing", () => {
       category: categorySchema,
     });
 
-    const parsedSchema = parseDef(inObjectSchema._def, new References());
+    const parsedSchema = zodToJsonSchema(inObjectSchema);
 
     const expectedJsonSchema = {
+      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       additionalProperties: false,
       required: ["category"],
@@ -304,12 +306,12 @@ describe("Pathing", () => {
       })
     );
 
-    const parsedSchema = parseDef(
-      categorySchema._def,
-      new References([], [], "none")
-    );
+    const parsedSchema = zodToJsonSchema(categorySchema, {
+      $refStrategy: "none",
+    });
 
     const expectedJsonSchema = {
+      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       properties: {
         name: {
@@ -325,7 +327,9 @@ describe("Pathing", () => {
     };
 
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
-    expect(console.warn).toBeCalledWith("Recursive reference detected at properties/subcategories/items! Defaulting to any");
+    expect(console.warn).toBeCalledWith(
+      "Recursive reference detected at #/properties/subcategories/items! Defaulting to any"
+    );
   });
 
   it("should be possible to override get proper references even when picking optional definitions path $defs", () => {
@@ -337,7 +341,7 @@ describe("Pathing", () => {
 
     const jsonSchema = zodToJsonSchema(objectSchema, {
       name: "hello",
-      definitionPath: "$defs"
+      definitionPath: "$defs",
     });
 
     const exptectedResult = {
@@ -356,8 +360,8 @@ describe("Pathing", () => {
           },
           required: ["foo", "bar"],
           additionalProperties: false,
-        }
-      }
+        },
+      },
     };
 
     expect(jsonSchema).toStrictEqual(exptectedResult);
@@ -372,7 +376,7 @@ describe("Pathing", () => {
 
     const jsonSchema = zodToJsonSchema(objectSchema, {
       name: "hello",
-      definitionPath: "definitions"
+      definitionPath: "definitions",
     });
 
     const exptectedResult = {
@@ -391,8 +395,8 @@ describe("Pathing", () => {
           },
           required: ["foo", "bar"],
           additionalProperties: false,
-        }
-      }
+        },
+      },
     };
 
     expect(jsonSchema).toStrictEqual(exptectedResult);
