@@ -7,5 +7,5 @@
         "strict": true,
         "skipLibCheck": true
     },
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/lab.ts"]
+  "exclude": ["node_modules", "dist", "test/**/*", "src/lab.ts"]
 }
