@@ -1,6 +1,6 @@
 import { ZodSchema } from "zod";
 import { JsonSchema7Type, parseDef } from "./parseDef";
-import { $refStrategy, EffectStrategy, Mode, References } from "./References";
+import { $refStrategy, EffectStrategy, Target, References } from "./References";
 
 const $schema = "http://json-schema.org/draft-07/schema#";
 
@@ -29,7 +29,7 @@ function zodToJsonSchema<Name extends string | undefined = undefined>(
  * @param options.basePath (string[]) The (optional) basePath for the root reference builder strategy. Default: [#]
  * @param options.effectStrategy ("input" | "any") The (optional) effect resolver strategy. Default: "input"
  * @param options.definitionPath ("definitions" | "$defs") defaults to definitions.
- * @param options.mode ("jsonSchema" | "openApi") defaults to "jsonSchema"
+ * @param options.target ("jsonSchema" | "openApi") defaults to "jsonSchema"
  *
  */
 function zodToJsonSchema<
@@ -37,7 +37,7 @@ function zodToJsonSchema<
   Strategy extends "root" | "relative" | "none" | undefined = undefined,
   BasePath extends string[] | undefined = undefined,
   DefinitionPath extends "definitions" | "$defs" = "definitions",
-  Mode extends "jsonSchema" | "openApi" | undefined = undefined
+  Target extends "jsonSchema" | "openApi" | undefined = undefined
 >(
   schema: ZodSchema<any>,
   options?: {
@@ -46,9 +46,9 @@ function zodToJsonSchema<
     basePath?: BasePath;
     effectStrategy?: EffectStrategy;
     definitionPath?: DefinitionPath;
-    mode?: Mode;
+    target?: Target;
   }
-): Mode extends "openApi"
+): Target extends "openApi"
   ? Name extends string
     ? BasePath extends string[]
       ? {
@@ -88,13 +88,13 @@ function zodToJsonSchema(
         basePath?: string[];
         effectStrategy?: EffectStrategy;
         definitionPath?: "definitions" | "$defs";
-        mode?: Mode;
+        target?: Target;
       }
     | string
 ) {
   if (typeof options === "object") {
     return options.name === undefined
-      ? options.mode === "openApi"
+      ? options.target === "openApi"
         ? parseDef(
             schema._def,
             new References(
@@ -102,7 +102,7 @@ function zodToJsonSchema(
               [],
               options.$refStrategy ?? "root",
               options.effectStrategy,
-              options.mode
+              options.target
             )
           )
         : {
@@ -114,11 +114,11 @@ function zodToJsonSchema(
                 [],
                 options.$refStrategy ?? "root",
                 options.effectStrategy,
-                options.mode
+                options.target
               )
             ),
           }
-      : options.mode === "openApi"
+      : options.target === "openApi"
       ? {
           $ref:
             options.$refStrategy === "relative"
@@ -137,7 +137,7 @@ function zodToJsonSchema(
                   [],
                   options.$refStrategy ?? "root",
                   options.effectStrategy,
-                  options.mode
+                  options.target
                 )
               ) || {},
           },
@@ -161,7 +161,7 @@ function zodToJsonSchema(
                   [],
                   options.$refStrategy ?? "root",
                   options.effectStrategy,
-                  options.mode
+                  options.target
                 )
               ) || {},
           },

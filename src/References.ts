@@ -5,7 +5,7 @@ export class References {
   currentPath: string[];
   $refStrategy: $refStrategy;
   effectStrategy: EffectStrategy;
-  mode: Mode;
+  target: Target;
 
   // constructor() {
 
@@ -16,13 +16,13 @@ export class References {
     visited: Visited = [],
     $refStrategy: $refStrategy = "root",
     effectStrategy: EffectStrategy = "input",
-    mode: Mode = "jsonSchema"
+    target: Target = "jsonSchema"
   ) {
     this.currentPath = path;
     this.visited = visited;
     this.$refStrategy = $refStrategy;
     this.effectStrategy = effectStrategy;
-    this.mode = mode;
+    this.target = target;
   }
 
   addToPath(...path: string[]) {
@@ -31,11 +31,11 @@ export class References {
       this.visited,
       this.$refStrategy,
       this.effectStrategy,
-      this.mode
+      this.target
     );
   }
 }
 type Visited = { def: ZodTypeDef; path: string[] }[];
 export type $refStrategy = "root" | "relative" | "none";
 export type EffectStrategy = "input" | "any";
-export type Mode = "jsonSchema" | "openApi";
+export type Target = "jsonSchema" | "openApi";

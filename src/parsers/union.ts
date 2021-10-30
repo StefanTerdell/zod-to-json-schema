@@ -34,7 +34,7 @@ export function parseUnionDef(
   def: ZodUnionDef,
   refs: References
 ): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
-  if (refs.mode === "openApi") return asAnyOf(def, refs);
+  if (refs.target === "openApi") return asAnyOf(def, refs);
 
   // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
   if (

@@ -2,9 +2,9 @@ import { zodToJsonSchema } from "../src/zodToJsonSchema";
 import { allParsersSchema } from "./allParsersSchema";
 
 describe("All Parsers tests", () => {
-  it("With JSON schema mode, should produce valid json schema (7)", () => {
+  it("With JSON schema target, should produce valid json schema (7)", () => {
     const jsonSchema = zodToJsonSchema(allParsersSchema, {
-      mode: "jsonSchema",
+      target: "jsonSchema",
     });
 
     const expectedOutput = {
@@ -330,9 +330,9 @@ describe("All Parsers tests", () => {
     expect(jsonSchema).toStrictEqual(expectedOutput);
   });
 
-  it("With OpenAPI schema mode, should produce valid Open API schema", () => {
+  it("With OpenAPI schema target, should produce valid Open API schema", () => {
     const jsonSchema = zodToJsonSchema(allParsersSchema, {
-      mode: "openApi",
+      target: "openApi",
     });
     const expectedOutput = {
       type: "object",

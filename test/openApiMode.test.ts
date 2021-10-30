@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zodToJsonSchema } from "../src/zodToJsonSchema";
 
-describe("Open API mode", () => {
+describe("Open API target", () => {
   it("should use nullable boolean property and not use $schema property", () => {
     const editCompanySchema = z.object({
       companyId: z.string().nullable(),
@@ -10,7 +10,7 @@ describe("Open API mode", () => {
     });
 
     const swaggerSchema = zodToJsonSchema(editCompanySchema, {
-      mode: "openApi",
+      target: "openApi",
     });
 
     const expectedSchema = {

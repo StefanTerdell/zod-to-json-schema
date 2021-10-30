@@ -26,7 +26,7 @@ export function parseLiteralDef(
     };
   }
 
-  if (refs.mode === "openApi") {
+  if (refs.target === "openApi") {
     return {
       type: parsedType === "bigint" ? "integer" : parsedType,
       enum: [def.value],

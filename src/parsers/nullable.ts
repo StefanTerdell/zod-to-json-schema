@@ -22,7 +22,7 @@ export function parseNullableDef(
     ) &&
     (!def.innerType._def.checks || !def.innerType._def.checks.length)
   ) {
-    if (refs.mode === "openApi") {
+    if (refs.target === "openApi") {
       return {
         type: primitiveMappings[
           def.innerType._def.typeName as keyof typeof primitiveMappings
@@ -44,7 +44,7 @@ export function parseNullableDef(
   const type = parseDef(def.innerType._def, refs.addToPath("anyOf", "0"));
 
   return type
-    ? refs.mode === "openApi"
+    ? refs.target === "openApi"
       ? ({ ...type, nullable: true } as any)
       : {
           anyOf: [
