@@ -10,6 +10,7 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 
 - Supports all relevant schema types, basic string, number and array length validations and string patterns.
 - Resolves recursive and recurring schemas with internal `$ref`s.
+- Also able to target Open API 3 (Swagger) specification for paths.
 
 ### Usage
 
@@ -67,6 +68,7 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 | **$refStrategy**?: "root" \| "relative" \| "none" | The reference builder strategy; <ul><li>**"root"** resolves $refs from the root up, ie: "#/definitions/mySchema".</li><li>**"relative"** uses [relative JSON pointers](https://tools.ietf.org/id/draft-handrews-relative-json-pointer-00.html). _See known issues!_</li><li>**"none"** ignores referencing all together, creating a new schema branch even on "seen" schemas. Recursive references defaults to "any", ie `{}`.</li></ul> Defaults to "root". |
 | **effectStrategy**?: "input" \| "any"             | The effects output strategy. Defaults to "input". _See known issues!_                                                                                                                                                                                                                                                                                                                                                                                        |
 | **definitionPath**?: "definitions" \| "$defs"     | The name of the definitions property when name is passed. Defaults to "definitions".                                                                                                                                                                                                                                                                                                                                                                         |
+| **target**?: "jsonSchema7" \| "openApi3"          | Which spec to target. Defaults to "jsonSchema7"                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 ## Known issues
 
