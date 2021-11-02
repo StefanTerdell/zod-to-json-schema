@@ -25,7 +25,7 @@ export function parseNumberDef(
           res.type = "integer";
           break;
         case "min":
-          if (refs.target === "jsonSchema") {
+          if (refs.target === "jsonSchema7") {
             if (check.inclusive) {
               res.minimum = check.value;
             } else {
@@ -39,7 +39,7 @@ export function parseNumberDef(
           }
           break;
         case "max":
-          if (refs.target === "jsonSchema") {
+          if (refs.target === "jsonSchema7") {
             if (check.inclusive) {
               res.maximum = check.value;
             } else {

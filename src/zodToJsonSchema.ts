@@ -29,7 +29,7 @@ function zodToJsonSchema<Name extends string | undefined = undefined>(
  * @param options.basePath (string[]) The (optional) basePath for the root reference builder strategy. Default: [#]
  * @param options.effectStrategy ("input" | "any") The (optional) effect resolver strategy. Default: "input"
  * @param options.definitionPath ("definitions" | "$defs") defaults to definitions.
- * @param options.target ("jsonSchema" | "openApi") defaults to "jsonSchema"
+ * @param options.target ("jsonSchema7" | "openApi3") defaults to "jsonSchema7"
  *
  */
 function zodToJsonSchema<
@@ -37,7 +37,7 @@ function zodToJsonSchema<
   Strategy extends "root" | "relative" | "none" | undefined = undefined,
   BasePath extends string[] | undefined = undefined,
   DefinitionPath extends "definitions" | "$defs" = "definitions",
-  Target extends "jsonSchema" | "openApi" | undefined = undefined
+  Target extends "jsonSchema7" | "openApi3" | undefined = undefined
 >(
   schema: ZodSchema<any>,
   options?: {
@@ -94,7 +94,7 @@ function zodToJsonSchema(
 ) {
   if (typeof options === "object") {
     return options.name === undefined
-      ? options.target === "openApi"
+      ? options.target === "openApi3"
         ? parseDef(
             schema._def,
             new References(
@@ -118,7 +118,7 @@ function zodToJsonSchema(
               )
             ),
           }
-      : options.target === "openApi"
+      : options.target === "openApi3"
       ? {
           $ref:
             options.$refStrategy === "relative"

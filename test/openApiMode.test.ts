@@ -10,7 +10,7 @@ describe("Open API target", () => {
     });
 
     const swaggerSchema = zodToJsonSchema(editCompanySchema, {
-      target: "openApi",
+      target: "openApi3",
     });
 
     const expectedSchema = {

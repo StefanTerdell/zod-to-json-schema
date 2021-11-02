@@ -8,16 +8,12 @@ export class References {
   effectStrategy: EffectStrategy;
   target: Target;
 
-  // constructor() {
-
-  // }
-
   constructor(
     path: string[] = ["#"],
     items: Item[] = [],
     $refStrategy: $refStrategy = "root",
     effectStrategy: EffectStrategy = "input",
-    target: Target = "jsonSchema"
+    target: Target = "jsonSchema7"
   ) {
     this.currentPath = path;
     this.items = items;
@@ -43,4 +39,4 @@ export type Item = {
 };
 export type $refStrategy = "root" | "relative" | "none";
 export type EffectStrategy = "input" | "any";
-export type Target = "jsonSchema" | "openApi";
+export type Target = "jsonSchema7" | "openApi3";

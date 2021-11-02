@@ -4,12 +4,12 @@
   "description": "Validation schema for OpenAPI Specification 3.0.X.",
   "type": "object",
   "required": [
-    "openapi",
+    "openApi3",
     "info",
     "paths"
   ],
   "properties": {
-    "openapi": {
+    "openApi3": {
       "type": "string",
       "pattern": "^3\\.0\\.\\d(-.+)?$"
     },

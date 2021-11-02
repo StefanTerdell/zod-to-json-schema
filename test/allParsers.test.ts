@@ -4,7 +4,7 @@ import { allParsersSchema } from "./allParsersSchema";
 describe("All Parsers tests", () => {
   it("With JSON schema target, should produce valid json schema (7)", () => {
     const jsonSchema = zodToJsonSchema(allParsersSchema, {
-      target: "jsonSchema",
+      target: "jsonSchema7",
     });
 
     const expectedOutput = {
@@ -329,7 +329,7 @@ describe("All Parsers tests", () => {
 
   it("With OpenAPI schema target, should produce valid Open API schema", () => {
     const jsonSchema = zodToJsonSchema(allParsersSchema, {
-      target: "openApi",
+      target: "openApi3",
     });
     const expectedOutput = {
       type: "object",
