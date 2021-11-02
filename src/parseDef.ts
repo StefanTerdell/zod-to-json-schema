@@ -134,7 +134,7 @@ const selectParser = (
     case ZodFirstPartyTypeKind.ZodString:
       return parseStringDef(def);
     case ZodFirstPartyTypeKind.ZodNumber:
-      return parseNumberDef(def);
+      return parseNumberDef(def, refs);
     case ZodFirstPartyTypeKind.ZodObject:
       return parseObjectDef(def, refs);
     case ZodFirstPartyTypeKind.ZodBigInt:

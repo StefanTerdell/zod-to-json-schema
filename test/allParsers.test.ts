@@ -125,19 +125,15 @@ describe("All Parsers tests", () => {
         numberGt: {
           type: "number",
           exclusiveMinimum: 1,
-          minimum: 1,
         },
         numberLt: {
           type: "number",
           exclusiveMaximum: 1,
-          maximum: 1,
         },
         numberGtLt: {
           type: "number",
           exclusiveMinimum: 1,
-          minimum: 1,
           exclusiveMaximum: 1,
-          maximum: 1,
         },
         numberGte: {
           type: "number",
@@ -447,19 +443,19 @@ describe("All Parsers tests", () => {
         },
         numberGt: {
           type: "number",
-          exclusiveMinimum: 1,
+          exclusiveMinimum: true,
           minimum: 1,
         },
         numberLt: {
           type: "number",
-          exclusiveMaximum: 1,
+          exclusiveMaximum: true,
           maximum: 1,
         },
         numberGtLt: {
           type: "number",
-          exclusiveMinimum: 1,
+          exclusiveMinimum: true,
           minimum: 1,
-          exclusiveMaximum: 1,
+          exclusiveMaximum: true,
           maximum: 1,
         },
         numberGte: {

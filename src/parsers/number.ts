@@ -1,4 +1,5 @@
 import { ZodNumberDef } from "zod";
+import { References } from "../References";
 
 export type JsonSchema7NumberType = {
   type: "number" | "integer";
@@ -6,10 +7,13 @@ export type JsonSchema7NumberType = {
   exclusiveMinimum?: number;
   maximum?: number;
   exclusiveMaximum?: number;
-  multipleOf?: number
+  multipleOf?: number;
 };
 
-export function parseNumberDef(def: ZodNumberDef): JsonSchema7NumberType {
+export function parseNumberDef(
+  def: ZodNumberDef,
+  refs: References
+): JsonSchema7NumberType {
   const res: JsonSchema7NumberType = {
     type: "number",
   };
@@ -21,19 +25,35 @@ export function parseNumberDef(def: ZodNumberDef): JsonSchema7NumberType {
           res.type = "integer";
           break;
         case "min":
-          if (!check.inclusive) {
-            res.exclusiveMinimum = check.value;
+          if (refs.target === "jsonSchema") {
+            if (check.inclusive) {
+              res.minimum = check.value;
+            } else {
+              res.exclusiveMinimum = check.value;
+            }
+          } else {
+            if (!check.inclusive) {
+              res.exclusiveMinimum = true as any;
+            }
+            res.minimum = check.value;
           }
-          res.minimum = check.value;
           break;
         case "max":
-          if (!check.inclusive) {
-            res.exclusiveMaximum = check.value;
+          if (refs.target === "jsonSchema") {
+            if (check.inclusive) {
+              res.maximum = check.value;
+            } else {
+              res.exclusiveMaximum = check.value;
+            }
+          } else {
+            if (!check.inclusive) {
+              res.exclusiveMaximum = true as any;
+            }
+            res.maximum = check.value;
           }
-          res.maximum = check.value;
           break;
         case "multipleOf":
-          res.multipleOf = check.value
+          res.multipleOf = check.value;
           break;
       }
     }
