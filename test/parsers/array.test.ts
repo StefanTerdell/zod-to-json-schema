@@ -6,10 +6,19 @@ const deref = require('json-schema-deref-sync')
 
 describe("Arrays and array validations", () => {
   it("should be possible to describe a simple array", () => {
-    const parsedSchema = parseArrayDef(z.array(z.any())._def, new References());
+    const parsedSchema = parseArrayDef(z.array(z.string())._def, new References());
     const jsonSchema: JSONSchema7Type = {
       type: "array",
-      items: {},
+      items: {
+        type: "string"
+      },
+    };
+    expect(parsedSchema).toStrictEqual(jsonSchema);
+  });
+  it("should be possible to describe a simple array with any item", () => {
+    const parsedSchema = parseArrayDef(z.array(z.any())._def, new References());
+    const jsonSchema: JSONSchema7Type = {
+      type: "array"
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
@@ -35,7 +44,6 @@ describe("Arrays and array validations", () => {
     );
     const jsonSchema: JSONSchema7Type = {
       type: "array",
-      items: {},
       minItems: 1,
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);

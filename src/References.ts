@@ -6,24 +6,29 @@ export class References {
   currentPath: string[];
   $refStrategy: $refStrategy;
   effectStrategy: EffectStrategy;
+  target: Target;
 
   constructor(
     path: string[] = ["#"],
     items: Item[] = [],
     $refStrategy: $refStrategy = "root",
-    effectStrategy: EffectStrategy = "input"
+    effectStrategy: EffectStrategy = "input",
+    target: Target = "jsonSchema7"
   ) {
     this.currentPath = path;
     this.items = items;
     this.$refStrategy = $refStrategy;
     this.effectStrategy = effectStrategy;
+    this.target = target;
   }
 
   addToPath(...path: string[]) {
     return new References(
       [...this.currentPath, ...path],
       this.items,
-      this.$refStrategy
+      this.$refStrategy,
+      this.effectStrategy,
+      this.target
     );
   }
 }
@@ -34,3 +39,4 @@ export type Item = {
 };
 export type $refStrategy = "root" | "relative" | "none";
 export type EffectStrategy = "input" | "any";
+export type Target = "jsonSchema7" | "openApi3";
