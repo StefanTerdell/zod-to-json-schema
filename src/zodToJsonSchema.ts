@@ -48,20 +48,20 @@ function zodToJsonSchema<
     definitionPath?: DefinitionPath;
     target?: Target;
   }
-): Target extends "openApi"
+): Target extends "openApi3"
   ? Name extends string
     ? BasePath extends string[]
       ? {
           $ref: string;
-        } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
+        } & Record<DefinitionPath, Record<Name, object>>
       : Strategy extends "relative"
       ? {
           $ref: `0/${DefinitionPath}/${Name}`;
-        } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
+        } & Record<DefinitionPath, Record<Name, object>>
       : {
           $ref: `#/${DefinitionPath}/${Name}`;
-        } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
-    : JsonSchema7Type
+        } & Record<DefinitionPath, Record<Name, object>>
+    : object
   : Name extends string
   ? BasePath extends string[]
     ? {
