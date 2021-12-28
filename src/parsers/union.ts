@@ -90,6 +90,17 @@ export function parseUnionDef(
         }, [] as (string | number | bigint | boolean | null)[]),
       };
     }
+  } else if (def.options.every((x) => x._def.typeName === "ZodEnum")) {
+    return {
+      type: "string",
+      enum: def.options.reduce(
+        (acc: string[], x) => [
+          ...acc,
+          ...x._def.values.filter((x: string) => !acc.includes(x)),
+        ],
+        []
+      ),
+    };
   }
 
   return asAnyOf(def, refs);

@@ -30,7 +30,7 @@ export const allParsersSchema = z.object({
   literal: z.literal("hej"),
   map: z.map(z.string().uuid(), z.boolean()),
   nativeEnum: z.nativeEnum(nativeEnum),
-  never: z.never(),
+  never: z.never() as any,
   null: z.null(),
   nullablePrimitive: z.string().nullable(),
   nullableObject: z.object({ hello: z.string() }).nullable(),

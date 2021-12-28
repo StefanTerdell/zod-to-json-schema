@@ -118,4 +118,15 @@ describe("Unions", () => {
       type: ["string", "null"],
     });
   });
+
+  it("should join a union of Zod enums into a single enum", () => {
+    const union = z.union([z.enum(["a", "b", "c"]), z.enum(["c", "d", "e"])]);
+
+    const jsonSchema = parseUnionDef(union._def, new References());
+
+    expect(jsonSchema).toStrictEqual({
+      type: "string",
+      enum: ["a", "b", "c", "d", "e"],
+    });
+  });
 });
