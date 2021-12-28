@@ -57,4 +57,19 @@ describe("records", () => {
     };
     expect(parsedSchema).toStrictEqual(expectedSchema);
   });
+
+  it("should be possible to describe a key with an enum", () => {
+    const schema = z.record(z.enum(["foo", "bar"]), z.number());
+    const parsedSchema = parseRecordDef(schema._def, new References());
+    const expectedSchema = {
+      type: "object",
+      additionalProperties: {
+        type: "number",
+      },
+      propertyNames: {
+        enum: ["foo", "bar"],
+      },
+    };
+    expect(parsedSchema).toStrictEqual(expectedSchema);
+  })
 });
