@@ -15,7 +15,7 @@ type JsonSchema7Primitive =
 
 export type JsonSchema7UnionType =
   | JsonSchema7PrimitiveUnionType
-  | JsonSchema7AnyOfType;
+  | JsonSchema7OneOfType;
 
 type JsonSchema7PrimitiveUnionType =
   | {
@@ -26,17 +26,17 @@ type JsonSchema7PrimitiveUnionType =
       enum: (string | number | bigint | boolean | null)[];
     };
 
-type JsonSchema7AnyOfType = {
-  anyOf: JsonSchema7Type[];
+type JsonSchema7OneOfType = {
+  oneOf: JsonSchema7Type[];
 };
 
 export function parseUnionDef(
   def: ZodUnionDef,
   refs: References
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
-  if (refs.target === "openApi3") return asAnyOf(def, refs);
+): JsonSchema7PrimitiveUnionType | JsonSchema7OneOfType | undefined {
+  if (refs.target === "openApi3") return asOneOf(def, refs);
 
-  // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of anyOf.
+  // This blocks tries to look ahead a bit to produce nicer looking schemas with type array instead of oneOf.
   if (
     def.options.every(
       (x) =>
@@ -103,16 +103,16 @@ export function parseUnionDef(
     };
   }
 
-  return asAnyOf(def, refs);
+  return asOneOf(def, refs);
 }
 
-const asAnyOf = (
+const asOneOf = (
   def: ZodUnionDef,
   refs: References
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined => {
-  const anyOf = def.options
-    .map((x, i) => parseDef(x._def, refs.addToPath("anyOf", i.toString())))
+): JsonSchema7PrimitiveUnionType | JsonSchema7OneOfType | undefined => {
+  const oneOf = def.options
+    .map((x, i) => parseDef(x._def, refs.addToPath("oneOf", i.toString())))
     .filter((x): x is JsonSchema7Type => !!x);
 
-  return anyOf.length ? { anyOf } : undefined;
+  return oneOf.length ? { oneOf } : undefined;
 };

@@ -54,10 +54,10 @@ describe("Arrays and array validations", () => {
     const unionSchema = z.union([willHaveBeenSeen, willHaveBeenSeen]);
     const arraySchema = z.array(unionSchema);
     const jsonSchema = parseArrayDef(arraySchema._def, new References());
-    //TODO: Remove 'any'-cast when json schema type package supports it. 'anyOf' in 'items' should be completely according to spec though.
-    expect((jsonSchema.items as any).anyOf[1].$ref).toEqual("#/items/anyOf/0");
+    //TODO: Remove 'any'-cast when json schema type package supports it. 'oneOf' in 'items' should be completely according to spec though.
+    expect((jsonSchema.items as any).oneOf[1].$ref).toEqual("#/items/oneOf/0");
 
     const resolvedSchema = deref(jsonSchema)
-    expect(resolvedSchema.items.anyOf[1]).toBe(resolvedSchema.items.anyOf[0]);
+    expect(resolvedSchema.items.oneOf[1]).toBe(resolvedSchema.items.oneOf[0]);
   });
 });

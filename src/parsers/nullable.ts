@@ -6,7 +6,7 @@ import { primitiveMappings } from "./union";
 
 export type JsonSchema7NullableType =
   | {
-      anyOf: [JsonSchema7Type, JsonSchema7NullType];
+      oneOf: [JsonSchema7Type, JsonSchema7NullType];
     }
   | {
       type: [string, "null"];
@@ -41,13 +41,13 @@ export function parseNullableDef(
     };
   }
 
-  const type = parseDef(def.innerType._def, refs.addToPath("anyOf", "0"));
+  const type = parseDef(def.innerType._def, refs.addToPath("oneOf", "0"));
 
   return type
     ? refs.target === "openApi3"
       ? ({ ...type, nullable: true } as any)
       : {
-          anyOf: [
+          oneOf: [
             type,
             {
               type: "null",

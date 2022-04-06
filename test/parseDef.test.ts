@@ -85,7 +85,7 @@ describe("Basic parsing", () => {
           enum: [1, 2, 3],
         },
         mixedUnion: {
-          anyOf: [
+          oneOf: [
             {
               type: "string",
               const: "abc",
@@ -108,7 +108,7 @@ describe("Basic parsing", () => {
           ],
         },
         objectOrNull: {
-          anyOf: [
+          oneOf: [
             {
               type: "object",
               properties: {

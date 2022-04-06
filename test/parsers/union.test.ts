@@ -33,7 +33,7 @@ describe("Unions", () => {
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
 
-  it("Should be possible to create a union with objects, arrays and validated primitives as an anyOf", () => {
+  it("Should be possible to create a union with objects, arrays and validated primitives as an oneOf", () => {
     const parsedSchema = parseUnionDef(
       z.union([
         z.object({ herp: z.string(), derp: z.boolean() }),
@@ -44,7 +44,7 @@ describe("Unions", () => {
       new References()
     );
     const jsonSchema: JSONSchema7Type = {
-      anyOf: [
+      oneOf: [
         {
           type: "object",
           properties: {
@@ -84,7 +84,7 @@ describe("Unions", () => {
     const jsonSchema = parseUnionDef(union._def, new References());
 
     expect(jsonSchema).toStrictEqual({
-      anyOf: [
+      oneOf: [
         {
           type: "object",
           properties: {
@@ -96,17 +96,17 @@ describe("Unions", () => {
           additionalProperties: false,
         },
         {
-          $ref: "#/anyOf/0",
+          $ref: "#/oneOf/0",
         },
         {
-          $ref: "#/anyOf/0",
+          $ref: "#/oneOf/0",
         },
       ],
     });
 
     const resolvedSchema = deref(jsonSchema);
-    expect(resolvedSchema.anyOf[0]).toBe(resolvedSchema.anyOf[1]);
-    expect(resolvedSchema.anyOf[1]).toBe(resolvedSchema.anyOf[2]);
+    expect(resolvedSchema.oneOf[0]).toBe(resolvedSchema.oneOf[1]);
+    expect(resolvedSchema.oneOf[1]).toBe(resolvedSchema.oneOf[2]);
   });
 
   it("nullable primitives should come out fine", () => {

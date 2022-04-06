@@ -59,7 +59,7 @@ describe("Pathing", () => {
       type: "object",
       properties: {
         union: {
-          anyOf: [
+          oneOf: [
             {
               type: "object",
               properties: {
@@ -76,7 +76,7 @@ describe("Pathing", () => {
           ],
         },
         part: {
-          $ref: "#/properties/union/anyOf/0",
+          $ref: "#/properties/union/oneOf/0",
         },
       },
       additionalProperties: false,
@@ -89,7 +89,7 @@ describe("Pathing", () => {
 
     const resolvedSchema = deref(expectedJsonSchema);
     expect(resolvedSchema.properties.part).toBe(
-      resolvedSchema.properties.union.anyOf[0]
+      resolvedSchema.properties.union.oneOf[0]
     );
   });
 
@@ -177,7 +177,7 @@ describe("Pathing", () => {
               additionalProperties: false,
               properties: {
                 subcategories: {
-                  anyOf: [
+                  oneOf: [
                     {
                       type: "object",
                       additionalProperties: {

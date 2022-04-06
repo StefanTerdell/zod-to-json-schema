@@ -37,7 +37,7 @@ describe("nullable", () => {
     const jsonSchema: any = parseObjectDef(schema._def, new References());
 
     expect(jsonSchema.properties.one).toStrictEqual({
-      anyOf: [
+      oneOf: [
         {
           type: "object",
           additionalProperties: false,
@@ -55,7 +55,7 @@ describe("nullable", () => {
     });
     expect(jsonSchema.properties.two.$ref).toStrictEqual("#/properties/one");
     expect(jsonSchema.properties.three.$ref).toStrictEqual(
-      "#/properties/one/anyOf/0/properties/three"
+      "#/properties/one/oneOf/0/properties/three"
     );
   });
 });

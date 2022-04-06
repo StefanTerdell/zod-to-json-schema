@@ -103,7 +103,7 @@ describe("All Parsers tests", () => {
           type: ["string", "null"],
         },
         nullableObject: {
-          anyOf: [
+          oneOf: [
             {
               type: "object",
               properties: {
@@ -297,7 +297,7 @@ describe("All Parsers tests", () => {
           enum: [123, "abc", null, true],
         },
         unionNonPrimitives: {
-          anyOf: [
+          oneOf: [
             {
               type: "string",
             },
@@ -613,7 +613,7 @@ describe("All Parsers tests", () => {
           not: {},
         },
         unionPrimitives: {
-          anyOf: [
+          oneOf: [
             {
               type: "string",
             },
@@ -634,7 +634,7 @@ describe("All Parsers tests", () => {
           ],
         },
         unionPrimitiveLiterals: {
-          anyOf: [
+          oneOf: [
             {
               type: "number",
               enum: [123],
@@ -653,7 +653,7 @@ describe("All Parsers tests", () => {
           ],
         },
         unionNonPrimitives: {
-          anyOf: [
+          oneOf: [
             {
               type: "string",
             },
