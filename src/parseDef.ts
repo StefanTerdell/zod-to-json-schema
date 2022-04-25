@@ -1,4 +1,9 @@
-import { ZodFirstPartyTypeKind, ZodTypeDef } from "zod";
+import {
+  ZodFirstPartyTypeKind,
+  ZodOptional,
+  ZodTypeDef,
+} from "zod";
+import { parseOptionalDef } from './parsers/optional';
 import { JsonSchema7AnyType, parseAnyDef } from "./parsers/any";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
@@ -166,7 +171,7 @@ const selectParser = (
     case ZodFirstPartyTypeKind.ZodNullable:
       return parseNullableDef(def, refs);
     case ZodFirstPartyTypeKind.ZodOptional:
-      return parseDef(def.innerType._def, refs);
+      return parseOptionalDef(def, refs);
     case ZodFirstPartyTypeKind.ZodMap:
       return parseMapDef(def, refs);
     case ZodFirstPartyTypeKind.ZodSet:

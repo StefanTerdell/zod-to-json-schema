@@ -7,19 +7,22 @@ export class References {
   $refStrategy: $refStrategy;
   effectStrategy: EffectStrategy;
   target: Target;
+  propertyPath: string[]
 
   constructor(
     path: string[] = ["#"],
     items: Item[] = [],
     $refStrategy: $refStrategy = "root",
     effectStrategy: EffectStrategy = "input",
-    target: Target = "jsonSchema7"
+    target: Target = "jsonSchema7",
+    propertyPath: string[] = []
   ) {
     this.currentPath = path;
     this.items = items;
     this.$refStrategy = $refStrategy;
     this.effectStrategy = effectStrategy;
     this.target = target;
+    this.propertyPath = propertyPath;
   }
 
   addToPath(...path: string[]) {
@@ -28,7 +31,19 @@ export class References {
       this.items,
       this.$refStrategy,
       this.effectStrategy,
-      this.target
+      this.target,
+      this.propertyPath
+    );
+  }
+
+  addToPathAsProperty(...path: string[]) {
+    return new References(
+      [...this.currentPath, ...path],
+      this.items,
+      this.$refStrategy,
+      this.effectStrategy,
+      this.target,
+      [...this.currentPath, ...path]
     );
   }
 }

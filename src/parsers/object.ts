@@ -23,7 +23,7 @@ export function parseObjectDef(def: ZodObjectDef, refs: References) {
         if (propDef === undefined || propDef._def === undefined) return acc;
         const parsedDef = parseDef(
           propDef._def,
-          refs.addToPath("properties", propName)
+          refs.addToPathAsProperty("properties", propName)
         );
         if (parsedDef === undefined) return acc;
         return {
