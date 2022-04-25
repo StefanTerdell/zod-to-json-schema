@@ -29,7 +29,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "zod": "^3.11.6"
+    "zod": "^3.14.4"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",

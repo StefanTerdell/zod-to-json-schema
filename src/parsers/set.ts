@@ -5,6 +5,8 @@ import { References } from "../References";
 export type JsonSchema7SetType = {
   type: "array";
   items?: JsonSchema7Type;
+  minItems?: number;
+  maxItems?: number;
 };
 
 export function parseSetDef(
@@ -12,5 +14,19 @@ export function parseSetDef(
   refs: References
 ): JsonSchema7SetType {
   const items = parseDef(def.valueType._def, refs.addToPath("items"));
-  return { type: "array", items };
+
+  const schema: JsonSchema7SetType = {
+    type: "array",
+    items
+  }
+
+  if (def.minSize) {
+    schema.minItems = def.minSize.value
+  }
+
+  if (def.maxSize) {
+    schema.maxItems = def.maxSize.value
+  }
+
+  return schema
 }
