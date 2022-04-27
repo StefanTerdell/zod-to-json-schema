@@ -28,7 +28,7 @@
     "url": "https://github.com/StefanTerdell/zod-to-json-schema"
   },
   "license": "ISC",
-  "dependencies": {
+  "peerDependencies": {
     "zod": "^3.14.4"
   },
   "devDependencies": {
