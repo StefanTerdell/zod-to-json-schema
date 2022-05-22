@@ -37,6 +37,9 @@ export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
         case "cuid":
           res.pattern = "^c[^\\s-]{8,}$";
           break;
+        case "trim":
+          // I have no idea why this is a check in Zod. It's a runtime string manipulation method.
+          break;
         default:
           ((_: never) => {})(check);
       }

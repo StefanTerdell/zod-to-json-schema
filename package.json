@@ -40,7 +40,8 @@
     "json-schema-deref-sync": "^0.14.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.2",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.3",
+    "zod": "^3.17.0"
   },
   "types": "index.d.ts"
 }
