@@ -90,7 +90,9 @@ describe("String validations", () => {
         message: 'must match format "uuid"',
       },
     ]);
-    expect(ajv.validate(parsedSchema, "2ad7b2ce-e571-44b8-bee3-84fb3ac80d6b")).toEqual(true);
+    expect(
+      ajv.validate(parsedSchema, "2ad7b2ce-e571-44b8-bee3-84fb3ac80d6b")
+    ).toEqual(true);
   });
   it("should be possible to use url constraint", () => {
     const parsedSchema = parseStringDef(z.string().url()._def);
@@ -122,12 +124,12 @@ describe("String validations", () => {
     ajv.validate(parsedSchema, "herpderp");
     expect(ajv.errors).toStrictEqual([
       {
-        instancePath: '',
-        schemaPath: '#/pattern',
-        keyword: 'pattern',
-        params: { pattern: '[A-C]' },
-        message: 'must match pattern "[A-C]"'
-      }
+        instancePath: "",
+        schemaPath: "#/pattern",
+        keyword: "pattern",
+        params: { pattern: "[A-C]" },
+        message: 'must match pattern "[A-C]"',
+      },
     ]);
     expect(ajv.validate(parsedSchema, "B")).toEqual(true);
   });
@@ -142,13 +144,21 @@ describe("String validations", () => {
     ajv.validate(parsedSchema, "herpderp");
     expect(ajv.errors).toStrictEqual([
       {
-        instancePath: '',
-        schemaPath: '#/pattern',
-        keyword: 'pattern',
-        params: { pattern: '^c[^\\s-]{8,}$' },
-        message: 'must match pattern "^c[^\\s-]{8,}$"'
-      }
+        instancePath: "",
+        schemaPath: "#/pattern",
+        keyword: "pattern",
+        params: { pattern: "^c[^\\s-]{8,}$" },
+        message: 'must match pattern "^c[^\\s-]{8,}$"',
+      },
     ]);
-    expect(ajv.validate(parsedSchema, "ckopqwooh000001la8mbi2im9")).toEqual(true);
+    expect(ajv.validate(parsedSchema, "ckopqwooh000001la8mbi2im9")).toEqual(
+      true
+    );
+  });
+
+  it('should gracefully ignore the .trim() "check"', () => {
+    const parsedSchema = parseStringDef(z.string().trim()._def);
+    const jsonSchema = { type: "string" };
+    expect(parsedSchema).toStrictEqual(jsonSchema);
   });
 });
