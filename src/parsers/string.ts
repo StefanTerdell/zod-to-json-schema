@@ -40,6 +40,12 @@ export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
         case "trim":
           // I have no idea why this is a check in Zod. It's a runtime string manipulation method.
           break;
+        case "startsWith":
+          res.pattern = "^" + escapeNonAlphaNumeric(check.value);
+          break;
+        case "endsWith":
+          res.pattern = escapeNonAlphaNumeric(check.value) + "$";
+          break;
         default:
           ((_: never) => {})(check);
       }
@@ -48,3 +54,9 @@ export function parseStringDef(def: ZodStringDef): JsonSchema7StringType {
 
   return res;
 }
+
+const escapeNonAlphaNumeric = (value: string) =>
+  Array.from(value).reduce(
+    (a, c) => (/[a-zA-Z0-9]/.test(c) ? `${a}${c}` : `${a}\\${c}`),
+    ""
+  );

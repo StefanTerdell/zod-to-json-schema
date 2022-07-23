@@ -161,4 +161,22 @@ describe("String validations", () => {
     const jsonSchema = { type: "string" };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
+
+  it("should work with the startsWith check", () => {
+    expect(parseStringDef(z.string().startsWith("aBcD123{}[]")._def)).toStrictEqual(
+      {
+        type: "string",
+        pattern: "^aBcD123\\{\\}\\[\\]",
+      }
+    );
+  });
+
+  it("should work with the endsWith check", () => {
+    expect(parseStringDef(z.string().endsWith("aBcD123{}[]")._def)).toStrictEqual(
+      {
+        type: "string",
+        pattern: "aBcD123\\{\\}\\[\\]$",
+      }
+    );
+  });
 });
