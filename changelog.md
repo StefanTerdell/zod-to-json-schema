@@ -2,6 +2,7 @@
 
 | Version         | Change                                                                                                                                                                                                                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.17.1 | Added startsWith and endsWith string checks. Merge multiple pattern checks into allOf array.
 | 3.17.0 | Added switch case handler for new trim "check". No changes to functionality.
 | 3.15.x - 3.16.x | Skipped: Did not change the Zod API in any way relevant for this package.                                                                                                                                                                                                                                                                        |
 | 3.14.1          | Dependabot security updates                                                                                                                                                                                                                                                                             |

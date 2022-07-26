@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.17.0",
+  "version": "3.17.1",
   "description": "Converts Zod schemas to Json Schemas",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "license": "ISC",
   "peerDependencies": {
-    "zod": "^3.14.4"
+    "zod": "^3.17.10"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
