@@ -163,20 +163,46 @@ describe("String validations", () => {
   });
 
   it("should work with the startsWith check", () => {
-    expect(parseStringDef(z.string().startsWith("aBcD123{}[]")._def)).toStrictEqual(
-      {
-        type: "string",
-        pattern: "^aBcD123\\{\\}\\[\\]",
-      }
-    );
+    expect(
+      parseStringDef(z.string().startsWith("aBcD123{}[]")._def)
+    ).toStrictEqual({
+      type: "string",
+      pattern: "^aBcD123\\{\\}\\[\\]",
+    });
   });
 
   it("should work with the endsWith check", () => {
-    expect(parseStringDef(z.string().endsWith("aBcD123{}[]")._def)).toStrictEqual(
-      {
-        type: "string",
-        pattern: "aBcD123\\{\\}\\[\\]$",
-      }
-    );
+    expect(
+      parseStringDef(z.string().endsWith("aBcD123{}[]")._def)
+    ).toStrictEqual({
+      type: "string",
+      pattern: "aBcD123\\{\\}\\[\\]$",
+    });
+  });
+
+  it("should bundle multiple pattern type checks in an allOf container", () => {
+    expect(
+      parseStringDef(z.string().startsWith("alpha").endsWith("omega")._def)
+    ).toStrictEqual({
+      type: "string",
+      allOf: [
+        {
+          pattern: "^alpha",
+        },
+        {
+          pattern: "omega$",
+        },
+      ],
+    });
+  });
+
+  it("should pick correct value if multiple min/max are present", () => {
+    expect(
+      parseStringDef(z.string().min(1).min(2).max(3).max(4)._def)
+    ).toStrictEqual({
+      type: "string",
+      maxLength: 3,
+      minLength: 2,
+    });
   });
 });
