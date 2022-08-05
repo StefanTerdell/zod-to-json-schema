@@ -155,4 +155,14 @@ describe("Basic parsing", () => {
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
   });
+
+  it("should handle a nullable string properly", () => {
+    const shorthand = z.string().nullable();
+    const union = z.union([z.string(), z.null()]);
+
+    const expected = { type: ["string", "null"] };
+
+    expect(parseDef(shorthand._def, new References())).toStrictEqual(expected);
+    expect(parseDef(union._def, new References())).toStrictEqual(expected);
+  });
 });
