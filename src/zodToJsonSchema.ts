@@ -172,7 +172,9 @@ function zodToJsonSchema(
       $schema,
       $ref: `#/definitions/${name}`,
       definitions: {
-        [name]: parseDef(schema._def, new References()) || {},
+        [name]:
+          parseDef(schema._def, new References(["#", "definitions", name])) ||
+          {},
       },
     };
   } else {

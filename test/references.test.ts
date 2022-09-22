@@ -401,4 +401,68 @@ describe("Pathing", () => {
 
     expect(jsonSchema).toStrictEqual(exptectedResult);
   });
+
+  it("should preserve correct $ref when overriding name with string", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, "hello");
+
+    const exptectedResult = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/definitions/hello",
+      definitions: {
+        hello: {
+          type: "object",
+          properties: {
+            foo: {
+              type: "string",
+            },
+            bar: {
+              $ref: "#/definitions/hello/properties/foo",
+            },
+          },
+          required: ["foo", "bar"],
+          additionalProperties: false,
+        },
+      },
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
+
+  it("should preserve correct $ref when overriding name with object property", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, { name: "hello" });
+
+    const exptectedResult = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/definitions/hello",
+      definitions: {
+        hello: {
+          type: "object",
+          properties: {
+            foo: {
+              type: "string",
+            },
+            bar: {
+              $ref: "#/definitions/hello/properties/foo",
+            },
+          },
+          required: ["foo", "bar"],
+          additionalProperties: false,
+        },
+      },
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
 });
