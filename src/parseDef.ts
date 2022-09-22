@@ -35,6 +35,7 @@ import {
 import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union";
 import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown";
 import { Item, References } from "./References";
+import { parseBrandedDef } from './parsers/branded';
 
 type JsonSchema7RefType = { $ref: string };
 
@@ -188,6 +189,8 @@ const selectParser = (
       return parseUnknownDef();
     case ZodFirstPartyTypeKind.ZodDefault:
       return parseDefaultDef(def, refs);
+    case ZodFirstPartyTypeKind.ZodBranded:
+      return parseBrandedDef(def, refs);
     case ZodFirstPartyTypeKind.ZodFunction:
     case ZodFirstPartyTypeKind.ZodVoid:
       return undefined;
