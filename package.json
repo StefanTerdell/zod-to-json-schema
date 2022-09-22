@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.17.2",
+  "version": "3.18.0",
   "description": "Converts Zod schemas to Json Schemas",
   "main": "index.js",
   "scripts": {
