@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.17.1",
+  "version": "3.17.2",
   "description": "Converts Zod schemas to Json Schemas",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,8 @@
   "contributors": [
     "Hammad Asif (https://github.com/mrhammadasif)",
     "Noah Rosenzweig (https://github.com/Noah2610)",
-    "John Wright (https://github.com/johngeorgewright)"
+    "John Wright (https://github.com/johngeorgewright)",
+    "Krzysztof Ciombor (https://github.com/krzysztofciombor)"
   ],
   "repository": {
     "type": "git",
