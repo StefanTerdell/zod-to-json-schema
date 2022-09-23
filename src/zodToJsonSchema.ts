@@ -30,6 +30,7 @@ function zodToJsonSchema<Name extends string | undefined = undefined>(
  * @param options.effectStrategy ("input" | "any") The (optional) effect resolver strategy. Default: "input"
  * @param options.definitionPath ("definitions" | "$defs") defaults to definitions.
  * @param options.target ("jsonSchema7" | "openApi3") defaults to "jsonSchema7"
+ * @param options.strictUnions (boolean) defaults to "false". Scrubs unions of any-like json schemas, like `{}` or `true`. Multiple zod types may result in these out of necessity, such as z.instanceof()
  *
  */
 function zodToJsonSchema<
@@ -47,6 +48,7 @@ function zodToJsonSchema<
     effectStrategy?: EffectStrategy;
     definitionPath?: DefinitionPath;
     target?: Target;
+    strictUnions?: boolean;
   }
 ): Target extends "openApi3"
   ? Name extends string
@@ -89,6 +91,7 @@ function zodToJsonSchema(
         effectStrategy?: EffectStrategy;
         definitionPath?: "definitions" | "$defs";
         target?: Target;
+        strictUnions?: boolean;
       }
     | string
 ) {
@@ -102,7 +105,9 @@ function zodToJsonSchema(
               [],
               options.$refStrategy ?? "root",
               options.effectStrategy,
-              options.target
+              options.target,
+              undefined,
+              options.strictUnions
             )
           )
         : {
@@ -114,7 +119,9 @@ function zodToJsonSchema(
                 [],
                 options.$refStrategy ?? "root",
                 options.effectStrategy,
-                options.target
+                options.target,
+                undefined,
+                options.strictUnions
               )
             ),
           }
@@ -137,7 +144,9 @@ function zodToJsonSchema(
                   [],
                   options.$refStrategy ?? "root",
                   options.effectStrategy,
-                  options.target
+                  options.target,
+                  undefined,
+                  options.strictUnions
                 )
               ) || {},
           },
@@ -161,7 +170,9 @@ function zodToJsonSchema(
                   [],
                   options.$refStrategy ?? "root",
                   options.effectStrategy,
-                  options.target
+                  options.target,
+                  undefined,
+                  options.strictUnions
                 )
               ) || {},
           },

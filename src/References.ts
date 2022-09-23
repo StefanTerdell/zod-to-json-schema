@@ -8,6 +8,7 @@ export class References {
   effectStrategy: EffectStrategy;
   target: Target;
   propertyPath: string[]
+  strictUnions: boolean
 
   constructor(
     path: string[] = ["#"],
@@ -15,7 +16,8 @@ export class References {
     $refStrategy: $refStrategy = "root",
     effectStrategy: EffectStrategy = "input",
     target: Target = "jsonSchema7",
-    propertyPath: string[] = []
+    propertyPath: string[] = [],
+    strictUnions = false
   ) {
     this.currentPath = path;
     this.items = items;
@@ -23,6 +25,7 @@ export class References {
     this.effectStrategy = effectStrategy;
     this.target = target;
     this.propertyPath = propertyPath;
+    this.strictUnions = strictUnions
   }
 
   addToPath(...path: string[]) {

@@ -122,7 +122,11 @@ const asAnyOf = (
     def.options instanceof Map ? Array.from(def.options.values()) : def.options
   )
     .map((x, i) => parseDef(x._def, refs.addToPath("anyOf", i.toString())))
-    .filter((x): x is JsonSchema7Type => !!x);
+    .filter(
+      (x): x is JsonSchema7Type =>
+        !!x &&
+        (!refs.strictUnions || (typeof x === "object" && Object.keys(x).length > 0))
+    );
 
   return anyOf.length ? { anyOf } : undefined;
 };

@@ -28,4 +28,28 @@ describe("Root schema result after parsing", () => {
       },
     });
   });
+
+  it("should not scrub 'any'-schemas from unions when strictUnions=false", () => {
+    expect(
+      zodToJsonSchema(
+        z.union([z.any(), z.instanceof(String), z.string(), z.number()]),
+        { strictUnions: false }
+      )
+    ).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      anyOf: [{}, {}, { type: "string" }, { type: "number" }],
+    });
+  });
+
+  it("should scrub 'any'-schemas from unions when strictUnions=true", () => {
+    expect(
+      zodToJsonSchema(
+        z.union([z.any(), z.instanceof(String), z.string(), z.number()]),
+        { strictUnions: true }
+      )
+    ).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      anyOf: [{ type: "string" }, { type: "number" }],
+    });
+  });
 });
