@@ -8,19 +8,17 @@ export type JsonSchema7NativeEnumType = {
 export function parseNativeEnumDef(
   def: ZodNativeEnumDef
 ): JsonSchema7NativeEnumType {
-  const numberValues = Object.values(def.values)
-    .filter((value) => typeof value === "number")
-    .map(toString);
-  const actualValues = Object.values(def.values).filter(
-    (_, i) => i >= numberValues.length
-  );
+  const object = def.values;
+  const actualKeys = Object.keys(def.values).filter((key: string) => {
+    return typeof object[object[key]] !== 'number'
+  });
+
+  const actualValues = actualKeys.map((key: string) => object[key]);
+
+  const parsedTypes = Array.from(new Set(actualValues.map((values: string | number) => (typeof values))));
+
   return {
-    type:
-      numberValues.length === 0
-        ? "string"
-        : numberValues.length === actualValues.length
-        ? "number"
-        : ["string", "number"],
+    type: parsedTypes.length === 1 ? parsedTypes[0] === 'string' ? "string" : "number" : ["string", "number"],
     enum: actualValues,
   };
 }
