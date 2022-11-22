@@ -35,7 +35,8 @@ export class References {
       this.$refStrategy,
       this.effectStrategy,
       this.target,
-      this.propertyPath
+      this.propertyPath,
+      this.strictUnions
     );
   }
 
@@ -46,7 +47,8 @@ export class References {
       this.$refStrategy,
       this.effectStrategy,
       this.target,
-      [...this.currentPath, ...path]
+      [...this.currentPath, ...path],
+      this.strictUnions
     );
   }
 }
