@@ -52,4 +52,22 @@ describe("Root schema result after parsing", () => {
       anyOf: [{ type: "string" }, { type: "number" }],
     });
   });
+
+  it("should scrub 'any'-schemas from unions when strictUnions=true in objects", () => {
+    expect(
+      zodToJsonSchema(
+        z.object({
+          field: z.union([z.any(), z.instanceof(String), z.string(), z.number()]),
+        }),
+        { strictUnions: true }
+      )
+    ).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      additionalProperties: false,
+      properties: {
+        field: { anyOf: [{ type: "string" }, { type: "number" }] },
+      },
+      type: "object",
+    });
+  });
 });
