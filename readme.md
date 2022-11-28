@@ -18,15 +18,17 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 
-const mySchema = z.object({
-  myString: z.string().min(5),
-  myUnion: z.union([z.number(), z.boolean()]),
-}).describe("My neat object schema");
+const mySchema = z
+  .object({
+    myString: z.string().min(5),
+    myUnion: z.union([z.number(), z.boolean()]),
+  })
+  .describe("My neat object schema");
 
 const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
 ```
 
-### Expected output
+#### Expected output
 
 ```json
 {
@@ -70,7 +72,42 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 | **effectStrategy**?: "input" \| "any"             | The effects output strategy. Defaults to "input". _See known issues!_                                                                                                                                                                                                                                                                                                                                                                                        |
 | **definitionPath**?: "definitions" \| "$defs"     | The name of the definitions property when name is passed. Defaults to "definitions".                                                                                                                                                                                                                                                                                                                                                                         |
 | **target**?: "jsonSchema7" \| "openApi3"          | Which spec to target. Defaults to "jsonSchema7"                                                                                                                                                                                                                                                                                                                                                                                                              |
-| **strictUnions**?: boolean                              | Scrubs unions of any-like json schemas, like `{}` or `true`. Multiple zod types may result in these out of necessity, such as z.instanceof()                                                                                                                                                                                                                                                                                                                 |
+| **strictUnions**?: boolean                        | Scrubs unions of any-like json schemas, like `{}` or `true`. Multiple zod types may result in these out of necessity, such as z.instanceof()                                                                                                                                                                                                                                                                                                                 |
+| **definitions**?: Record<string, ZodSchema>       | See separate section below                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+
+### Definitions
+
+The definitions option lets you manually add recurring schemas into definitions for cleaner outputs. It's fully compatible with named schemas, changed definitions path and base path. Here's a simple example:
+
+```typescript
+const myRecurringSchema = z.string();
+const myObjectSchema = z.object({ a: myRecurringSchema, b: myRecurringSchema });
+
+const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+  definitions: { myRecurringSchema },
+});
+```
+
+#### Result
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "a": {
+      "$ref": "#/definitions/myRecurringSchema"
+    },
+    "b": {
+      "$ref": "#/definitions/myRecurringSchema"
+    }
+  },
+  "definitions": {
+    "myRecurringSchema": {
+      "type": "string"
+    }
+  }
+}
+```
 
 ## Known issues
 
