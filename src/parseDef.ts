@@ -64,7 +64,7 @@ export type JsonSchema7Type = (
   | JsonSchema7AllOfType
   | JsonSchema7UnknownType
   | JsonSchema7SetType
-) & { default?: any; description?: string } & { [key: string]: any };
+) & { default?: any; description?: string }
 
 export function parseDef(
   def: ZodTypeDef,
@@ -274,9 +274,9 @@ const addDefinitionSchemas = (
   definitionsPath: string | undefined
 ) => {
   if (definitionSchemas && definitionsPath !== undefined) {
-    jsonSchema[definitionsPath] = {
+    (jsonSchema as any)[definitionsPath] = {
       ...definitionSchemas,
-      ...jsonSchema[definitionsPath],
+      ...(jsonSchema as any)[definitionsPath],
     };
   }
 };

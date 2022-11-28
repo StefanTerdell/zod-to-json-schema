@@ -142,9 +142,9 @@ function zodToJsonSchema(
     if (options.name !== undefined) {
       let definitions;
 
-      if (result?.[definitionsPath]) {
-        definitions = result[definitionsPath];
-        delete result[definitionsPath];
+      if ((result as any)?.[definitionsPath]) {
+        definitions = (result as any)[definitionsPath];
+        delete (result as any)[definitionsPath];
       }
 
       result = {
@@ -160,7 +160,7 @@ function zodToJsonSchema(
       result = {
         $schema,
         ...result,
-      };
+      } as any;
     }
 
     return result ?? {};
