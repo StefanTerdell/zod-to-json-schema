@@ -119,8 +119,6 @@ function zodToJsonSchema(
       ...(options.name === undefined ? [] : [definitionPath, options.name]),
     ];
 
-    console.log(basePath);
-
     let result = parseDef(
       schema._def,
       new References(
