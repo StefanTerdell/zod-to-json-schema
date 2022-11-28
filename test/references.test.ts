@@ -260,6 +260,41 @@ describe("Pathing", () => {
     expect(jsonSchema).toStrictEqual(exptectedResult);
   });
 
+  it("should be possible to override the base path with name", () => {
+    const recurringSchema = z.string();
+    const objectSchema = z.object({
+      foo: recurringSchema,
+      bar: recurringSchema,
+    });
+
+    const jsonSchema = zodToJsonSchema(objectSchema, {
+      basePath: ["#", "lol", "xD"],
+      name: "kex",
+    });
+
+    const exptectedResult: JSONSchema7 = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/lol/xD/definitions/kex",
+      definitions: {
+        kex: {
+          type: "object",
+          properties: {
+            foo: {
+              type: "string",
+            },
+            bar: {
+              $ref: "#/lol/xD/definitions/kex/properties/foo",
+            },
+          },
+          required: ["foo", "bar"],
+          additionalProperties: false,
+        },
+      },
+    };
+
+    expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
+
   it("should be possible to opt out of $ref building", () => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
@@ -464,5 +499,263 @@ describe("Pathing", () => {
     };
 
     expect(jsonSchema).toStrictEqual(exptectedResult);
+  });
+
+  it("should be possible to preload a single definition", () => {
+    const myRecurringSchema = z.string();
+    const myObjectSchema = z.object({
+      a: myRecurringSchema,
+      b: myRecurringSchema,
+    });
+
+    const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+      definitions: { myRecurringSchema },
+    });
+
+    expect(myJsonSchema).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      required: ["a", "b"],
+      properties: {
+        a: {
+          $ref: "#/definitions/myRecurringSchema",
+        },
+        b: {
+          $ref: "#/definitions/myRecurringSchema",
+        },
+      },
+      additionalProperties: false,
+      definitions: {
+        myRecurringSchema: {
+          type: "string",
+        },
+      },
+    });
+  });
+
+  it("should be possible to preload multiple definitions", () => {
+    const myRecurringSchema = z.string();
+    const mySecondRecurringSchema = z.object({
+      x: myRecurringSchema,
+    });
+    const myObjectSchema = z.object({
+      a: myRecurringSchema,
+      b: mySecondRecurringSchema,
+      c: mySecondRecurringSchema,
+    });
+
+    const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+      definitions: { myRecurringSchema, mySecondRecurringSchema },
+    });
+
+    expect(myJsonSchema).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      required: ["a", "b", "c"],
+      properties: {
+        a: {
+          $ref: "#/definitions/myRecurringSchema",
+        },
+        b: {
+          $ref: "#/definitions/mySecondRecurringSchema",
+        },
+        c: {
+          $ref: "#/definitions/mySecondRecurringSchema",
+        },
+      },
+      additionalProperties: false,
+      definitions: {
+        myRecurringSchema: {
+          type: "string",
+        },
+        mySecondRecurringSchema: {
+          type: "object",
+          required: ["x"],
+          properties: {
+            x: {
+              $ref: "#/definitions/myRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    });
+  });
+
+  it("should be possible to preload multiple definitions and have a named schema", () => {
+    const myRecurringSchema = z.string();
+    const mySecondRecurringSchema = z.object({
+      x: myRecurringSchema,
+    });
+    const myObjectSchema = z.object({
+      a: myRecurringSchema,
+      b: mySecondRecurringSchema,
+      c: mySecondRecurringSchema,
+    });
+
+    const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+      definitions: { myRecurringSchema, mySecondRecurringSchema },
+      name: "mySchemaName",
+    });
+
+    expect(myJsonSchema).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/definitions/mySchemaName",
+      definitions: {
+        mySchemaName: {
+          type: "object",
+          required: ["a", "b", "c"],
+          properties: {
+            a: {
+              $ref: "#/definitions/myRecurringSchema",
+            },
+            b: {
+              $ref: "#/definitions/mySecondRecurringSchema",
+            },
+            c: {
+              $ref: "#/definitions/mySecondRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+        myRecurringSchema: {
+          type: "string",
+        },
+        mySecondRecurringSchema: {
+          type: "object",
+          required: ["x"],
+          properties: {
+            x: {
+              $ref: "#/definitions/myRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    });
+  });
+
+  it("should be possible to preload multiple definitions and have a named schema and set the definitions path", () => {
+    const myRecurringSchema = z.string();
+    const mySecondRecurringSchema = z.object({
+      x: myRecurringSchema,
+    });
+    const myObjectSchema = z.object({
+      a: myRecurringSchema,
+      b: mySecondRecurringSchema,
+      c: mySecondRecurringSchema,
+    });
+
+    const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+      definitions: { myRecurringSchema, mySecondRecurringSchema },
+      name: "mySchemaName",
+      definitionPath: "$defs",
+    });
+
+    expect(myJsonSchema).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/$defs/mySchemaName",
+      $defs: {
+        mySchemaName: {
+          type: "object",
+          required: ["a", "b", "c"],
+          properties: {
+            a: {
+              $ref: "#/$defs/myRecurringSchema",
+            },
+            b: {
+              $ref: "#/$defs/mySecondRecurringSchema",
+            },
+            c: {
+              $ref: "#/$defs/mySecondRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+        myRecurringSchema: {
+          type: "string",
+        },
+        mySecondRecurringSchema: {
+          type: "object",
+          required: ["x"],
+          properties: {
+            x: {
+              $ref: "#/$defs/myRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    });
+  });
+
+  it("should be possible to preload a single definition with custom basePath", () => {
+    const myRecurringSchema = z.string();
+    const myObjectSchema = z.object({
+      a: myRecurringSchema,
+      b: myRecurringSchema,
+    });
+
+    const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+      definitions: { myRecurringSchema },
+      basePath: ["hello"],
+    });
+
+    expect(myJsonSchema).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      required: ["a", "b"],
+      properties: {
+        a: {
+          $ref: "hello/definitions/myRecurringSchema",
+        },
+        b: {
+          $ref: "hello/definitions/myRecurringSchema",
+        },
+      },
+      additionalProperties: false,
+      definitions: {
+        myRecurringSchema: {
+          type: "string",
+        },
+      },
+    });
+  });
+
+  it("should be possible to preload a single definition with custom basePath and name", () => {
+    const myRecurringSchema = z.string();
+    const myObjectSchema = z.object({
+      a: myRecurringSchema,
+      b: myRecurringSchema,
+    });
+
+    const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+      definitions: { myRecurringSchema },
+      basePath: ["hello"],
+      name: "kex",
+    });
+
+    expect(myJsonSchema).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "hello/definitions/kex",
+      definitions: {
+        kex: {
+          type: "object",
+          required: ["a", "b"],
+          properties: {
+            a: {
+              $ref: "hello/definitions/myRecurringSchema",
+            },
+            b: {
+              $ref: "hello/definitions/myRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+        myRecurringSchema: {
+          type: "string",
+        },
+      },
+    });
   });
 });

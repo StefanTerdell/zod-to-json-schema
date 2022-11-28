@@ -1,6 +1,6 @@
 import { ZodSchema } from "zod";
 import { JsonSchema7Type, parseDef } from "./parseDef";
-import { $refStrategy, EffectStrategy, Target, References } from "./References";
+import { $refStrategy, EffectStrategy, References, Target } from "./References";
 
 const $schema = "http://json-schema.org/draft-07/schema#";
 
@@ -38,7 +38,8 @@ function zodToJsonSchema<
   Strategy extends "root" | "relative" | "none" | undefined = undefined,
   BasePath extends string[] | undefined = undefined,
   DefinitionPath extends "definitions" | "$defs" = "definitions",
-  Target extends "jsonSchema7" | "openApi3" | undefined = undefined
+  Target extends "jsonSchema7" | "openApi3" | undefined = undefined,
+  Definitions extends Record<string, ZodSchema<any>> | undefined = undefined
 >(
   schema: ZodSchema<any>,
   options?: {
@@ -49,37 +50,50 @@ function zodToJsonSchema<
     definitionPath?: DefinitionPath;
     target?: Target;
     strictUnions?: boolean;
+    definitions?: Definitions;
   }
 ): Target extends "openApi3"
   ? Name extends string
     ? BasePath extends string[]
       ? {
           $ref: string;
-        } & Record<DefinitionPath, Record<Name, object>>
+        } & Record<DefinitionPath, Record<Name | keyof Definitions, object>>
       : Strategy extends "relative"
       ? {
           $ref: `0/${DefinitionPath}/${Name}`;
-        } & Record<DefinitionPath, Record<Name, object>>
+        } & Record<DefinitionPath, Record<Name | keyof Definitions, object>>
       : {
           $ref: `#/${DefinitionPath}/${Name}`;
-        } & Record<DefinitionPath, Record<Name, object>>
+        } & Record<DefinitionPath, Record<Name | keyof Definitions, object>>
     : object
   : Name extends string
   ? BasePath extends string[]
     ? {
         $schema: "http://json-schema.org/draft-07/schema#";
         $ref: string;
-      } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
+      } & Record<
+        DefinitionPath,
+        Record<Name | keyof Definitions, JsonSchema7Type>
+      >
     : Strategy extends "relative"
     ? {
         $schema: "http://json-schema.org/draft-07/schema#";
         $ref: `0/${DefinitionPath}/${Name}`;
-      } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
+      } & Record<
+        DefinitionPath,
+        Record<Name | keyof Definitions, JsonSchema7Type>
+      >
     : {
         $schema: "http://json-schema.org/draft-07/schema#";
         $ref: `#/${DefinitionPath}/${Name}`;
-      } & Record<DefinitionPath, Record<Name, JsonSchema7Type>>
-  : { $schema: "http://json-schema.org/draft-07/schema#" } & JsonSchema7Type;
+      } & Record<
+        DefinitionPath,
+        Record<Name | keyof Definitions, JsonSchema7Type>
+      >
+  : Definitions extends undefined
+  ? { $schema: "http://json-schema.org/draft-07/schema#" } & JsonSchema7Type
+  : { $schema: "http://json-schema.org/draft-07/schema#" } & JsonSchema7Type &
+      Record<DefinitionPath, Record<keyof Definitions, JsonSchema7Type>>;
 
 function zodToJsonSchema(
   schema: ZodSchema<any>,
@@ -92,91 +106,64 @@ function zodToJsonSchema(
         definitionPath?: "definitions" | "$defs";
         target?: Target;
         strictUnions?: boolean;
+        definitions?: Record<string, ZodSchema<any>>;
       }
     | string
 ) {
   if (typeof options === "object") {
-    return options.name === undefined
-      ? options.target === "openApi3"
-        ? parseDef(
-            schema._def,
-            new References(
-              options.basePath ?? ["#"],
-              [],
-              options.$refStrategy ?? "root",
-              options.effectStrategy,
-              options.target,
-              undefined,
-              options.strictUnions
-            )
-          )
-        : {
-            $schema,
-            ...parseDef(
-              schema._def,
-              new References(
-                options.basePath ?? ["#"],
-                [],
-                options.$refStrategy ?? "root",
-                options.effectStrategy,
-                options.target,
-                undefined,
-                options.strictUnions
-              )
-            ),
-          }
-      : options.target === "openApi3"
-      ? {
-          $ref:
-            options.$refStrategy === "relative"
-              ? `0/${options.definitionPath ?? "definitions"}/${options.name}`
-              : `#/${options.definitionPath ?? "definitions"}/${options.name}`,
-          [options.definitionPath ?? "definitions"]: {
-            [options.name]:
-              parseDef(
-                schema._def,
-                new References(
-                  [
-                    ...(options.basePath ?? ["#"]),
-                    options.definitionPath ?? "definitions",
-                    options.name,
-                  ],
-                  [],
-                  options.$refStrategy ?? "root",
-                  options.effectStrategy,
-                  options.target,
-                  undefined,
-                  options.strictUnions
-                )
-              ) || {},
-          },
-        }
-      : {
-          $schema,
-          $ref:
-            options.$refStrategy === "relative"
-              ? `0/${options.definitionPath ?? "definitions"}/${options.name}`
-              : `#/${options.definitionPath ?? "definitions"}/${options.name}`,
-          [options.definitionPath ?? "definitions"]: {
-            [options.name]:
-              parseDef(
-                schema._def,
-                new References(
-                  [
-                    ...(options.basePath ?? ["#"]),
-                    options.definitionPath ?? "definitions",
-                    options.name,
-                  ],
-                  [],
-                  options.$refStrategy ?? "root",
-                  options.effectStrategy,
-                  options.target,
-                  undefined,
-                  options.strictUnions
-                )
-              ) || {},
-          },
-        };
+    const definitionsPath = options.definitionPath ?? "definitions";
+    const basePath = options.basePath ?? [
+      options.$refStrategy === "relative" ? "0" : "#",
+    ];
+
+    const mainPath = [
+      ...basePath,
+      ...(options.name === undefined ? [] : [definitionsPath, options.name]),
+    ];
+
+    let result = parseDef(
+      schema._def,
+      new References(
+        mainPath,
+        [],
+        options.$refStrategy ?? "root",
+        options.effectStrategy,
+        options.target,
+        undefined,
+        options.strictUnions
+      ),
+      options.definitions && {
+        basePath,
+        definitionsPath,
+        definitions: options.definitions,
+      }
+    );
+
+    if (options.name !== undefined) {
+      let definitions;
+
+      if ((result as any)?.[definitionsPath]) {
+        definitions = (result as any)[definitionsPath];
+        delete (result as any)[definitionsPath];
+      }
+
+      result = {
+        $ref: mainPath.join("/"),
+        [definitionsPath]: {
+          [options.name]: result,
+          ...definitions,
+        },
+      };
+    }
+
+    if (options.target !== "openApi3") {
+      result = {
+        $schema,
+        ...result,
+      } as any;
+    }
+
+    return result ?? {};
   } else if (typeof options === "string") {
     const name = options;
     return {

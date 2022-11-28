@@ -1,9 +1,9 @@
-import { ZodFirstPartyTypeKind, ZodOptional, ZodTypeDef } from "zod";
-import { parseOptionalDef } from "./parsers/optional";
+import { ZodFirstPartyTypeKind, ZodSchema, ZodTypeDef } from "zod";
 import { JsonSchema7AnyType, parseAnyDef } from "./parsers/any";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
 import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean";
+import { parseBrandedDef } from "./parsers/branded";
 import { JsonSchema7DateType, parseDateDef } from "./parsers/date";
 import { parseDefaultDef } from "./parsers/default";
 import { parseEffectsDef } from "./parsers/effects";
@@ -23,6 +23,7 @@ import { JsonSchema7NullType, parseNullDef } from "./parsers/null";
 import { JsonSchema7NullableType, parseNullableDef } from "./parsers/nullable";
 import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number";
 import { JsonSchema7ObjectType, parseObjectDef } from "./parsers/object";
+import { parseOptionalDef } from "./parsers/optional";
 import { parsePromiseDef } from "./parsers/promise";
 import { JsonSchema7RecordType, parseRecordDef } from "./parsers/record";
 import { JsonSchema7SetType, parseSetDef } from "./parsers/set";
@@ -35,7 +36,6 @@ import {
 import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union";
 import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown";
 import { Item, References } from "./References";
-import { parseBrandedDef } from './parsers/branded';
 
 type JsonSchema7RefType = { $ref: string };
 
@@ -64,19 +64,45 @@ export type JsonSchema7Type = (
   | JsonSchema7AllOfType
   | JsonSchema7UnknownType
   | JsonSchema7SetType
-) & { default?: any; description?: string };
+) & { default?: any; description?: string }
 
 export function parseDef(
   def: ZodTypeDef,
-  refs: References
+  refs: References,
+  preloadDefinitions?: {
+    definitions: Record<string, ZodSchema<any>>;
+    definitionsPath: string;
+    basePath: string[];
+  }
 ): JsonSchema7Type | undefined {
-  const item = refs.items.find((x) => Object.is(x.def, def));
-  if (item) return select$refStrategy(item, refs);
+  const definitionSchemas = getPreloadedDefinitionSchemas(
+    refs,
+    preloadDefinitions
+  );
+
+  const seenItem = refs.items.find((x) => Object.is(x.def, def));
+
+  if (seenItem) {
+    return select$refStrategy(seenItem, refs);
+  }
+
   const newItem: Item = { def, path: refs.currentPath, jsonSchema: undefined };
+
   refs.items.push(newItem);
+
   const jsonSchema = selectParser(def, (def as any).typeName, refs);
-  if (jsonSchema) addMeta(def, jsonSchema);
+
+  if (jsonSchema) {
+    addMeta(def, jsonSchema);
+    addDefinitionSchemas(
+      jsonSchema,
+      definitionSchemas,
+      preloadDefinitions?.definitionsPath
+    );
+  }
+
   newItem.jsonSchema = jsonSchema;
+
   return jsonSchema;
 }
 
@@ -205,4 +231,52 @@ const addMeta = (
 ): JsonSchema7Type => {
   if (def.description) jsonSchema.description = def.description;
   return jsonSchema;
+};
+
+const getPreloadedDefinitionSchemas = (
+  refs: References,
+  options:
+    | {
+        basePath: string[];
+        definitionsPath: string;
+        definitions: Record<string, ZodSchema<any>>;
+      }
+    | undefined
+) =>
+  options
+    ? Object.entries(options.definitions).reduce(
+        (acc: Record<string, JsonSchema7Type>, [key, schema]) => {
+          const jsonSchema = selectParser(
+            schema._def,
+            (schema._def as any).typeName,
+            refs
+          );
+
+          if (jsonSchema) {
+            refs.items.push({
+              def: schema._def,
+              path: [...options.basePath, options.definitionsPath, key],
+              jsonSchema,
+            });
+
+            acc[key] = jsonSchema;
+          }
+
+          return acc;
+        },
+        {}
+      )
+    : undefined;
+
+const addDefinitionSchemas = (
+  jsonSchema: JsonSchema7Type,
+  definitionSchemas: Record<string, JsonSchema7Type> | undefined,
+  definitionsPath: string | undefined
+) => {
+  if (definitionSchemas && definitionsPath !== undefined) {
+    (jsonSchema as any)[definitionsPath] = {
+      ...definitionSchemas,
+      ...(jsonSchema as any)[definitionsPath],
+    };
+  }
 };
