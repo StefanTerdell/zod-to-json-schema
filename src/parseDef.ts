@@ -69,12 +69,14 @@ export type JsonSchema7Type = (
 export function parseDef(
   def: ZodTypeDef,
   refs: References,
-  preloadDefinitions?: Record<string, ZodSchema<any>>,
-  definitionsPath: string = "definitions"
+  preloadDefinitions?: {
+    definitions: Record<string, ZodSchema<any>>;
+    definitionsPath: string;
+    basePath: string[];
+  }
 ): JsonSchema7Type | undefined {
   const definitionSchemas = getPreloadedDefinitionSchemas(
     refs,
-    definitionsPath,
     preloadDefinitions
   );
 
@@ -92,7 +94,11 @@ export function parseDef(
 
   if (jsonSchema) {
     addMeta(def, jsonSchema);
-    addDefinitionSchemas(jsonSchema, definitionSchemas, definitionsPath);
+    addDefinitionSchemas(
+      jsonSchema,
+      definitionSchemas,
+      preloadDefinitions?.definitionsPath
+    );
   }
 
   newItem.jsonSchema = jsonSchema;
@@ -229,11 +235,16 @@ const addMeta = (
 
 const getPreloadedDefinitionSchemas = (
   refs: References,
-  definitionsPath: string,
-  definitions: Record<string, ZodSchema<any>> | undefined
+  options:
+    | {
+        basePath: string[];
+        definitionsPath: string;
+        definitions: Record<string, ZodSchema<any>>;
+      }
+    | undefined
 ) =>
-  definitions
-    ? Object.entries(definitions).reduce(
+  options
+    ? Object.entries(options.definitions).reduce(
         (acc: Record<string, JsonSchema7Type>, [key, schema]) => {
           const jsonSchema = selectParser(
             schema._def,
@@ -244,7 +255,7 @@ const getPreloadedDefinitionSchemas = (
           if (jsonSchema) {
             refs.items.push({
               def: schema._def,
-              path: ["#", definitionsPath, key],
+              path: [...options.basePath, options.definitionsPath, key],
               jsonSchema,
             });
 
@@ -260,9 +271,9 @@ const getPreloadedDefinitionSchemas = (
 const addDefinitionSchemas = (
   jsonSchema: JsonSchema7Type,
   definitionSchemas: Record<string, JsonSchema7Type> | undefined,
-  definitionsPath: string
+  definitionsPath: string | undefined
 ) => {
-  if (definitionSchemas) {
+  if (definitionSchemas && definitionsPath !== undefined) {
     jsonSchema[definitionsPath] = {
       ...definitionSchemas,
       ...jsonSchema[definitionsPath],

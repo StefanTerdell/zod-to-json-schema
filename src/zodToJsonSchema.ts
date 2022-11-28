@@ -111,18 +111,20 @@ function zodToJsonSchema(
     | string
 ) {
   if (typeof options === "object") {
-    const definitionPath = options.definitionPath ?? "definitions";
-    const basePath = [
-      ...(options.basePath ?? [
-        options.$refStrategy === "relative" ? "0" : "#",
-      ]),
-      ...(options.name === undefined ? [] : [definitionPath, options.name]),
+    const definitionsPath = options.definitionPath ?? "definitions";
+    const basePath = options.basePath ?? [
+      options.$refStrategy === "relative" ? "0" : "#",
+    ];
+
+    const mainPath = [
+      ...basePath,
+      ...(options.name === undefined ? [] : [definitionsPath, options.name]),
     ];
 
     let result = parseDef(
       schema._def,
       new References(
-        basePath,
+        mainPath,
         [],
         options.$refStrategy ?? "root",
         options.effectStrategy,
@@ -130,21 +132,24 @@ function zodToJsonSchema(
         undefined,
         options.strictUnions
       ),
-      options.definitions,
-      options.definitionPath
+      options.definitions && {
+        basePath,
+        definitionsPath,
+        definitions: options.definitions,
+      }
     );
 
     if (options.name !== undefined) {
       let definitions;
 
-      if (result?.[definitionPath]) {
-        definitions = result[definitionPath];
-        delete result[definitionPath];
+      if (result?.[definitionsPath]) {
+        definitions = result[definitionsPath];
+        delete result[definitionsPath];
       }
 
       result = {
-        $ref: basePath.join("/"),
-        [definitionPath]: {
+        $ref: mainPath.join("/"),
+        [definitionsPath]: {
           [options.name]: result,
           ...definitions,
         },
