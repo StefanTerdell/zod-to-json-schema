@@ -77,6 +77,8 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 
 ### Definitions
 
+⚠️ ***This feature is experimental***
+
 The definitions option lets you manually add recurring schemas into definitions for cleaner outputs. It's fully compatible with named schemas, changed definitions path and base path. Here's a simple example:
 
 ```typescript
