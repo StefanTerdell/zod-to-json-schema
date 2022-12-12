@@ -2,13 +2,13 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseMapDef } from "../../src/parsers/map";
 import Ajv from "ajv";
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 const ajv = new Ajv();
 describe("map", () => {
   it("should be possible to use Map", () => {
     const mapSchema = z.map(z.string(), z.number());
 
-    const parsedSchema = parseMapDef(mapSchema._def, new References());
+    const parsedSchema = parseMapDef(mapSchema._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
       type: "array",

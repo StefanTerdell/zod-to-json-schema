@@ -1,12 +1,12 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseNumberDef } from "../../src/parsers/number";
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 describe("Number validations", () => {
   it("should be possible to describe minimum number", () => {
     const parsedSchema = parseNumberDef(
       z.number().min(5)._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
@@ -17,7 +17,7 @@ describe("Number validations", () => {
   it("should be possible to describe maximum number", () => {
     const parsedSchema = parseNumberDef(
       z.number().max(5)._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
@@ -28,7 +28,7 @@ describe("Number validations", () => {
   it("should be possible to describe both minimum and maximum number", () => {
     const parsedSchema = parseNumberDef(
       z.number().min(5).max(5)._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
@@ -40,7 +40,7 @@ describe("Number validations", () => {
   it("should be possible to describe an integer", () => {
     const parsedSchema = parseNumberDef(
       z.number().int()._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "integer",
@@ -50,7 +50,7 @@ describe("Number validations", () => {
   it("should be possible to describe multiples of n", () => {
     const parsedSchema = parseNumberDef(
       z.number().multipleOf(2)._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
@@ -61,7 +61,7 @@ describe("Number validations", () => {
   it("should be possible to describe positive, negative, nonpositive and nonnegative numbers", () => {
     const parsedSchema = parseNumberDef(
       z.number().positive().negative().nonpositive().nonnegative()._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",

@@ -1,10 +1,12 @@
 import { ZodFirstPartyTypeKind, ZodRecordDef, ZodTypeAny } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { References } from "../References";
+import { Refs } from "../refs";
 import { JsonSchema7EnumType } from "./enum";
 import { JsonSchema7StringType, parseStringDef } from "./string";
 
-type JsonSchema7RecordPropertyNamesType = Omit<JsonSchema7StringType, "type"> | Omit<JsonSchema7EnumType, "type">;
+type JsonSchema7RecordPropertyNamesType =
+  | Omit<JsonSchema7StringType, "type">
+  | Omit<JsonSchema7EnumType, "type">;
 
 export type JsonSchema7RecordType = {
   type: "object";
@@ -14,14 +16,16 @@ export type JsonSchema7RecordType = {
 
 export function parseRecordDef(
   def: ZodRecordDef<ZodTypeAny, ZodTypeAny>,
-  refs: References
+  refs: Refs
 ): JsonSchema7RecordType {
   const schema: JsonSchema7RecordType = {
     type: "object",
     additionalProperties:
-      parseDef(def.valueType._def, refs.addToPath("additionalProperties")) ||
-      {},
-  }
+      parseDef(def.valueType._def, {
+        ...refs,
+        currentPath: [...refs.currentPath, "additionalProperties"],
+      }) || {},
+  };
 
   if (
     def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodString &&
@@ -42,10 +46,10 @@ export function parseRecordDef(
     return {
       ...schema,
       propertyNames: {
-        enum: def.keyType._def.values
-      }
-    }
+        enum: def.keyType._def.values,
+      },
+    };
   }
 
-  return schema
+  return schema;
 }

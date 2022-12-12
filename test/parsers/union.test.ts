@@ -1,14 +1,14 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseUnionDef } from "../../src/parsers/union";
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 const deref = require("json-schema-deref-sync");
 
 describe("Unions", () => {
   it("Should be possible to get a simple type array from a union of only unvalidated primitives", () => {
     const parsedSchema = parseUnionDef(
       z.union([z.string(), z.number(), z.boolean(), z.null()])._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: ["string", "number", "boolean", "null"],
@@ -24,7 +24,7 @@ describe("Unions", () => {
         z.literal(true),
         z.literal(null),
       ])._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       type: ["string", "number", "boolean", "null"],
@@ -41,7 +41,7 @@ describe("Unions", () => {
         z.string().min(3),
         z.number(),
       ])._def,
-      new References()
+      getRefs()
     );
     const jsonSchema: JSONSchema7Type = {
       anyOf: [
@@ -81,7 +81,7 @@ describe("Unions", () => {
 
     const union = z.union([recurring, recurring, recurring]);
 
-    const jsonSchema = parseUnionDef(union._def, new References());
+    const jsonSchema = parseUnionDef(union._def, getRefs());
 
     expect(jsonSchema).toStrictEqual({
       anyOf: [
@@ -112,7 +112,7 @@ describe("Unions", () => {
   it("nullable primitives should come out fine", () => {
     const union = z.union([z.string(), z.null()]);
 
-    const jsonSchema = parseUnionDef(union._def, new References());
+    const jsonSchema = parseUnionDef(union._def, getRefs());
 
     expect(jsonSchema).toStrictEqual({
       type: ["string", "null"],
@@ -122,7 +122,7 @@ describe("Unions", () => {
   it("should join a union of Zod enums into a single enum", () => {
     const union = z.union([z.enum(["a", "b", "c"]), z.enum(["c", "d", "e"])]);
 
-    const jsonSchema = parseUnionDef(union._def, new References());
+    const jsonSchema = parseUnionDef(union._def, getRefs());
 
     expect(jsonSchema).toStrictEqual({
       type: "string",
@@ -136,7 +136,7 @@ describe("Unions", () => {
       z.object({ kek: z.literal("B"), lel: z.number() }),
     ]);
 
-    const jsonSchema = parseUnionDef(discUnion._def, new References());
+    const jsonSchema = parseUnionDef(discUnion._def, getRefs());
 
     expect(jsonSchema).toStrictEqual({
       anyOf: [

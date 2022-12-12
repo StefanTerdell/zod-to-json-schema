@@ -2,7 +2,7 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseNullableDef } from "../../src/parsers/nullable";
 import { parseObjectDef } from "../../src/parsers/object";
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 
 describe("nullable", () => {
   it("should be possible to properly reference nested nullable primitives", () => {
@@ -13,7 +13,7 @@ describe("nullable", () => {
       two: nullablePrimitive,
     });
 
-    const jsonSchema: any = parseObjectDef(schema._def, new References());
+    const jsonSchema: any = parseObjectDef(schema._def, getRefs());
 
     expect(jsonSchema.properties.one.type).toStrictEqual(["string", "null"]);
     expect(jsonSchema.properties.two.$ref).toStrictEqual("#/properties/one");
@@ -34,7 +34,7 @@ describe("nullable", () => {
       three,
     });
 
-    const jsonSchema: any = parseObjectDef(schema._def, new References());
+    const jsonSchema: any = parseObjectDef(schema._def, getRefs());
 
     expect(jsonSchema.properties.one).toStrictEqual({
       anyOf: [

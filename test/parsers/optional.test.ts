@@ -1,11 +1,11 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../../src/parseDef";
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 
-describe.only("Standalone optionals", () => {
+describe("Standalone optionals", () => {
   it("should work as unions with undefined", () => {
-    const parsedSchema = parseDef(z.string().optional()._def, new References());
+    const parsedSchema = parseDef(z.string().optional()._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
       anyOf: [
@@ -24,7 +24,7 @@ describe.only("Standalone optionals", () => {
   it("should not affect object properties", () => {
     const parsedSchema = parseDef(
       z.object({ myProperty: z.string().optional() })._def,
-      new References()
+      getRefs()
     );
 
     const jsonSchema: JSONSchema7Type = {
@@ -43,7 +43,7 @@ describe.only("Standalone optionals", () => {
   it("should work with nested properties", () => {
     const parsedSchema = parseDef(
       z.object({ myProperty: z.string().optional().array() })._def,
-      new References()
+      getRefs()
     );
 
     const jsonSchema: JSONSchema7Type = {
@@ -68,7 +68,7 @@ describe.only("Standalone optionals", () => {
       z.object({
         myProperty: z.object({ myInnerProperty: z.string().optional() }),
       })._def,
-      new References()
+      getRefs()
     );
 
     const jsonSchema: JSONSchema7Type = {
@@ -98,7 +98,7 @@ describe.only("Standalone optionals", () => {
           myInnerProperty: z.string().optional().array(),
         }),
       })._def,
-      new References()
+      getRefs()
     );
 
     const jsonSchema: JSONSchema7Type = {
@@ -135,7 +135,7 @@ describe.only("Standalone optionals", () => {
 
     const schema = z.tuple([recurring.optional(), recurring]);
 
-    const parsedSchema = parseDef(schema._def, new References());
+    const parsedSchema = parseDef(schema._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
       type: "array",

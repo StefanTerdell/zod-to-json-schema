@@ -1,5 +1,5 @@
 import { ZodLiteralDef } from "zod";
-import { References } from "../References";
+import { Refs } from "../refs";
 
 export type JsonSchema7LiteralType =
   | {
@@ -12,7 +12,7 @@ export type JsonSchema7LiteralType =
 
 export function parseLiteralDef(
   def: ZodLiteralDef,
-  refs: References
+  refs: Refs
 ): JsonSchema7LiteralType {
   const parsedType = typeof def.value;
   if (

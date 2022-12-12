@@ -1,6 +1,6 @@
 import { ZodMapDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { References } from "../References";
+import { Refs } from "../refs";
 
 export type JsonSchema7MapType = {
   type: "array";
@@ -13,14 +13,17 @@ export type JsonSchema7MapType = {
   };
 };
 
-export function parseMapDef(
-  def: ZodMapDef,
-  refs: References
-): JsonSchema7MapType {
+export function parseMapDef(def: ZodMapDef, refs: Refs): JsonSchema7MapType {
   const keys =
-    parseDef(def.keyType._def, refs.addToPath("items", "items", "0")) || {};
+    parseDef(def.keyType._def, {
+      ...refs,
+      currentPath: [...refs.currentPath, "items", "items", "0"],
+    }) || {};
   const values =
-    parseDef(def.valueType._def, refs.addToPath("items", "items", "1")) || {};
+    parseDef(def.valueType._def, {
+      ...refs,
+      currentPath: [...refs.currentPath, "items", "items", "1"],
+    }) || {};
   return {
     type: "array",
     maxItems: 125,

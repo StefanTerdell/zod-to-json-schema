@@ -1,10 +1,7 @@
 import { ZodBrandedDef } from "zod";
 import { parseDef } from "../parseDef";
-import { References } from "../References";
+import { Refs } from "../refs";
 
-export function parseBrandedDef(
-  _def: ZodBrandedDef<any>,
-  refs: References
-) {
-  return parseDef(_def.type._def, refs)
+export function parseBrandedDef(_def: ZodBrandedDef<any>, refs: Refs) {
+  return parseDef(_def.type._def, refs);
 }

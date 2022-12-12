@@ -1,6 +1,6 @@
 import { ZodObjectDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { References } from "../References";
+import { Refs } from "../refs";
 
 export type JsonSchema7ObjectType = {
   type: "object";
@@ -9,7 +9,7 @@ export type JsonSchema7ObjectType = {
   required?: string[];
 };
 
-export function parseObjectDef(def: ZodObjectDef, refs: References) {
+export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
   const result: JsonSchema7ObjectType = {
     type: "object",
     ...Object.entries(def.shape()).reduce(
@@ -21,10 +21,11 @@ export function parseObjectDef(def: ZodObjectDef, refs: References) {
         [propName, propDef]
       ) => {
         if (propDef === undefined || propDef._def === undefined) return acc;
-        const parsedDef = parseDef(
-          propDef._def,
-          refs.addToPathAsProperty("properties", propName)
-        );
+        const parsedDef = parseDef(propDef._def, {
+          ...refs,
+          currentPath: [...refs.currentPath, "properties", propName],
+          propertyPath: [...refs.currentPath, "properties", propName],
+        });
         if (parsedDef === undefined) return acc;
         return {
           properties: { ...acc.properties, [propName]: parsedDef },
@@ -38,8 +39,10 @@ export function parseObjectDef(def: ZodObjectDef, refs: References) {
     additionalProperties:
       def.catchall._def.typeName === "ZodNever"
         ? def.unknownKeys === "passthrough"
-        : parseDef(def.catchall._def, refs.addToPath("additionalProperties")) ??
-          true,
+        : parseDef(def.catchall._def, {
+            ...refs,
+            currentPath: [...refs.currentPath, "additionalProperties"],
+          }) ?? true,
   };
   if (!result.required!.length) delete result.required;
   return result;

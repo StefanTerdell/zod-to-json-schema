@@ -1,5 +1,5 @@
 import { ZodNumberDef } from "zod";
-import { References } from "../References";
+import { Refs } from "../refs";
 
 export type JsonSchema7NumberType = {
   type: "number" | "integer";
@@ -12,7 +12,7 @@ export type JsonSchema7NumberType = {
 
 export function parseNumberDef(
   def: ZodNumberDef,
-  refs: References
+  refs: Refs
 ): JsonSchema7NumberType {
   const res: JsonSchema7NumberType = {
     type: "number",

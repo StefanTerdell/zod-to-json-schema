@@ -1,6 +1,6 @@
 import { ZodSetDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { References } from "../References";
+import { Refs } from "../refs";
 
 export type JsonSchema7SetType = {
   type: "array";
@@ -9,24 +9,24 @@ export type JsonSchema7SetType = {
   maxItems?: number;
 };
 
-export function parseSetDef(
-  def: ZodSetDef,
-  refs: References
-): JsonSchema7SetType {
-  const items = parseDef(def.valueType._def, refs.addToPath("items"));
+export function parseSetDef(def: ZodSetDef, refs: Refs): JsonSchema7SetType {
+  const items = parseDef(def.valueType._def, {
+    ...refs,
+    currentPath: [...refs.currentPath, "items"],
+  });
 
   const schema: JsonSchema7SetType = {
     type: "array",
-    items
-  }
+    items,
+  };
 
   if (def.minSize) {
-    schema.minItems = def.minSize.value
+    schema.minItems = def.minSize.value;
   }
 
   if (def.maxSize) {
-    schema.maxItems = def.maxSize.value
+    schema.maxItems = def.maxSize.value;
   }
 
-  return schema
+  return schema;
 }

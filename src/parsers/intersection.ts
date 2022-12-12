@@ -1,6 +1,6 @@
 import { ZodIntersectionDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { References } from "../References";
+import { Refs } from "../refs";
 
 export type JsonSchema7AllOfType = {
   allOf: JsonSchema7Type[];
@@ -8,11 +8,17 @@ export type JsonSchema7AllOfType = {
 
 export function parseIntersectionDef(
   def: ZodIntersectionDef,
-  refs: References
+  refs: Refs
 ): JsonSchema7AllOfType | JsonSchema7Type | undefined {
   const allOf = [
-    parseDef(def.left._def, refs.addToPath("allOf", "0")),
-    parseDef(def.right._def, refs.addToPath("allOf", "1")),
+    parseDef(def.left._def, {
+      ...refs,
+      currentPath: [...refs.currentPath, "allOf", "0"],
+    }),
+    parseDef(def.right._def, {
+      ...refs,
+      currentPath: [...refs.currentPath, "allOf", "1"],
+    }),
   ].filter((x): x is JsonSchema7Type => !!x);
 
   return allOf.length ? { allOf } : undefined;

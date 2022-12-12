@@ -1,4 +1,4 @@
-import { ZodFirstPartyTypeKind, ZodSchema, ZodTypeDef } from "zod";
+import { ZodFirstPartyTypeKind, ZodTypeDef } from "zod";
 import { JsonSchema7AnyType, parseAnyDef } from "./parsers/any";
 import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
@@ -35,9 +35,10 @@ import {
 } from "./parsers/undefined";
 import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union";
 import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown";
-import { Item, References } from "./References";
+import { Refs, Seen } from "./refs";
 
 type JsonSchema7RefType = { $ref: string };
+type JsonSchema7Meta = { default?: any; description?: string };
 
 export type JsonSchema7Type = (
   | JsonSchema7StringType
@@ -64,41 +65,27 @@ export type JsonSchema7Type = (
   | JsonSchema7AllOfType
   | JsonSchema7UnknownType
   | JsonSchema7SetType
-) & { default?: any; description?: string }
+) &
+  JsonSchema7Meta;
 
 export function parseDef(
   def: ZodTypeDef,
-  refs: References,
-  preloadDefinitions?: {
-    definitions: Record<string, ZodSchema<any>>;
-    definitionsPath: string;
-    basePath: string[];
-  }
+  refs: Refs
 ): JsonSchema7Type | undefined {
-  const definitionSchemas = getPreloadedDefinitionSchemas(
-    refs,
-    preloadDefinitions
-  );
-
-  const seenItem = refs.items.find((x) => Object.is(x.def, def));
+  const seenItem = refs.seen.find((x) => Object.is(x.def, def));
 
   if (seenItem) {
-    return select$refStrategy(seenItem, refs);
+    return get$ref(seenItem, refs);
   }
 
-  const newItem: Item = { def, path: refs.currentPath, jsonSchema: undefined };
+  const newItem: Seen = { def, path: refs.currentPath, jsonSchema: undefined };
 
-  refs.items.push(newItem);
+  refs.seen.push(newItem);
 
   const jsonSchema = selectParser(def, (def as any).typeName, refs);
 
   if (jsonSchema) {
     addMeta(def, jsonSchema);
-    addDefinitionSchemas(
-      jsonSchema,
-      definitionSchemas,
-      preloadDefinitions?.definitionsPath
-    );
   }
 
   newItem.jsonSchema = jsonSchema;
@@ -106,9 +93,9 @@ export function parseDef(
   return jsonSchema;
 }
 
-const select$refStrategy = (
-  item: Item,
-  refs: References
+const get$ref = (
+  item: Seen,
+  refs: Refs
 ):
   | {
       $ref: string;
@@ -126,7 +113,7 @@ const select$refStrategy = (
             : item.path.join("/"),
       };
     case "relative":
-      return { $ref: makeRelativePath(refs.currentPath, item.path) };
+      return { $ref: getRelativePath(refs.currentPath, item.path) };
     case "none": {
       if (
         item.path.length < refs.currentPath.length &&
@@ -145,7 +132,7 @@ const select$refStrategy = (
   }
 };
 
-const makeRelativePath = (pathA: string[], pathB: string[]) => {
+const getRelativePath = (pathA: string[], pathB: string[]) => {
   let i = 0;
   for (; i < pathA.length && i < pathB.length; i++) {
     if (pathA[i] !== pathB[i]) break;
@@ -156,7 +143,7 @@ const makeRelativePath = (pathA: string[], pathB: string[]) => {
 const selectParser = (
   def: any,
   typeName: ZodFirstPartyTypeKind,
-  refs: References
+  refs: Refs
 ): JsonSchema7Type | undefined => {
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
@@ -231,52 +218,4 @@ const addMeta = (
 ): JsonSchema7Type => {
   if (def.description) jsonSchema.description = def.description;
   return jsonSchema;
-};
-
-const getPreloadedDefinitionSchemas = (
-  refs: References,
-  options:
-    | {
-        basePath: string[];
-        definitionsPath: string;
-        definitions: Record<string, ZodSchema<any>>;
-      }
-    | undefined
-) =>
-  options
-    ? Object.entries(options.definitions).reduce(
-        (acc: Record<string, JsonSchema7Type>, [key, schema]) => {
-          const jsonSchema = selectParser(
-            schema._def,
-            (schema._def as any).typeName,
-            refs
-          );
-
-          if (jsonSchema) {
-            refs.items.push({
-              def: schema._def,
-              path: [...options.basePath, options.definitionsPath, key],
-              jsonSchema,
-            });
-
-            acc[key] = jsonSchema;
-          }
-
-          return acc;
-        },
-        {}
-      )
-    : undefined;
-
-const addDefinitionSchemas = (
-  jsonSchema: JsonSchema7Type,
-  definitionSchemas: Record<string, JsonSchema7Type> | undefined,
-  definitionsPath: string | undefined
-) => {
-  if (definitionSchemas && definitionsPath !== undefined) {
-    (jsonSchema as any)[definitionsPath] = {
-      ...definitionSchemas,
-      ...(jsonSchema as any)[definitionsPath],
-    };
-  }
 };

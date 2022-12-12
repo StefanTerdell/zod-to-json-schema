@@ -758,4 +758,98 @@ describe("Pathing", () => {
       },
     });
   });
+
+  it("should be possible for a preloaded definition to circularly reference itself", () => {
+    const myRecurringSchema: any = z.object({
+      circular: z.lazy(() => myRecurringSchema),
+    });
+
+    const myObjectSchema = z.object({
+      a: myRecurringSchema,
+      b: myRecurringSchema,
+    });
+
+    const myJsonSchema = zodToJsonSchema(myObjectSchema, {
+      definitions: { myRecurringSchema },
+      basePath: ["hello"],
+      name: "kex",
+    });
+
+    expect(myJsonSchema).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "hello/definitions/kex",
+      definitions: {
+        kex: {
+          type: "object",
+          required: ["a", "b"],
+          properties: {
+            a: {
+              $ref: "hello/definitions/myRecurringSchema",
+            },
+            b: {
+              $ref: "hello/definitions/myRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+        myRecurringSchema: {
+          type: "object",
+          required: ["circular"],
+          properties: {
+            circular: {
+              $ref: "hello/definitions/myRecurringSchema",
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    });
+  });
+
+  it("should handle the user example", () => {
+    interface User {
+      id: string;
+      headUser?: User;
+    }
+
+    const userSchema: z.ZodType<User> = z.lazy(() =>
+      z.object({
+        id: z.string(),
+        headUser: userSchema.optional(),
+      })
+    );
+
+    const schema = z.object({ user: userSchema });
+
+    expect(
+      zodToJsonSchema(schema, {
+        definitions: { userSchema },
+      })
+    ).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        user: {
+          $ref: "#/definitions/userSchema",
+        },
+      },
+      required: ["user"],
+      additionalProperties: false,
+      definitions: {
+        userSchema: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+            },
+            headUser: {
+              $ref: "#/definitions/userSchema",
+            },
+          },
+          required: ["id"],
+          additionalProperties: false,
+        },
+      },
+    });
+  });
 });

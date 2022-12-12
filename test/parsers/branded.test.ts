@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { parseBrandedDef } from '../../src/parsers/branded';
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 
 describe("objects", () => {
   it("should be possible to use branded string", () => {
     const schema = z.string().brand<'x'>();
-    const parsedSchema = parseBrandedDef(schema._def, new References());
+    const parsedSchema = parseBrandedDef(schema._def, getRefs());
 
     const expectedSchema = {
     type: "string"

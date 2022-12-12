@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { parseRecordDef } from "../../src/parsers/record";
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 
 describe("records", () => {
   it("should be possible to describe a simple record", () => {
     const schema = z.record(z.number());
 
-    const parsedSchema = parseRecordDef(schema._def, new References());
+    const parsedSchema = parseRecordDef(schema._def, getRefs());
     const expectedSchema = {
       type: "object",
       additionalProperties: {
@@ -21,7 +21,7 @@ describe("records", () => {
       z.object({ foo: z.number().min(2) }).catchall(z.string().cuid())
     );
 
-    const parsedSchema = parseRecordDef(schema._def, new References());
+    const parsedSchema = parseRecordDef(schema._def, getRefs());
     const expectedSchema = {
       type: "object",
       additionalProperties: {
@@ -45,7 +45,7 @@ describe("records", () => {
   it("should be possible to describe a key schema", () => {
     const schema = z.record(z.string().uuid(), z.number());
 
-    const parsedSchema = parseRecordDef(schema._def, new References());
+    const parsedSchema = parseRecordDef(schema._def, getRefs());
     const expectedSchema = {
       type: "object",
       additionalProperties: {
@@ -60,7 +60,7 @@ describe("records", () => {
 
   it("should be possible to describe a key with an enum", () => {
     const schema = z.record(z.enum(["foo", "bar"]), z.number());
-    const parsedSchema = parseRecordDef(schema._def, new References());
+    const parsedSchema = parseRecordDef(schema._def, getRefs());
     const expectedSchema = {
       type: "object",
       additionalProperties: {

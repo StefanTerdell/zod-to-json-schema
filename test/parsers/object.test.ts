@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { parseObjectDef } from "../../src/parsers/object";
-import { References } from "../../src/References";
+import { getRefs } from "../../src/Refs"
 
 describe("objects", () => {
   it("should be possible to describe catchAll schema", () => {
@@ -8,7 +8,7 @@ describe("objects", () => {
       .object({ normalProperty: z.string() })
       .catchall(z.boolean());
 
-    const parsedSchema = parseObjectDef(schema._def, new References());
+    const parsedSchema = parseObjectDef(schema._def, getRefs());
     const expectedSchema = {
       type: "object",
       properties: {
@@ -27,7 +27,7 @@ describe("objects", () => {
       .object({ foo: z.boolean(), bar: z.number() })
       .partial({ foo: true });
 
-    const parsedSchema = parseObjectDef(schema._def, new References());
+    const parsedSchema = parseObjectDef(schema._def, getRefs());
     const expectedSchema = {
       type: "object",
       properties: {

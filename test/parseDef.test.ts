@@ -2,7 +2,7 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../src/parseDef";
 import Ajv from "ajv";
-import { References } from "../src/References";
+import { getRefs } from '../src/refs';
 const ajv = new Ajv();
 describe("Basic parsing", () => {
   it("should return a proper json schema with some common types without validation", () => {
@@ -151,7 +151,7 @@ describe("Basic parsing", () => {
       ],
       additionalProperties: false,
     };
-    const parsedSchema = parseDef(zodSchema._def, new References());
+    const parsedSchema = parseDef(zodSchema._def, getRefs());
     expect(parsedSchema).toStrictEqual(expectedJsonSchema);
     expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
   });
@@ -162,7 +162,7 @@ describe("Basic parsing", () => {
 
     const expected = { type: ["string", "null"] };
 
-    expect(parseDef(shorthand._def, new References())).toStrictEqual(expected);
-    expect(parseDef(union._def, new References())).toStrictEqual(expected);
+    expect(parseDef(shorthand._def, getRefs())).toStrictEqual(expected);
+    expect(parseDef(union._def, getRefs())).toStrictEqual(expected);
   });
 });
