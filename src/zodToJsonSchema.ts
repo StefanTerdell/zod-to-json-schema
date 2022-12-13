@@ -51,6 +51,7 @@ function zodToJsonSchema<
     target?: Target;
     strictUnions?: boolean;
     definitions?: Definitions;
+    errorMessages?: boolean;
   }
 ): Target extends "openApi3"
   ? Name extends string
@@ -107,6 +108,7 @@ function zodToJsonSchema(
         target?: Target;
         strictUnions?: boolean;
         definitions?: Record<string, ZodSchema<any>>;
+        errorMessages?: boolean;
       }
     | string
 ) {
@@ -130,7 +132,8 @@ function zodToJsonSchema(
         options.effectStrategy,
         options.target,
         undefined,
-        options.strictUnions
+        options.strictUnions,
+        options.errorMessages
       ),
       options.definitions && {
         basePath,

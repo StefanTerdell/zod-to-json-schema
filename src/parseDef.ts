@@ -39,7 +39,7 @@ import { Item, References } from "./References";
 
 type JsonSchema7RefType = { $ref: string };
 
-export type JsonSchema7Type = (
+export type JsonSchema7TypeUnion =
   | JsonSchema7StringType
   | JsonSchema7ArrayType
   | JsonSchema7NumberType
@@ -63,8 +63,12 @@ export type JsonSchema7Type = (
   | JsonSchema7NullableType
   | JsonSchema7AllOfType
   | JsonSchema7UnknownType
-  | JsonSchema7SetType
-) & { default?: any; description?: string }
+  | JsonSchema7SetType;
+
+export type JsonSchema7Type = JsonSchema7TypeUnion & {
+  default?: any;
+  description?: string;
+};
 
 export function parseDef(
   def: ZodTypeDef,
@@ -160,7 +164,7 @@ const selectParser = (
 ): JsonSchema7Type | undefined => {
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
-      return parseStringDef(def);
+      return parseStringDef(def, refs);
     case ZodFirstPartyTypeKind.ZodNumber:
       return parseNumberDef(def, refs);
     case ZodFirstPartyTypeKind.ZodObject:
@@ -252,17 +256,17 @@ const getPreloadedDefinitionSchemas = (
             refs
           );
 
-          if (jsonSchema) {
-            refs.items.push({
-              def: schema._def,
-              path: [...options.basePath, options.definitionsPath, key],
-              jsonSchema,
-            });
+        if (jsonSchema) {
+          refs.items.push({
+            def: schema._def,
+            path: [...options.basePath, options.definitionsPath, key],
+            jsonSchema,
+          });
 
-            acc[key] = jsonSchema;
-          }
+          acc[key] = jsonSchema;
+        }
 
-          return acc;
+        return acc;
         },
         {}
       )
