@@ -33,7 +33,7 @@
   },
   "license": "ISC",
   "peerDependencies": {
-    "zod": "^3.19.0"
+    "zod": ">=3.19.0 <3.20.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
