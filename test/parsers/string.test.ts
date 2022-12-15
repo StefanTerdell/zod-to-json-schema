@@ -1,15 +1,24 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { JsonSchema7Type } from "../../src/parseDef";
-import { parseStringDef } from "../../src/parsers/string";
+import {
+  JsonSchema7StringType,
+  parseStringDef,
+} from "../../src/parsers/string";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
+import { ErrorMessages } from "../../src/errorMessages";
+import { References } from "../../src/References";
+import { errorReferences } from "./errorReferences";
 
 const ajv = addFormats(new Ajv());
 
 describe("String validations", () => {
   it("should be possible to describe minimum length of a string", () => {
-    const parsedSchema = parseStringDef(z.string().min(5)._def);
+    const parsedSchema = parseStringDef(
+      z.string().min(5)._def,
+      new References()
+    );
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       minLength: 5,
@@ -28,7 +37,10 @@ describe("String validations", () => {
     ]);
   });
   it("should be possible to describe maximum length of a string", () => {
-    const parsedSchema = parseStringDef(z.string().max(5)._def);
+    const parsedSchema = parseStringDef(
+      z.string().max(5)._def,
+      new References()
+    );
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       maxLength: 5,
@@ -46,7 +58,10 @@ describe("String validations", () => {
     ]);
   });
   it("should be possible to describe both minimum and maximum length of a string", () => {
-    const parsedSchema = parseStringDef(z.string().min(5).max(5)._def);
+    const parsedSchema = parseStringDef(
+      z.string().min(5).max(5)._def,
+      new References()
+    );
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       minLength: 5,
@@ -55,7 +70,10 @@ describe("String validations", () => {
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
   it("should be possible to use email constraint", () => {
-    const parsedSchema = parseStringDef(z.string().email()._def);
+    const parsedSchema = parseStringDef(
+      z.string().email()._def,
+      new References()
+    );
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       format: "email",
@@ -74,7 +92,10 @@ describe("String validations", () => {
     expect(ajv.validate(parsedSchema, "hej@hej.com")).toEqual(true);
   });
   it("should be possible to use uuid constraint", () => {
-    const parsedSchema = parseStringDef(z.string().uuid()._def);
+    const parsedSchema = parseStringDef(
+      z.string().uuid()._def,
+      new References()
+    );
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       format: "uuid",
@@ -95,7 +116,10 @@ describe("String validations", () => {
     ).toEqual(true);
   });
   it("should be possible to use url constraint", () => {
-    const parsedSchema = parseStringDef(z.string().url()._def);
+    const parsedSchema = parseStringDef(
+      z.string().url()._def,
+      new References()
+    );
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       format: "uri",
@@ -115,7 +139,10 @@ describe("String validations", () => {
   });
 
   it("should be possible to use regex constraint", () => {
-    const parsedSchema = parseStringDef(z.string().regex(/[A-C]/)._def);
+    const parsedSchema = parseStringDef(
+      z.string().regex(/[A-C]/)._def,
+      new References()
+    );
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       pattern: "[A-C]",
@@ -135,7 +162,10 @@ describe("String validations", () => {
   });
 
   it("should be possible to use CUID constraint", () => {
-    const parsedSchema = parseStringDef(z.string().cuid()._def);
+    const parsedSchema = parseStringDef(
+      z.string().cuid()._def,
+      new References()
+    );
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       pattern: "^c[^\\s-]{8,}$",
@@ -157,14 +187,20 @@ describe("String validations", () => {
   });
 
   it('should gracefully ignore the .trim() "check"', () => {
-    const parsedSchema = parseStringDef(z.string().trim()._def);
+    const parsedSchema = parseStringDef(
+      z.string().trim()._def,
+      new References()
+    );
     const jsonSchema = { type: "string" };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
 
   it("should work with the startsWith check", () => {
     expect(
-      parseStringDef(z.string().startsWith("aBcD123{}[]")._def)
+      parseStringDef(
+        z.string().startsWith("aBcD123{}[]")._def,
+        new References()
+      )
     ).toStrictEqual({
       type: "string",
       pattern: "^aBcD123\\{\\}\\[\\]",
@@ -173,7 +209,7 @@ describe("String validations", () => {
 
   it("should work with the endsWith check", () => {
     expect(
-      parseStringDef(z.string().endsWith("aBcD123{}[]")._def)
+      parseStringDef(z.string().endsWith("aBcD123{}[]")._def, new References())
     ).toStrictEqual({
       type: "string",
       pattern: "aBcD123\\{\\}\\[\\]$",
@@ -182,7 +218,10 @@ describe("String validations", () => {
 
   it("should bundle multiple pattern type checks in an allOf container", () => {
     expect(
-      parseStringDef(z.string().startsWith("alpha").endsWith("omega")._def)
+      parseStringDef(
+        z.string().startsWith("alpha").endsWith("omega")._def,
+        new References()
+      )
     ).toStrictEqual({
       type: "string",
       allOf: [
@@ -198,11 +237,199 @@ describe("String validations", () => {
 
   it("should pick correct value if multiple min/max are present", () => {
     expect(
-      parseStringDef(z.string().min(1).min(2).max(3).max(4)._def)
+      parseStringDef(
+        z.string().min(1).min(2).max(3).max(4)._def,
+        new References()
+      )
     ).toStrictEqual({
       type: "string",
       maxLength: 3,
       minLength: 2,
     });
+  });
+
+  it("should include custom error messages for each string check if they're included", () => {
+    const regex = /cool/;
+    const errorMessages = {
+      min: "Not long enough",
+      max: "Too long",
+      email: "not email",
+      url: "not url",
+      uuid: "not uuid",
+      regex: "didn't match regex " + regex.source,
+      startsWith: "didn't start with " + regex.source,
+      endsWith: "didn't end with " + regex.source,
+    };
+    const testCases: {
+      schema: z.ZodString;
+      errorMessage: ErrorMessages<JsonSchema7StringType>;
+    }[] = [
+      {
+        schema: z.string().min(1, errorMessages.min),
+        errorMessage: {
+          minLength: errorMessages.min,
+        },
+      },
+      {
+        schema: z.string().max(1, errorMessages.max),
+        errorMessage: {
+          maxLength: errorMessages.max,
+        },
+      },
+      {
+        schema: z.string().uuid(errorMessages.uuid),
+        errorMessage: {
+          format: errorMessages.uuid,
+        },
+      },
+      {
+        schema: z.string().email(errorMessages.email),
+        errorMessage: {
+          format: errorMessages.email,
+        },
+      },
+      {
+        schema: z.string().url(errorMessages.url),
+        errorMessage: {
+          format: errorMessages.url,
+        },
+      },
+      {
+        schema: z.string().startsWith(regex.source, errorMessages.startsWith),
+        errorMessage: {
+          pattern: errorMessages.startsWith,
+        },
+      },
+      {
+        schema: z.string().endsWith(regex.source, errorMessages.endsWith),
+        errorMessage: {
+          pattern: errorMessages.endsWith,
+        },
+      },
+      {
+        schema: z.string().regex(regex, errorMessages.regex),
+        errorMessage: {
+          pattern: errorMessages.regex,
+        },
+      },
+    ];
+    for (const testCase of testCases) {
+      const { schema, errorMessage } = testCase;
+      const jsonSchema: JSONSchema7Type = {
+        type: "string",
+        errorMessage,
+      };
+      const jsonSchemaParsed = parseStringDef(schema._def, errorReferences());
+      expect(jsonSchemaParsed.errorMessage).toStrictEqual(
+        jsonSchema.errorMessage
+      );
+    }
+  });
+  it("should not include a custom error message for any string when they aren't passed for single checks", () => {
+    const regex = /cool/;
+    const testCases: z.ZodString[] = [
+      z.string().min(1),
+      z.string().max(1),
+      z.string().uuid(),
+      z.string().email(),
+      z.string().url(),
+      z.string().startsWith(regex.source),
+      z.string().endsWith(regex.source),
+      z.string().regex(regex),
+      z.string().regex(regex).regex(regex),
+    ];
+    for (const schema of testCases) {
+      const jsonSchemaParsed = parseStringDef(schema._def, errorReferences());
+      expect(jsonSchemaParsed.errorMessage).toBeUndefined();
+    }
+  });
+  it("should include custom error messages in 'allOf' if they're passed for a given pattern, and include other errors at the top level.", () => {
+    const regex = /cool/;
+    const pattern = regex.source;
+    const errorMessages = {
+      one: `Pattern one doesn't match.`,
+      two: `Pattern two doesn't match`,
+      format: "Pretty terrible format",
+      minLength: "too short",
+      maxLength: "too long",
+    };
+    const jsonSchema: JSONSchema7Type = {
+      type: "string",
+      minLength: 5,
+      maxLength: 10,
+      format: "uuid",
+      allOf: [
+        {
+          pattern,
+          errorMessage: {
+            pattern: errorMessages.one,
+          },
+        },
+        {
+          pattern,
+          errorMessage: {
+            pattern: errorMessages.two,
+          },
+        },
+        {
+          pattern,
+        },
+      ],
+      errorMessage: {
+        format: errorMessages.format,
+        minLength: errorMessages.minLength,
+      },
+    };
+    const zodSchema = z
+      .string()
+      .max(10)
+      .uuid(errorMessages.format)
+      .min(5, errorMessages.minLength)
+      .regex(regex, errorMessages.one)
+      .regex(regex, errorMessages.two)
+      .regex(regex);
+    const jsonSchemaParse = parseStringDef(zodSchema._def, errorReferences());
+    expect(jsonSchemaParse).toStrictEqual(jsonSchema);
+  });
+
+  it("should include include the pattern error message in the top level with other messages if there is only one pattern", () => {
+    const formatMessage = "not a uuid";
+    const regex = /cool/;
+    const regexErrorMessage = "doesn't match regex " + regex.source;
+    const jsonSchema: JSONSchema7Type = {
+      type: "string",
+      format: "uuid",
+      pattern: regex.source,
+      errorMessage: {
+        format: formatMessage,
+        pattern: regexErrorMessage,
+      },
+    };
+    const zodSchema = z
+      .string()
+      .uuid(formatMessage)
+      .regex(regex, regexErrorMessage);
+    const jsonParsedSchema = parseStringDef(zodSchema._def, errorReferences());
+    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+  });
+
+  it("should not include error messages if the error message option isn't explicitly passed to References constructor", () => {
+    const zodSchema = [
+      z.string().min(5, "bad"),
+      z.string().max(5, "bad"),
+      z.string().regex(/cool/, "bad"),
+      z.string().uuid("bad"),
+      z.string().email("bad"),
+      z.string().url("bad"),
+      z.string().regex(/cool/, "bad").regex(/cool/, "bad").url("bad"),
+    ];
+    for (const schema of zodSchema) {
+      const jsonParsedSchema = parseStringDef(schema._def, new References());
+      expect(jsonParsedSchema.errorMessage).toBeUndefined();
+      if (!jsonParsedSchema.allOf?.length) continue;
+      for (const oneOf of jsonParsedSchema.allOf) {
+        expect(oneOf.errorMessage).toBeUndefined();
+      }
+    }
   });
 });

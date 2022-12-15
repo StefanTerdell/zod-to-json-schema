@@ -2,7 +2,8 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseArrayDef } from "../../src/parsers/array";
 import { References } from "../../src/References";
-const deref = require('json-schema-deref-sync')
+import { errorReferences } from "./errorReferences";
+const deref = require("json-schema-deref-sync");
 
 describe("Arrays and array validations", () => {
   it("should be possible to describe a simple array", () => {
@@ -59,5 +60,52 @@ describe("Arrays and array validations", () => {
 
     const resolvedSchema = deref(jsonSchema)
     expect(resolvedSchema.items.anyOf[1]).toBe(resolvedSchema.items.anyOf[0]);
+  });
+
+  it("should include custom error messages for minLength and maxLength", () => {
+    const minLengthMessage = "Must have at least 5 items.";
+    const maxLengthMessage = "Can have at most 10 items.";
+    const jsonSchema: JSONSchema7Type = {
+      type: "array",
+      minItems: 5,
+      maxItems: 10,
+      errorMessage: {
+        minItems: minLengthMessage,
+        maxItems: maxLengthMessage,
+      },
+    };
+    const zodArraySchema = z
+      .array(z.any())
+      .min(5, minLengthMessage)
+      .max(10, maxLengthMessage);
+    const jsonParsedSchema = parseArrayDef(
+      zodArraySchema._def,
+      errorReferences()
+    );
+    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+  });
+
+  it("should not include errorMessages property if none are passed", () => {
+    const jsonSchema: JSONSchema7Type = {
+      type: "array",
+      minItems: 5,
+      maxItems: 10,
+    };
+    const zodArraySchema = z.array(z.any()).min(5).max(10);
+    const jsonParsedSchema = parseArrayDef(
+      zodArraySchema._def,
+      errorReferences()
+    );
+    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+  });
+  it("should not include error messages if it isn't explicitly set to true in References constructor", () => {
+    const zodSchemas = [
+      z.array(z.any()).min(1, "bad"),
+      z.array(z.any()).max(1, "bad"),
+    ];
+    for (const schema of zodSchemas) {
+      const jsonParsedSchema = parseArrayDef(schema._def, new References());
+      expect(jsonParsedSchema.errorMessages).toBeUndefined();
+    }
   });
 });

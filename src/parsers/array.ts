@@ -1,4 +1,5 @@
 import { ZodArrayDef, ZodFirstPartyTypeKind } from "zod";
+import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
 import { JsonSchema7Type, parseDef } from "../parseDef";
 import { References } from "../References";
 
@@ -7,6 +8,7 @@ export type JsonSchema7ArrayType = {
   items?: JsonSchema7Type;
   minItems?: number;
   maxItems?: number;
+  errorMessages?: ErrorMessages<JsonSchema7ArrayType, "items">;
 };
 
 export function parseArrayDef(def: ZodArrayDef, refs: References) {
@@ -17,10 +19,22 @@ export function parseArrayDef(def: ZodArrayDef, refs: References) {
     res.items = parseDef(def.type._def, refs.addToPath("items"));
   }
   if (def.minLength) {
-    res.minItems = def.minLength.value;
+    setResponseValueAndErrors(
+      res,
+      "minItems",
+      def.minLength.value,
+      def.minLength.message,
+      refs
+    );
   }
   if (def.maxLength) {
-    res.maxItems = def.maxLength.value;
+    setResponseValueAndErrors(
+      res,
+      "maxItems",
+      def.maxLength.value,
+      def.maxLength.message,
+      refs
+    );
   }
 
   return res;
