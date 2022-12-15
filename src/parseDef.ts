@@ -4,6 +4,7 @@ import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array";
 import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint";
 import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean";
 import { parseBrandedDef } from "./parsers/branded";
+import { parseCatchDef } from "./parsers/catch";
 import { JsonSchema7DateType, parseDateDef } from "./parsers/date";
 import { parseDefaultDef } from "./parsers/default";
 import { parseEffectsDef } from "./parsers/effects";
@@ -24,6 +25,7 @@ import { JsonSchema7NullableType, parseNullableDef } from "./parsers/nullable";
 import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number";
 import { JsonSchema7ObjectType, parseObjectDef } from "./parsers/object";
 import { parseOptionalDef } from "./parsers/optional";
+import { parsePipelineDef } from "./parsers/pipeline";
 import { parsePromiseDef } from "./parsers/promise";
 import { JsonSchema7RecordType, parseRecordDef } from "./parsers/record";
 import { JsonSchema7SetType, parseSetDef } from "./parsers/set";
@@ -204,8 +206,13 @@ const selectParser = (
       return parseDefaultDef(def, refs);
     case ZodFirstPartyTypeKind.ZodBranded:
       return parseBrandedDef(def, refs);
+    case ZodFirstPartyTypeKind.ZodCatch:
+      return parseCatchDef(def, refs);
+    case ZodFirstPartyTypeKind.ZodPipeline:
+      return parsePipelineDef(def, refs);
     case ZodFirstPartyTypeKind.ZodFunction:
     case ZodFirstPartyTypeKind.ZodVoid:
+    case ZodFirstPartyTypeKind.ZodSymbol:
       return undefined;
     default:
       return ((_: never) => undefined)(typeName);

@@ -6,7 +6,7 @@ export type JsonSchema7StringType = {
   type: "string";
   minLength?: number;
   maxLength?: number;
-  format?: "email" | "uri" | "uuid";
+  format?: "email" | "uri" | "uuid" | "date-time";
   pattern?: string;
   allOf?: {
     pattern: string;
@@ -88,6 +88,35 @@ export function parseStringDef(
           break;
         case "trim":
           // I have no idea why this is a check in Zod. It's a runtime string manipulation method.
+          break;
+        case "datetime":
+          setResponseValueAndErrors(
+            res,
+            "format",
+            "date-time",
+            check.message,
+            refs
+          );
+          break;
+        case "length":
+          setResponseValueAndErrors(
+            res,
+            "minLength",
+            typeof res.minLength === "number"
+              ? Math.max(res.minLength, check.value)
+              : check.value,
+            check.message,
+            refs
+          );
+          setResponseValueAndErrors(
+            res,
+            "maxLength",
+            typeof res.maxLength === "number"
+              ? Math.min(res.maxLength, check.value)
+              : check.value,
+            check.message,
+            refs
+          );
           break;
         default:
           ((_: never) => {})(check);
