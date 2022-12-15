@@ -1,7 +1,7 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseSetDef } from "../../src/parsers/set";
-import { References } from "../../src/References";
+import { getRefs } from '../../src/refs';
 import { errorReferences } from "./errorReferences";
 
 describe("set", () => {
@@ -36,7 +36,7 @@ describe("set", () => {
   });
   it("should not include error messages if it's not explicitly set to true in the References constructor", () => {
     const zodSchema = z.set(z.any()).min(1, "bad").max(5, "vbad");
-    const jsonParsedSchema = parseSetDef(zodSchema._def, new References());
+    const jsonParsedSchema = parseSetDef(zodSchema._def, getRefs());
     expect(jsonParsedSchema.errorMessage).toBeUndefined();
   });
 });
