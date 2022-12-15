@@ -76,6 +76,7 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 | **target**?: "jsonSchema7" \| "openApi3"          | Which spec to target. Defaults to "jsonSchema7"                                                                                                                                                                                                                                                                                                                                                                                                              |
 | **strictUnions**?: boolean                        | Scrubs unions of any-like json schemas, like `{}` or `true`. Multiple zod types may result in these out of necessity, such as z.instanceof()                                                                                                                                                                                                                                                                                                                 |
 | **definitions**?: Record<string, ZodSchema>       | See separate section below                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **errorMessages**?: boolean                       | Include custom error messages created via chained function checks for supported zod types. See section below                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Definitions
 
@@ -112,6 +113,50 @@ const myJsonSchema = zodToJsonSchema(myObjectSchema, {
   }
 }
 ```
+
+### Error Messages
+
+This feature allows optionally including error messages created via chained function calls for supported zod types:
+
+```ts
+// string schema with additional chained function call checks
+const EmailSchema = z.string().email("Invalid email").min(5, "Too short");
+
+const jsonSchema = zodToJsonSchema(EmailSchema, {errorMessages: true})
+```
+
+#### Result
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "string",
+  "format": "email",
+  "minLength": 5,
+  "errorMessage": {
+    "format": "Invalid email",
+    "minLength": "Too short",
+  }
+}
+```
+
+This allows for field specific, validation step specific error messages which can be useful for building forms and such. This format is accepted by `react-hook-form`'s ajv resolver (and therefor `ajv-errors` which it uses under the hood). Note that if using AJV with this format will require [enabling `ajv-errors`](https://ajv.js.org/packages/ajv-errors.html#usage) as vanilla AJV does not accept this format by default.
+
+#### Custom Error Message Support
+
+- ZodString
+  - regex
+  - min, max
+  - email, cuid, uuid, url
+  - endsWith, startsWith
+- ZodNumber
+  - min, max, lt, lte, gt, gte, 
+  - int
+  - multipleOf
+- ZodSet
+  - min, max
+- ZodArray
+  - min, max
 
 ## Known issues
 

@@ -32,7 +32,7 @@ export function parseRecordDef(
     def.keyType._def.checks?.length
   ) {
     const keyType: JsonSchema7RecordPropertyNamesType = Object.entries(
-      parseStringDef(def.keyType._def)
+      parseStringDef(def.keyType._def, refs)
     ).reduce(
       (acc, [key, value]) => (key === "type" ? acc : { ...acc, [key]: value }),
       {}

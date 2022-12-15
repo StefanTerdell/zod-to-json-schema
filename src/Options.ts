@@ -9,6 +9,7 @@ export type Options = {
   strictUnions: boolean;
   definitionPath: string;
   definitions: Record<string, ZodSchema>;
+  errorMessages: boolean
 };
 
 export const defaultOptions: Options = {
@@ -20,6 +21,7 @@ export const defaultOptions: Options = {
   target: "jsonSchema7",
   strictUnions: false,
   definitions: {},
+  errorMessages: false
 };
 
 export const getDefaultOptions = (

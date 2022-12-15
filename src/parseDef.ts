@@ -40,7 +40,7 @@ import { Refs, Seen } from "./refs";
 type JsonSchema7RefType = { $ref: string };
 type JsonSchema7Meta = { default?: any; description?: string };
 
-export type JsonSchema7Type = (
+export type JsonSchema7TypeUnion =
   | JsonSchema7StringType
   | JsonSchema7ArrayType
   | JsonSchema7NumberType
@@ -64,9 +64,9 @@ export type JsonSchema7Type = (
   | JsonSchema7NullableType
   | JsonSchema7AllOfType
   | JsonSchema7UnknownType
-  | JsonSchema7SetType
-) &
-  JsonSchema7Meta;
+  | JsonSchema7SetType;
+
+export type JsonSchema7Type = JsonSchema7TypeUnion & JsonSchema7Meta;
 
 export function parseDef(
   def: ZodTypeDef,
@@ -147,7 +147,7 @@ const selectParser = (
 ): JsonSchema7Type | undefined => {
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
-      return parseStringDef(def);
+      return parseStringDef(def, refs);
     case ZodFirstPartyTypeKind.ZodNumber:
       return parseNumberDef(def, refs);
     case ZodFirstPartyTypeKind.ZodObject:
