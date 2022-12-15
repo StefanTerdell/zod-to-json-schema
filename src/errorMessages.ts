@@ -1,5 +1,5 @@
 import { JsonSchema7TypeUnion } from "./parseDef";
-import { References } from "./References";
+import { Refs } from "./Refs";
 
 export type ErrorMessages<
   T extends JsonSchema7TypeUnion,
@@ -14,9 +14,9 @@ export function addErrorMessage<
   res: T,
   key: keyof T,
   errorMessage: string | undefined,
-  references: References
+  refs: Refs
 ) {
-  if (!references?.errorMessages) return;
+  if (!refs?.errorMessages) return;
   if (errorMessage) {
     res.errorMessage = {
       ...res.errorMessage,
@@ -35,8 +35,8 @@ export function setResponseValueAndErrors<
   key: Key,
   value: Json7Type[Key],
   errorMessage: string | undefined,
-  references: References
+  refs: Refs
 ) {
   res[key] = value;
-  addErrorMessage(res, key, errorMessage, references);
+  addErrorMessage(res, key, errorMessage, refs);
 }

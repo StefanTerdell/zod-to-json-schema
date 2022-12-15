@@ -1,6 +1,6 @@
 import { ZodStringDef } from "zod";
 import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
-import { References } from "../References";
+import { Refs } from "../refs";
 
 export type JsonSchema7StringType = {
   type: "string";
@@ -17,7 +17,7 @@ export type JsonSchema7StringType = {
 
 export function parseStringDef(
   def: ZodStringDef,
-  references: References
+  refs: Refs
 ): JsonSchema7StringType {
   const res: JsonSchema7StringType = {
     type: "string",
@@ -34,7 +34,7 @@ export function parseStringDef(
               ? Math.max(res.minLength, check.value)
               : check.value,
             check.message,
-            references
+            refs
           );
           break;
         case "max":
@@ -45,7 +45,7 @@ export function parseStringDef(
               ? Math.min(res.maxLength, check.value)
               : check.value,
             check.message,
-            references
+            refs
           );
 
           break;
@@ -55,39 +55,27 @@ export function parseStringDef(
             "format",
             "email",
             check.message,
-            references
+            refs
           );
           break;
         case "url":
-          setResponseValueAndErrors(
-            res,
-            "format",
-            "uri",
-            check.message,
-            references
-          );
+          setResponseValueAndErrors(res, "format", "uri", check.message, refs);
           break;
         case "uuid":
-          setResponseValueAndErrors(
-            res,
-            "format",
-            "uuid",
-            check.message,
-            references
-          );
+          setResponseValueAndErrors(res, "format", "uuid", check.message, refs);
           break;
         case "regex":
-          addPattern(res, check.regex.source, check.message, references);
+          addPattern(res, check.regex.source, check.message, refs);
           break;
         case "cuid":
-          addPattern(res, "^c[^\\s-]{8,}$", check.message, references);
+          addPattern(res, "^c[^\\s-]{8,}$", check.message, refs);
           break;
         case "startsWith":
           addPattern(
             res,
             "^" + escapeNonAlphaNumeric(check.value),
             check.message,
-            references
+            refs
           );
           break;
         case "endsWith":
@@ -95,7 +83,7 @@ export function parseStringDef(
             res,
             escapeNonAlphaNumeric(check.value) + "$",
             check.message,
-            references
+            refs
           );
           break;
         case "trim":
@@ -119,7 +107,7 @@ const addPattern = (
   schema: JsonSchema7StringType,
   value: string,
   message: string | undefined,
-  references: References
+  refs: Refs
 ) => {
   if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
     if (!schema.allOf) {
@@ -130,7 +118,7 @@ const addPattern = (
       schema.allOf!.push({
         pattern: schema.pattern,
         ...(schema.errorMessage &&
-          references.errorMessages && {
+          refs.errorMessages && {
             errorMessage: { pattern: schema.errorMessage.pattern },
           }),
       });
@@ -146,9 +134,9 @@ const addPattern = (
     schema.allOf!.push({
       pattern: value,
       ...(message &&
-        references.errorMessages && { errorMessage: { pattern: message } }),
+        refs.errorMessages && { errorMessage: { pattern: message } }),
     });
   } else {
-    setResponseValueAndErrors(schema, "pattern", value, message, references);
+    setResponseValueAndErrors(schema, "pattern", value, message, refs);
   }
 };
