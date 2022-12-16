@@ -1,6 +1,6 @@
 import { ZodIntersectionDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../refs";
+import { Refs } from "../Refs";
 
 export type JsonSchema7AllOfType = {
   allOf: JsonSchema7Type[];

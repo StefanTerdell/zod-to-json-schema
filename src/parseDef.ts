@@ -37,7 +37,7 @@ import {
 } from "./parsers/undefined";
 import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union";
 import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown";
-import { Refs, Seen } from "./refs";
+import { Refs, Seen } from "./Refs";
 
 type JsonSchema7RefType = { $ref: string };
 type JsonSchema7Meta = { default?: any; description?: string };

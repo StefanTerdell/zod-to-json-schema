@@ -1,7 +1,7 @@
 import { ZodSetDef } from "zod";
 import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../refs";
+import { Refs } from "../Refs";
 
 export type JsonSchema7SetType = {
   type: "array";

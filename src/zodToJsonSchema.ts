@@ -2,7 +2,7 @@ import { JSONSchema7Type } from "json-schema";
 import { ZodSchema } from "zod";
 import { Options } from "./Options";
 import { JsonSchema7Type, parseDef } from "./parseDef";
-import { getRefs } from "./refs";
+import { getRefs } from "./Refs";
 
 const zodToJsonSchema = (
   schema: ZodSchema<any>,

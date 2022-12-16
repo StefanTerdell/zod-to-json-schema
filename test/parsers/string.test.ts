@@ -9,7 +9,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import { ErrorMessages } from "../../src/errorMessages";
 import { errorReferences } from "./errorReferences";
-import { getRefs } from '../../src/refs';
+import { getRefs } from '../../src/Refs';
 
 const ajv = addFormats(new Ajv());
 

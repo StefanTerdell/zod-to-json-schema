@@ -1,6 +1,6 @@
 import { ZodEffectsDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../refs";
+import { Refs } from "../Refs";
 
 export function parseEffectsDef(
   _def: ZodEffectsDef,
