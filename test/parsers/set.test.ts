@@ -1,7 +1,7 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseSetDef } from "../../src/parsers/set";
-import { getRefs } from '../../src/refs';
+import { getRefs } from '../../src/Refs';
 import { errorReferences } from "./errorReferences";
 
 describe("set", () => {

@@ -1,6 +1,6 @@
 import { ZodFirstPartyTypeKind, ZodRecordDef, ZodTypeAny } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../refs";
+import { Refs } from "../Refs";
 import { JsonSchema7EnumType } from "./enum";
 import { JsonSchema7StringType, parseStringDef } from "./string";
 

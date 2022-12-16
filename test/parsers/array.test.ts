@@ -1,7 +1,7 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseArrayDef } from "../../src/parsers/array";
-import { getRefs } from "../../src/refs";
+import { getRefs } from "../../src/Refs";
 import { errorReferences } from "./errorReferences";
 const deref = require("json-schema-deref-sync");
 
