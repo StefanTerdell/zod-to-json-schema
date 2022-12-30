@@ -4,12 +4,16 @@ import { Options } from "./Options";
 import { JsonSchema7Type, parseDef } from "./parseDef";
 import { getRefs } from "./Refs";
 
-const zodToJsonSchema = (
+const zodToJsonSchema = <
+  Target extends "jsonSchema7" | "openApi3" = "jsonSchema7"
+>(
   schema: ZodSchema<any>,
-  options?: Partial<Options> | string
-): JsonSchema7Type & {
+  options?: Partial<Options<Target>> | string
+): (Target extends "jsonSchema7" ? JsonSchema7Type : object) & {
   $schema?: string;
-  definitions?: { [key: string]: JSONSchema7Type };
+  definitions?: {
+    [key: string]: Target extends "jsonSchema7" ? JSONSchema7Type : object;
+  };
 } => {
   const refs = getRefs(options);
 
@@ -41,7 +45,7 @@ const zodToJsonSchema = (
           }
     ) ?? {};
 
-  const combined: ReturnType<typeof zodToJsonSchema> =
+  const combined: ReturnType<typeof zodToJsonSchema<Target>> =
     name === undefined
       ? definitions
         ? {

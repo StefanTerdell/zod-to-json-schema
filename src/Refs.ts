@@ -6,7 +6,7 @@ export type Refs = {
   seen: Seen[];
   currentPath: string[];
   propertyPath: string[] | undefined;
-} & Options;
+} & Options<"jsonSchema7" | "openApi3">;
 
 export type Seen = {
   def: ZodTypeDef;
@@ -14,7 +14,9 @@ export type Seen = {
   jsonSchema: JsonSchema7Type | undefined;
 };
 
-export const getRefs = (options?: string | Partial<Options>): Refs => {
+export const getRefs = (
+  options?: string | Partial<Options<"jsonSchema7" | "openApi3">>
+): Refs => {
   const _options = getDefaultOptions(options);
   const currentPath =
     _options.name !== undefined
