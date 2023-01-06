@@ -7,10 +7,12 @@ import { getRefs } from "./Refs";
 const zodToJsonSchema = (
   schema: ZodSchema<any>,
   options?: Partial<Options> | string
-): JsonSchema7Type & {
-  $schema?: string;
-  definitions?: { [key: string]: JSONSchema7Type };
-} => {
+):
+  | (JsonSchema7Type & {
+      $schema?: string;
+      definitions?: { [key: string]: JSONSchema7Type };
+    })
+  | undefined => {
   const refs = getRefs(options);
 
   const definitions =
@@ -30,16 +32,17 @@ const zodToJsonSchema = (
 
   const name = typeof options === "string" ? options : options?.name;
 
-  const main =
-    parseDef(
-      schema._def,
-      name === undefined
-        ? refs
-        : {
-            ...refs,
-            currentPath: [...refs.basePath, refs.definitionPath, name],
-          }
-    ) ?? {};
+  const main = parseDef(
+    schema._def,
+    name === undefined
+      ? refs
+      : {
+          ...refs,
+          currentPath: [...refs.basePath, refs.definitionPath, name],
+        }
+  );
+
+  if (main === undefined) return main;
 
   const combined: ReturnType<typeof zodToJsonSchema> =
     name === undefined
