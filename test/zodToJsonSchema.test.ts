@@ -57,7 +57,12 @@ describe("Root schema result after parsing", () => {
     expect(
       zodToJsonSchema(
         z.object({
-          field: z.union([z.any(), z.instanceof(String), z.string(), z.number()]),
+          field: z.union([
+            z.any(),
+            z.instanceof(String),
+            z.string(),
+            z.number(),
+          ]),
         }),
         { strictUnions: true }
       )
@@ -69,5 +74,9 @@ describe("Root schema result after parsing", () => {
       },
       type: "object",
     });
+  });
+
+  it("should return undefined from z.void()", () => {
+    expect(zodToJsonSchema(z.void())).toStrictEqual(undefined);
   });
 });
