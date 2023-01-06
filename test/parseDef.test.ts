@@ -2,7 +2,7 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../src/parseDef";
 import Ajv from "ajv";
-import { getRefs } from '../src/Refs';
+import { getRefs } from "../src/Refs";
 const ajv = new Ajv();
 describe("Basic parsing", () => {
   it("should return a proper json schema with some common types without validation", () => {
@@ -164,5 +164,9 @@ describe("Basic parsing", () => {
 
     expect(parseDef(shorthand._def, getRefs())).toStrictEqual(expected);
     expect(parseDef(union._def, getRefs())).toStrictEqual(expected);
+  });
+
+  it("should return undefined from z.void()", () => {
+    expect(parseDef(z.void()._def, getRefs())).toStrictEqual(undefined);
   });
 });
