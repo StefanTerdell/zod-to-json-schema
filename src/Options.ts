@@ -1,16 +1,17 @@
 import { ZodSchema } from "zod";
 
-export type Options = {
-  name: string | undefined;
-  $refStrategy: "root" | "relative" | "none";
-  basePath: string[];
-  effectStrategy: "input" | "any";
-  target: "jsonSchema7" | "openApi3";
-  strictUnions: boolean;
-  definitionPath: string;
-  definitions: Record<string, ZodSchema>;
-  errorMessages: boolean
-};
+export type Options<Target extends "jsonSchema7" | "openApi3" = "jsonSchema7"> =
+  {
+    name: string | undefined;
+    $refStrategy: "root" | "relative" | "none";
+    basePath: string[];
+    effectStrategy: "input" | "any";
+    target: Target;
+    strictUnions: boolean;
+    definitionPath: string;
+    definitions: Record<string, ZodSchema>;
+    errorMessages: boolean;
+  };
 
 export const defaultOptions: Options = {
   name: undefined,
@@ -21,13 +22,13 @@ export const defaultOptions: Options = {
   target: "jsonSchema7",
   strictUnions: false,
   definitions: {},
-  errorMessages: false
+  errorMessages: false,
 };
 
-export const getDefaultOptions = (
-  options: Partial<Options> | string | undefined
-): Options =>
-  typeof options === "string"
+export const getDefaultOptions = <Target extends "jsonSchema7" | "openApi3">(
+  options: Partial<Options<Target>> | string | undefined
+) =>
+  (typeof options === "string"
     ? {
         ...defaultOptions,
         name: options,
@@ -35,4 +36,4 @@ export const getDefaultOptions = (
     : {
         ...defaultOptions,
         ...options,
-      };
+      }) as Options<Target>;
