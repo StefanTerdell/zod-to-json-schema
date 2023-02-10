@@ -1,7 +1,7 @@
-import { getRefs, Refs } from '../../src/Refs';
+import { getRefs, Refs } from "../../src/Refs";
 
 export function errorReferences(): Refs {
-  const r = getRefs()
+  const r = getRefs();
   r.errorMessages = true;
   return r;
 }

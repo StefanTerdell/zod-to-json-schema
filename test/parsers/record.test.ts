@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { parseRecordDef } from "../../src/parsers/record";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 
 describe("records", () => {
   it("should be possible to describe a simple record", () => {
@@ -71,5 +71,5 @@ describe("records", () => {
       },
     };
     expect(parsedSchema).toStrictEqual(expectedSchema);
-  })
+  });
 });

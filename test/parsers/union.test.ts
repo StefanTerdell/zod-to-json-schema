@@ -1,7 +1,7 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseUnionDef } from "../../src/parsers/union";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 const deref = require("json-schema-deref-sync");
 
 describe("Unions", () => {
@@ -152,7 +152,7 @@ describe("Unions", () => {
             },
           },
           required: ["kek", "lel"],
-          additionalProperties: false
+          additionalProperties: false,
         },
         {
           type: "object",
@@ -166,7 +166,7 @@ describe("Unions", () => {
             },
           },
           required: ["kek", "lel"],
-          additionalProperties: false
+          additionalProperties: false,
         },
       ],
     });

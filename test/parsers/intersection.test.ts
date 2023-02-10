@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { parseIntersectionDef } from "../../src/parsers/intersection";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 
 describe("intersections", () => {
   it("should be possible to use intersections", () => {

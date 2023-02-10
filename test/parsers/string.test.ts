@@ -9,16 +9,13 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import { ErrorMessages } from "../../src/errorMessages";
 import { errorReferences } from "./errorReferences";
-import { getRefs } from '../../src/Refs';
+import { getRefs } from "../../src/Refs";
 
 const ajv = addFormats(new Ajv());
 
 describe("String validations", () => {
   it("should be possible to describe minimum length of a string", () => {
-    const parsedSchema = parseStringDef(
-      z.string().min(5)._def,
-      getRefs()
-    );
+    const parsedSchema = parseStringDef(z.string().min(5)._def, getRefs());
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       minLength: 5,
@@ -37,10 +34,7 @@ describe("String validations", () => {
     ]);
   });
   it("should be possible to describe maximum length of a string", () => {
-    const parsedSchema = parseStringDef(
-      z.string().max(5)._def,
-      getRefs()
-    );
+    const parsedSchema = parseStringDef(z.string().max(5)._def, getRefs());
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       maxLength: 5,
@@ -70,10 +64,7 @@ describe("String validations", () => {
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
   it("should be possible to use email constraint", () => {
-    const parsedSchema = parseStringDef(
-      z.string().email()._def,
-      getRefs()
-    );
+    const parsedSchema = parseStringDef(z.string().email()._def, getRefs());
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       format: "email",
@@ -92,10 +83,7 @@ describe("String validations", () => {
     expect(ajv.validate(parsedSchema, "hej@hej.com")).toEqual(true);
   });
   it("should be possible to use uuid constraint", () => {
-    const parsedSchema = parseStringDef(
-      z.string().uuid()._def,
-      getRefs()
-    );
+    const parsedSchema = parseStringDef(z.string().uuid()._def, getRefs());
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       format: "uuid",
@@ -116,10 +104,7 @@ describe("String validations", () => {
     ).toEqual(true);
   });
   it("should be possible to use url constraint", () => {
-    const parsedSchema = parseStringDef(
-      z.string().url()._def,
-      getRefs()
-    );
+    const parsedSchema = parseStringDef(z.string().url()._def, getRefs());
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       format: "uri",
@@ -162,10 +147,7 @@ describe("String validations", () => {
   });
 
   it("should be possible to use CUID constraint", () => {
-    const parsedSchema = parseStringDef(
-      z.string().cuid()._def,
-      getRefs()
-    );
+    const parsedSchema = parseStringDef(z.string().cuid()._def, getRefs());
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       pattern: "^c[^\\s-]{8,}$",
@@ -187,20 +169,14 @@ describe("String validations", () => {
   });
 
   it('should gracefully ignore the .trim() "check"', () => {
-    const parsedSchema = parseStringDef(
-      z.string().trim()._def,
-      getRefs()
-    );
+    const parsedSchema = parseStringDef(z.string().trim()._def, getRefs());
     const jsonSchema = { type: "string" };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
 
   it("should work with the startsWith check", () => {
     expect(
-      parseStringDef(
-        z.string().startsWith("aBcD123{}[]")._def,
-        getRefs()
-      )
+      parseStringDef(z.string().startsWith("aBcD123{}[]")._def, getRefs())
     ).toStrictEqual({
       type: "string",
       pattern: "^aBcD123\\{\\}\\[\\]",
@@ -237,10 +213,7 @@ describe("String validations", () => {
 
   it("should pick correct value if multiple min/max are present", () => {
     expect(
-      parseStringDef(
-        z.string().min(1).min(2).max(3).max(4)._def,
-        getRefs()
-      )
+      parseStringDef(z.string().min(1).min(2).max(3).max(4)._def, getRefs())
     ).toStrictEqual({
       type: "string",
       maxLength: 3,

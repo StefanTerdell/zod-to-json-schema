@@ -10,12 +10,7 @@ export type ErrorMessages<
 
 export function addErrorMessage<
   T extends { errorMessage?: ErrorMessages<any> }
->(
-  res: T,
-  key: keyof T,
-  errorMessage: string | undefined,
-  refs: Refs
-) {
+>(res: T, key: keyof T, errorMessage: string | undefined, refs: Refs) {
   if (!refs?.errorMessages) return;
   if (errorMessage) {
     res.errorMessage = {

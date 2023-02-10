@@ -2,7 +2,7 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseNullableDef } from "../../src/parsers/nullable";
 import { parseObjectDef } from "../../src/parsers/object";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 
 describe("nullable", () => {
   it("should be possible to properly reference nested nullable primitives", () => {

@@ -1,7 +1,7 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../../src/parseDef";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 
 describe("Standalone optionals", () => {
   it("should work as unions with undefined", () => {

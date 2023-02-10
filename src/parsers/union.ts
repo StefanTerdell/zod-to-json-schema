@@ -16,7 +16,7 @@ export const primitiveMappings = {
 } as const;
 type ZodPrimitive = keyof typeof primitiveMappings;
 type JsonSchema7Primitive =
-  typeof primitiveMappings[keyof typeof primitiveMappings];
+  (typeof primitiveMappings)[keyof typeof primitiveMappings];
 
 export type JsonSchema7UnionType =
   | JsonSchema7PrimitiveUnionType
@@ -118,9 +118,11 @@ const asAnyOf = (
   def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
   refs: Refs
 ): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined => {
-  const anyOf = ((
-    def.options instanceof Map ? Array.from(def.options.values()) : def.options
-  ) as any[])
+  const anyOf = (
+    (def.options instanceof Map
+      ? Array.from(def.options.values())
+      : def.options) as any[]
+  )
     .map((x, i) =>
       parseDef(x._def, {
         ...refs,

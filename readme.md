@@ -120,7 +120,7 @@ This feature allows optionally including error messages created via chained func
 // string schema with additional chained function call checks
 const EmailSchema = z.string().email("Invalid email").min(5, "Too short");
 
-const jsonSchema = zodToJsonSchema(EmailSchema, {errorMessages: true})
+const jsonSchema = zodToJsonSchema(EmailSchema, { errorMessages: true });
 ```
 
 #### Result
@@ -133,7 +133,7 @@ const jsonSchema = zodToJsonSchema(EmailSchema, {errorMessages: true})
   "minLength": 5,
   "errorMessage": {
     "format": "Invalid email",
-    "minLength": "Too short",
+    "minLength": "Too short"
   }
 }
 ```
@@ -148,7 +148,7 @@ This allows for field specific, validation step specific error messages which ca
   - email, cuid, uuid, url
   - endsWith, startsWith
 - ZodNumber
-  - min, max, lt, lte, gt, gte, 
+  - min, max, lt, lte, gt, gte,
   - int
   - multipleOf
 - ZodSet

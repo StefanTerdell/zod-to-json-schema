@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { parseObjectDef } from "../../src/parsers/object";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 
 describe("objects", () => {
   it("should be possible to describe catchAll schema", () => {

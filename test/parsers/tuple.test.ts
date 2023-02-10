@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { parseTupleDef } from "../../src/parsers/tuple";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 
 describe("objects", () => {
   it("should be possible to describe a simple tuple schema", () => {

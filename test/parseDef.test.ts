@@ -2,7 +2,7 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../src/parseDef";
 import Ajv from "ajv";
-import { getRefs } from '../src/Refs';
+import { getRefs } from "../src/Refs";
 const ajv = new Ajv();
 describe("Basic parsing", () => {
   it("should return a proper json schema with some common types without validation", () => {

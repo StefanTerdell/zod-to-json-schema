@@ -2,7 +2,7 @@ import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseMapDef } from "../../src/parsers/map";
 import Ajv from "ajv";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 const ajv = new Ajv();
 describe("map", () => {
   it("should be possible to use Map", () => {

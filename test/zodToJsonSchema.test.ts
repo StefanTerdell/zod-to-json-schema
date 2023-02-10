@@ -57,7 +57,12 @@ describe("Root schema result after parsing", () => {
     expect(
       zodToJsonSchema(
         z.object({
-          field: z.union([z.any(), z.instanceof(String), z.string(), z.number()]),
+          field: z.union([
+            z.any(),
+            z.instanceof(String),
+            z.string(),
+            z.number(),
+          ]),
         }),
         { strictUnions: true }
       )

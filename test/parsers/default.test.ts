@@ -1,7 +1,7 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDefaultDef } from "../../src/parsers/default";
-import { getRefs } from "../../src/Refs"
+import { getRefs } from "../../src/Refs";
 
 describe("promise", () => {
   it("should be possible to use default on objects", () => {
@@ -43,10 +43,7 @@ describe("promise", () => {
       .transform((val) => val.toUpperCase())
       .default("default");
 
-    const parsedSchema = parseDefaultDef(
-      stringWithDefault._def,
-      getRefs()
-    );
+    const parsedSchema = parseDefaultDef(stringWithDefault._def, getRefs());
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       default: "default",

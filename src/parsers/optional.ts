@@ -17,12 +17,12 @@ export const parseOptionalDef = (
 
   return innerSchema
     ? {
-      anyOf: [
-        {
-          not: {},
-        },
-        innerSchema,
-      ],
-    }
+        anyOf: [
+          {
+            not: {},
+          },
+          innerSchema,
+        ],
+      }
     : {};
 };

@@ -1,4 +1,3 @@
-
 export type JsonSchema7BigintType = {
   type: "integer";
   format: "int64";

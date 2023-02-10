@@ -1,11 +1,11 @@
 {
-    "compilerOptions": {
-        "outDir": "dist",
-        "target": "ES2017",
-        "declaration": true,
-        "module": "commonjs",
-        "strict": true,
-        "skipLibCheck": true
-    },
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES2017",
+    "declaration": true,
+    "module": "commonjs",
+    "strict": true,
+    "skipLibCheck": true
+  },
   "exclude": ["node_modules", "dist", "test/**/*", "src/lab.ts"]
 }
