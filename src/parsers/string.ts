@@ -70,6 +70,9 @@ export function parseStringDef(
         case "cuid":
           addPattern(res, "^c[^\\s-]{8,}$", check.message, refs);
           break;
+        case "cuid2":
+          addPattern(res, "^[a-z][a-z0-9]*$", check.message, refs);
+          break;
         case "startsWith":
           addPattern(
             res,
