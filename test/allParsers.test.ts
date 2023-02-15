@@ -545,10 +545,7 @@ describe("All Parsers tests", () => {
           type: "object",
           additionalProperties: {
             type: "boolean",
-          },
-          propertyNames: {
-            format: "uuid",
-          },
+          }
         },
         recordBooleanBoolean: {
           type: "object",

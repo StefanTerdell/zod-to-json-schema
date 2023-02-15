@@ -27,6 +27,10 @@ export function parseRecordDef(
       }) || {},
   };
 
+  if (refs.target === "openApi3") {
+    return schema;
+  }
+
   if (
     def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodString &&
     def.keyType._def.checks?.length
