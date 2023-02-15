@@ -1,4 +1,3 @@
-import { JSONSchema7Type } from "json-schema";
 import { ZodSchema } from "zod";
 import { Options } from "./Options";
 import { JsonSchema7Type, parseDef } from "./parseDef";
@@ -12,7 +11,7 @@ const zodToJsonSchema = <
 ): (Target extends "jsonSchema7" ? JsonSchema7Type : object) & {
   $schema?: string;
   definitions?: {
-    [key: string]: Target extends "jsonSchema7" ? JSONSchema7Type : object;
+    [key: string]: Target extends "jsonSchema7" ? JsonSchema7Type : object;
   };
 } => {
   const refs = getRefs(options);
