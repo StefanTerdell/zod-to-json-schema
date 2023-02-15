@@ -27,4 +27,25 @@ describe("Open API target", () => {
 
     expect(swaggerSchema).toStrictEqual(expectedSchema);
   });
+
+  it("should not use the enumNames keyword from the records parser when an enum is present", () => {
+    const recordSchema = z.record(z.enum(["a", "b", "c"]), z.boolean());
+
+    const swaggerSchema = zodToJsonSchema(recordSchema, {
+      target: "openApi3",
+    });
+
+    const expectedSchema = {
+      type: "object",
+      required: ["a", "b", "c"],
+      properties: {
+        a: { type: "boolean" },
+        b: { $ref: "#/properties/a" },
+        c: { $ref: "#/properties/a" },
+      },
+      additionalProperties: false,
+    };
+
+    expect(swaggerSchema).toStrictEqual(expectedSchema);
+  });
 });

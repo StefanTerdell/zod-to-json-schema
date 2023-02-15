@@ -2,6 +2,7 @@ import { ZodFirstPartyTypeKind, ZodRecordDef, ZodTypeAny } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
 import { Refs } from "../Refs";
 import { JsonSchema7EnumType } from "./enum";
+import { JsonSchema7ObjectType } from "./object";
 import { JsonSchema7StringType, parseStringDef } from "./string";
 
 type JsonSchema7RecordPropertyNamesType =
@@ -18,13 +19,35 @@ export function parseRecordDef(
   def: ZodRecordDef<ZodTypeAny, ZodTypeAny>,
   refs: Refs
 ): JsonSchema7RecordType {
+  if (
+    refs.target === "openApi3" &&
+    def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodEnum
+  ) {
+    return {
+      type: "object",
+      required: def.keyType._def.values,
+      properties: def.keyType._def.values.reduce(
+        (acc: Record<string, JsonSchema7Type>, key: string) => ({
+          ...acc,
+          [key]:
+            parseDef(def.valueType._def, {
+              ...refs,
+              currentPath: [...refs.currentPath, "properties", key],
+            }) ?? {},
+        }),
+        {}
+      ),
+      additionalProperties: false,
+    } satisfies JsonSchema7ObjectType as any;
+  }
+
   const schema: JsonSchema7RecordType = {
     type: "object",
     additionalProperties:
       parseDef(def.valueType._def, {
         ...refs,
         currentPath: [...refs.currentPath, "additionalProperties"],
-      }) || {},
+      }) ?? {},
   };
 
   if (refs.target === "openApi3") {
