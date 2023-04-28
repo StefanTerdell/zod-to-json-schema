@@ -155,7 +155,7 @@ const selectParser = (
     case ZodFirstPartyTypeKind.ZodObject:
       return parseObjectDef(def, refs);
     case ZodFirstPartyTypeKind.ZodBigInt:
-      return parseBigintDef();
+      return parseBigintDef(def, refs);
     case ZodFirstPartyTypeKind.ZodBoolean:
       return parseBooleanDef();
     case ZodFirstPartyTypeKind.ZodDate:
