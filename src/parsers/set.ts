@@ -5,6 +5,7 @@ import { Refs } from "../Refs";
 
 export type JsonSchema7SetType = {
   type: "array";
+  uniqueItems: true,
   items?: JsonSchema7Type;
   minItems?: number;
   maxItems?: number;
@@ -19,6 +20,7 @@ export function parseSetDef(def: ZodSetDef, refs: Refs): JsonSchema7SetType {
 
   const schema: JsonSchema7SetType = {
     type: "array",
+    uniqueItems: true,
     items,
   };
 

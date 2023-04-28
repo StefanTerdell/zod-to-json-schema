@@ -17,6 +17,7 @@ describe("set", () => {
       minItems: 5,
       maxItems: 10,
       errorMessage: errs,
+      uniqueItems: true,
       items: {},
     };
     const zodSchema = z.set(z.any()).min(5, minSizeError).max(10, maxSizeError);
@@ -28,6 +29,7 @@ describe("set", () => {
       type: "array",
       minItems: 5,
       maxItems: 10,
+      uniqueItems: true,
       items: {},
     };
     const zodSchema = z.set(z.any()).min(5).max(10);

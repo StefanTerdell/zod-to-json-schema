@@ -235,6 +235,7 @@ describe("All Parsers tests", () => {
         },
         set: {
           type: "array",
+          uniqueItems: true,
           items: {
             type: "string",
           },
@@ -555,6 +556,7 @@ describe("All Parsers tests", () => {
         },
         set: {
           type: "array",
+          uniqueItems: true,
           items: {
             type: "string",
           },
