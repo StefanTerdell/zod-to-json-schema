@@ -75,4 +75,30 @@ describe("Root schema result after parsing", () => {
       type: "object",
     });
   });
+
+  it("Definitions play nice with named schemas", () => {
+    const MySpecialStringSchema = z.string();
+    const MyArraySchema = z.array(MySpecialStringSchema);
+
+    const result = zodToJsonSchema(MyArraySchema, {
+      definitions: {
+        MySpecialStringSchema,
+        MyArraySchema,
+      },
+    });
+
+    expect(result).toStrictEqual({
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $ref: "#/definitions/MyArraySchema",
+      definitions: {
+        MySpecialStringSchema: { type: "string" },
+        MyArraySchema: {
+          type: "array",
+          items: {
+            $ref: "#/definitions/MySpecialStringSchema",
+          },
+        },
+      },
+    });
+  });
 });
