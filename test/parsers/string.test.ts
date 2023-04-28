@@ -405,4 +405,24 @@ describe("String validations", () => {
       }
     }
   });
+
+  it("should bundle multiple formats into anyOf", () => {
+    const zodSchema = z.string().ip().email();
+    const jsonSchema: JSONSchema7Type = {
+      type: "string",
+      anyOf: [
+        {
+          format: "ipv4",
+        },
+        {
+          format: "ipv6",
+        },
+        {
+          format: "email",
+        },
+      ],
+    };
+    const jsonParsedSchema = parseStringDef(zodSchema._def, errorReferences());
+    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+  });
 });

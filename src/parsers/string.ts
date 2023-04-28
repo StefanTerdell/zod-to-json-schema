@@ -6,11 +6,15 @@ export type JsonSchema7StringType = {
   type: "string";
   minLength?: number;
   maxLength?: number;
-  format?: "email" | "uri" | "uuid" | "date-time";
+  format?: "email" | "uri" | "uuid" | "date-time" | "ipv4" | "ipv6";
   pattern?: string;
   allOf?: {
     pattern: string;
     errorMessage?: ErrorMessages<{ pattern: string }>;
+  }[];
+  anyOf?: {
+    format: string;
+    errorMessage?: ErrorMessages<{ format: string }>;
   }[];
   errorMessage?: ErrorMessages<JsonSchema7StringType>;
 };
@@ -50,19 +54,13 @@ export function parseStringDef(
 
           break;
         case "email":
-          setResponseValueAndErrors(
-            res,
-            "format",
-            "email",
-            check.message,
-            refs
-          );
+          addFormat(res, "email", check.message, refs);
           break;
         case "url":
-          setResponseValueAndErrors(res, "format", "uri", check.message, refs);
+          addFormat(res, "uri", check.message, refs);
           break;
         case "uuid":
-          setResponseValueAndErrors(res, "format", "uuid", check.message, refs);
+          addFormat(res, "uuid", check.message, refs);
           break;
         case "regex":
           addPattern(res, check.regex.source, check.message, refs);
@@ -89,17 +87,9 @@ export function parseStringDef(
             refs
           );
           break;
-        case "trim":
-          // I have no idea why this is a check in Zod. It's a runtime string manipulation method.
-          break;
+
         case "datetime":
-          setResponseValueAndErrors(
-            res,
-            "format",
-            "date-time",
-            check.message,
-            refs
-          );
+          addFormat(res, "date-time", check.message, refs);
           break;
         case "length":
           setResponseValueAndErrors(
@@ -121,6 +111,41 @@ export function parseStringDef(
             refs
           );
           break;
+        case "includes": {
+          addPattern(
+            res,
+            escapeNonAlphaNumeric(check.value),
+            check.message,
+            refs
+          );
+          break;
+        }
+        case "ip": {
+          if (check.version !== "v6") {
+            addFormat(res, "ipv4", check.message, refs);
+          }
+          if (check.version !== "v4") {
+            addFormat(res, "ipv6", check.message, refs);
+          }
+          break;
+        }
+        case "emoji":
+          addPattern(
+            res,
+            "/^(p{Extended_Pictographic}|p{Emoji_Component})+$/u",
+            check.message,
+            refs
+          );
+          break;
+        case "ulid": {
+          addPattern(res, "/[0-9A-HJKMNP-TV-Z]{26}/", check.message, refs);
+          break;
+        }
+        case "toLowerCase":
+        case "toUpperCase":
+        case "trim":
+          // I have no idea why these are checks in Zod 🤷
+          break;
         default:
           ((_: never) => {})(check);
       }
@@ -134,6 +159,44 @@ const escapeNonAlphaNumeric = (value: string) =>
   Array.from(value)
     .map((c) => (/[a-zA-Z0-9]/.test(c) ? c : `\\${c}`))
     .join("");
+
+const addFormat = (
+  schema: JsonSchema7StringType,
+  value: Required<JsonSchema7StringType>["format"],
+  message: string | undefined,
+  refs: Refs
+) => {
+  if (schema.format || schema.anyOf?.some((x) => x.format)) {
+    if (!schema.anyOf) {
+      schema.anyOf = [];
+    }
+
+    if (schema.format) {
+      schema.anyOf!.push({
+        format: schema.format,
+        ...(schema.errorMessage &&
+          refs.errorMessages && {
+            errorMessage: { format: schema.errorMessage.format },
+          }),
+      });
+      delete schema.format;
+      if (schema.errorMessage) {
+        delete schema.errorMessage.format;
+        if (Object.keys(schema.errorMessage).length === 0) {
+          delete schema.errorMessage;
+        }
+      }
+    }
+
+    schema.anyOf!.push({
+      format: value,
+      ...(message &&
+        refs.errorMessages && { errorMessage: { format: message } }),
+    });
+  } else {
+    setResponseValueAndErrors(schema, "format", value, message, refs);
+  }
+};
 
 const addPattern = (
   schema: JsonSchema7StringType,
