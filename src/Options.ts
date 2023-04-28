@@ -6,6 +6,7 @@ export type Options<Target extends "jsonSchema7" | "openApi3" = "jsonSchema7"> =
     $refStrategy: "root" | "relative" | "none";
     basePath: string[];
     effectStrategy: "input" | "any";
+    pipeStrategy: "input" | "all";
     target: Target;
     strictUnions: boolean;
     definitionPath: string;
@@ -18,6 +19,7 @@ export const defaultOptions: Options = {
   $refStrategy: "root",
   basePath: ["#"],
   effectStrategy: "input",
+  pipeStrategy: "all",
   definitionPath: "definitions",
   target: "jsonSchema7",
   strictUnions: false,

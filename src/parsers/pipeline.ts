@@ -7,6 +7,10 @@ export const parsePipelineDef = (
   def: ZodPipelineDef<any, any>,
   refs: Refs
 ): JsonSchema7AllOfType | JsonSchema7Type | undefined => {
+  if (refs.pipeStrategy === "input") {
+    return parseDef(def.in._def, refs);
+  }
+
   const a = parseDef(def.in._def, {
     ...refs,
     currentPath: [...refs.currentPath, "allOf", "0"],
