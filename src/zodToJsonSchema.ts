@@ -45,8 +45,7 @@ const zodToJsonSchema = <
         : {
             ...refs,
             currentPath: [...refs.basePath, refs.definitionPath, name],
-          },
-      true
+          }
     ) ?? {};
 
   const combined: ReturnType<typeof zodToJsonSchema<Target>> =
