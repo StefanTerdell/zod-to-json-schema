@@ -3,7 +3,7 @@ import { getDefaultOptions, Options } from "./Options";
 import { JsonSchema7Type } from "./parseDef";
 
 export type Refs = {
-  seen: Seen[];
+  seen: Map<ZodTypeDef, Seen>;
   currentPath: string[];
   propertyPath: string[] | undefined;
 } & Options<"jsonSchema7" | "openApi3">;
@@ -26,6 +26,6 @@ export const getRefs = (
     ..._options,
     currentPath: currentPath,
     propertyPath: undefined,
-    seen: [],
+    seen: new Map(),
   };
 };
