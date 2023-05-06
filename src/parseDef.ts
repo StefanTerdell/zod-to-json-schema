@@ -75,7 +75,7 @@ export function parseDef(
   refs: Refs,
   isTop?: boolean
 ): JsonSchema7Type | undefined {
-  const seenItem = refs.seen.find((x) => Object.is(x.def, def));
+  const seenItem = refs.seen.get(def);
 
   if (seenItem && !isTop) {
     return get$ref(seenItem, refs);
@@ -83,7 +83,7 @@ export function parseDef(
 
   const newItem: Seen = { def, path: refs.currentPath, jsonSchema: undefined };
 
-  refs.seen.push(newItem);
+  refs.seen.set(def, newItem);
 
   const jsonSchema = selectParser(def, (def as any).typeName, refs);
 
