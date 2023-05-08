@@ -62,7 +62,9 @@ export function parseUnionDef(
     return {
       type: types.length > 1 ? types : types[0],
     };
-  } else if (options.every((x) => x._def.typeName === "ZodLiteral")) {
+  } else if (
+    options.every((x) => x._def.typeName === "ZodLiteral" && !x.description)
+  ) {
     // all options literals
 
     const types = options.reduce(

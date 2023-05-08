@@ -171,4 +171,30 @@ describe("Unions", () => {
       ],
     });
   });
+
+  it("should not ignore descriptions in literal unions", () => {
+    expect([
+      parseUnionDef(
+        z.union([z.literal(true), z.literal("herp"), z.literal(3)])._def,
+        getRefs()
+      ),
+      parseUnionDef(
+        z.union([
+          z.literal(true),
+          z.literal("herp").describe("derp"),
+          z.literal(3),
+        ])._def,
+        getRefs()
+      ),
+    ]).toStrictEqual([
+      { type: ["boolean", "string", "number"], enum: [true, "herp", 3] },
+      {
+        anyOf: [
+          { type: "boolean", const: true },
+          { type: "string", const: "herp", description: "derp" },
+          { type: "number", const: 3 },
+        ],
+      },
+    ]);
+  });
 });
