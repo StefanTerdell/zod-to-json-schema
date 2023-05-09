@@ -19,6 +19,7 @@ describe("intersections", () => {
           maxLength: 3,
         },
       ],
+      unevaluatedProperties: false,
     });
   });
 
@@ -36,6 +37,42 @@ describe("intersections", () => {
           $ref: "#/allOf/0",
         },
       ],
+      unevaluatedProperties: false,
+    });
+  });
+
+  it("should intersect complex objects correctly", () => {
+    const schema1 = z.object({
+      foo: z.string()
+    });
+    const schema2 = z.object({
+      bar: z.string()
+    });
+    const intersection = z.intersection(schema1, schema2);
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
+
+    expect(jsonSchema).toStrictEqual({
+      allOf: [
+        {
+          properties: {
+            foo: {
+              type: "string"
+            }
+          },
+          required: ["foo"],
+          type: "object"
+        },
+        {
+          properties: {
+            bar: {
+              type: "string"
+            }
+          },
+          required: ["bar"],
+          type: "object"
+        }
+      ],
+      unevaluatedProperties: false,
     });
   });
 });

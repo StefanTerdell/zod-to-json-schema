@@ -4,6 +4,7 @@ import { Refs } from "../Refs";
 
 export type JsonSchema7AllOfType = {
   allOf: JsonSchema7Type[];
+  unevaluatedProperties: boolean;
 };
 
 export function parseIntersectionDef(
@@ -19,7 +20,16 @@ export function parseIntersectionDef(
       ...refs,
       currentPath: [...refs.currentPath, "allOf", "1"],
     }),
-  ].filter((x): x is JsonSchema7Type => !!x);
+  ].filter((x): x is JsonSchema7Type => !!x)
+    .map((schema) => {
+      if ('additionalProperties' in schema && schema.additionalProperties === false) {
+        const {additionalProperties, ...rest} = schema;
+        return {
+          ...rest
+        };
+      }
+      return schema
+    });
 
-  return allOf.length ? { allOf } : undefined;
+  return allOf.length ? {allOf, unevaluatedProperties: false} : undefined;
 }
