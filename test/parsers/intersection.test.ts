@@ -47,7 +47,7 @@ describe("intersections", () => {
       bar: z.string()
     });
     const intersection = z.intersection(schema1, schema2);
-    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs({target: "jsonSchema2019-09"}));
 
     expect(jsonSchema).toStrictEqual({
       allOf: [
@@ -82,7 +82,7 @@ describe("intersections", () => {
       bar: z.string()
     }).passthrough();
     const intersection = z.intersection(schema1, schema2);
-    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs({target: "jsonSchema2019-09"}));
 
     expect(jsonSchema).toStrictEqual({
       allOf: [
@@ -120,7 +120,7 @@ describe("intersections", () => {
       baz: z.string()
     });
     const intersection = schema1.and(schema2).and(schema3);
-    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs({target: "jsonSchema2019-09"}));
 
     expect(jsonSchema).toStrictEqual({
       allOf: [
@@ -167,7 +167,7 @@ describe("intersections", () => {
       baz: z.string()
     }).passthrough();
     const intersection = schema1.and(schema2).and(schema3);
-    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs({target: "jsonSchema2019-09"}));
 
     expect(jsonSchema).toStrictEqual({
       allOf: [

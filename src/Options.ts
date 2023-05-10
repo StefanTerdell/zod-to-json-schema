@@ -1,6 +1,8 @@
 import { ZodSchema } from "zod";
 
-export type Options<Target extends "jsonSchema7" | "openApi3" = "jsonSchema7"> =
+export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3"
+
+export type Options<Target extends Targets = "jsonSchema7"> =
   {
     name: string | undefined;
     $refStrategy: "root" | "relative" | "none";
@@ -27,7 +29,7 @@ export const defaultOptions: Options = {
   errorMessages: false,
 };
 
-export const getDefaultOptions = <Target extends "jsonSchema7" | "openApi3">(
+export const getDefaultOptions = <Target extends Targets>(
   options: Partial<Options<Target>> | string | undefined
 ) =>
   (typeof options === "string"

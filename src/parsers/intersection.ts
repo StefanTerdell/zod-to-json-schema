@@ -29,7 +29,9 @@ export function parseIntersectionDef(
   ].filter((x): x is JsonSchema7Type => !!x);
 
 
-  let unevaluatedProperties: { unevaluatedProperties: boolean } | undefined = {unevaluatedProperties: false};
+  let unevaluatedProperties: Pick<JsonSchema7AllOfType, 'unevaluatedProperties'> | undefined =
+    refs.target === 'jsonSchema2019-09' ? {unevaluatedProperties: false} : undefined;
+  
   const mergedAllOf: JsonSchema7Type[] = []
   // If either of the schemas is an allOf, merge them into a single allOf
   allOf.forEach((schema) => {
