@@ -1,11 +1,17 @@
 import { ZodIntersectionDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef";
 import { Refs } from "../Refs";
+import { JsonSchema7StringType } from "./string";
 
 export type JsonSchema7AllOfType = {
   allOf: JsonSchema7Type[];
-  unevaluatedProperties: boolean;
+  unevaluatedProperties?: boolean;
 };
+
+const isJsonSchema7AllOfType = (type: JsonSchema7Type | JsonSchema7StringType): type is JsonSchema7AllOfType => {
+  if ("type" in type && type.type === "string") return false;
+  return 'allOf' in type;
+}
 
 export function parseIntersectionDef(
   def: ZodIntersectionDef,
@@ -20,16 +26,38 @@ export function parseIntersectionDef(
       ...refs,
       currentPath: [...refs.currentPath, "allOf", "1"],
     }),
-  ].filter((x): x is JsonSchema7Type => !!x)
-    .map((schema) => {
+  ].filter((x): x is JsonSchema7Type => !!x);
+
+
+  let unevaluatedProperties: { unevaluatedProperties: boolean } | undefined = {unevaluatedProperties: false};
+  const mergedAllOf: JsonSchema7Type[] = []
+  // If either of the schemas is an allOf, merge them into a single allOf
+  allOf.forEach((schema) => {
+    if (isJsonSchema7AllOfType(schema)) {
+
+      mergedAllOf.push(...schema.allOf);
+      if (schema.unevaluatedProperties === undefined) {
+        // If one of the schemas has no unevaluatedProperties set,
+        // the merged schema should also have no unevaluatedProperties set
+        unevaluatedProperties = undefined;
+      }
+
+    } else {
+
+      let nestedSchema: JsonSchema7Type = schema
       if ('additionalProperties' in schema && schema.additionalProperties === false) {
         const {additionalProperties, ...rest} = schema;
-        return {
-          ...rest
-        };
+        nestedSchema = rest;
+      } else {
+        // As soon as one of the schemas has additionalProperties set not to false, we allow unevaluatedProperties
+        unevaluatedProperties = undefined;
       }
-      return schema
-    });
+      mergedAllOf.push(nestedSchema);
 
-  return allOf.length ? {allOf, unevaluatedProperties: false} : undefined;
+    }
+  });
+  return mergedAllOf.length ? {
+    allOf: mergedAllOf,
+    ...unevaluatedProperties
+  } : undefined;
 }

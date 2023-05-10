@@ -66,7 +66,6 @@ describe("All Parsers tests", () => {
               maxLength: 4,
             },
           ],
-          unevaluatedProperties: false,
         },
         literal: {
           type: "string",
@@ -391,7 +390,6 @@ describe("All Parsers tests", () => {
               maxLength: 4,
             },
           ],
-          unevaluatedProperties: false,
         },
         literal: {
           type: "string",
