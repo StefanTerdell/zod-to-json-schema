@@ -1,17 +1,17 @@
 import { ZodSchema } from "zod";
-import { Options } from "./Options";
+import { Options, Targets } from "./Options";
 import { JsonSchema7Type, parseDef } from "./parseDef";
 import { getRefs } from "./Refs";
 
 const zodToJsonSchema = <
-  Target extends "jsonSchema7" | "openApi3" = "jsonSchema7"
+  Target extends Targets = "jsonSchema7"
 >(
   schema: ZodSchema<any>,
   options?: Partial<Options<Target>> | string
 ): (Target extends "jsonSchema7" ? JsonSchema7Type : object) & {
   $schema?: string;
   definitions?: {
-    [key: string]: Target extends "jsonSchema7" ? JsonSchema7Type : object;
+    [key: string]: Target extends "jsonSchema7" ? JsonSchema7Type  : Target extends "jsonSchema2019-09" ? JsonSchema7Type: object;
   };
 } => {
   const refs = getRefs(options);
@@ -66,6 +66,8 @@ const zodToJsonSchema = <
 
   if (refs.target === "jsonSchema7") {
     combined.$schema = "http://json-schema.org/draft-07/schema#";
+  } else if (refs.target === "jsonSchema2019-09") {
+    combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
   }
 
   return combined;

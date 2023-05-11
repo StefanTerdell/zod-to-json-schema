@@ -1,12 +1,12 @@
 import { ZodTypeDef } from "zod";
-import { getDefaultOptions, Options } from "./Options";
+import { getDefaultOptions, Options, Targets } from "./Options";
 import { JsonSchema7Type } from "./parseDef";
 
 export type Refs = {
   seen: Map<ZodTypeDef, Seen>;
   currentPath: string[];
   propertyPath: string[] | undefined;
-} & Options<"jsonSchema7" | "openApi3">;
+} & Options<Targets>;
 
 export type Seen = {
   def: ZodTypeDef;
@@ -15,7 +15,7 @@ export type Seen = {
 };
 
 export const getRefs = (
-  options?: string | Partial<Options<"jsonSchema7" | "openApi3">>
+  options?: string | Partial<Options<Targets>>
 ): Refs => {
   const _options = getDefaultOptions(options);
   const currentPath =
