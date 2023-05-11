@@ -22,10 +22,14 @@ const zodToJsonSchema = <
           (acc, [name, schema]) => ({
             ...acc,
             [name]:
-              parseDef(schema._def, {
-                ...refs,
-                currentPath: [...refs.basePath, refs.definitionPath, name],
-              }) ?? {},
+              parseDef(
+                schema._def,
+                {
+                  ...refs,
+                  currentPath: [...refs.basePath, refs.definitionPath, name],
+                },
+                true
+              ) ?? {},
           }),
           {}
         )

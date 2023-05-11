@@ -72,11 +72,12 @@ export type JsonSchema7Type = JsonSchema7TypeUnion & JsonSchema7Meta;
 
 export function parseDef(
   def: ZodTypeDef,
-  refs: Refs
+  refs: Refs,
+  isTop?: boolean
 ): JsonSchema7Type | undefined {
   const seenItem = refs.seen.get(def);
 
-  if (seenItem) {
+  if (seenItem && !isTop) {
     return get$ref(seenItem, refs);
   }
 

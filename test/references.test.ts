@@ -852,4 +852,81 @@ describe("Pathing", () => {
       },
     });
   });
+
+  it("should handle mutual recursion", () => {
+    const leafSchema = z.object({
+      prop: z.string(),
+    });
+
+    let nodeChildSchema: z.ZodType;
+
+    const nodeSchema = z.object({
+      children: z.lazy(() => z.array(nodeChildSchema)),
+    });
+
+    nodeChildSchema = z.union([leafSchema, nodeSchema]);
+
+    const treeSchema = z.object({
+      nodes: nodeSchema,
+    });
+
+    expect(
+      zodToJsonSchema(treeSchema, {
+        name: "Tree",
+        definitions: {
+          Leaf: leafSchema,
+          NodeChild: nodeChildSchema,
+          Node: nodeSchema,
+        },
+      })
+    ).toStrictEqual({
+      $ref: "#/definitions/Tree",
+      definitions: {
+        Leaf: {
+          type: "object",
+          properties: {
+            prop: {
+              type: "string",
+            },
+          },
+          required: ["prop"],
+          additionalProperties: false,
+        },
+        Node: {
+          type: "object",
+          properties: {
+            children: {
+              type: "array",
+              items: {
+                $ref: "#/definitions/NodeChild",
+              },
+            },
+          },
+          required: ["children"],
+          additionalProperties: false,
+        },
+        NodeChild: {
+          anyOf: [
+            {
+              $ref: "#/definitions/Leaf",
+            },
+            {
+              $ref: "#/definitions/Node",
+            },
+          ],
+        },
+        Tree: {
+          type: "object",
+          properties: {
+            nodes: {
+              $ref: "#/definitions/Node",
+            },
+          },
+          required: ["nodes"],
+          additionalProperties: false,
+        },
+      },
+      $schema: "http://json-schema.org/draft-07/schema#",
+    });
+  });
 });

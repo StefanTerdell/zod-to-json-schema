@@ -26,6 +26,15 @@ export const getRefs = (
     ..._options,
     currentPath: currentPath,
     propertyPath: undefined,
-    seen: new Map(),
+    seen: new Map(
+      Object.entries(_options.definitions).map(([name, def]) => [
+        def._def,
+        {
+          def: def._def,
+          path: [..._options.basePath, _options.definitionPath, name],
+          jsonSchema: undefined,
+        },
+      ])
+    ),
   };
 };
