@@ -73,11 +73,11 @@ export type JsonSchema7Type = JsonSchema7TypeUnion & JsonSchema7Meta;
 export function parseDef(
   def: ZodTypeDef,
   refs: Refs,
-  isTop?: boolean
+  forceResolution = false // Forces a new schema to be instantiated even though its def has been seen. Used for improving refs in definitions. See https://github.com/StefanTerdell/zod-to-json-schema/pull/61.
 ): JsonSchema7Type | undefined {
   const seenItem = refs.seen.get(def);
 
-  if (seenItem && !isTop) {
+  if (seenItem && !forceResolution) {
     return get$ref(seenItem, refs);
   }
 

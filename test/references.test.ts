@@ -929,4 +929,25 @@ describe("Pathing", () => {
       $schema: "http://json-schema.org/draft-07/schema#",
     });
   });
+
+  it("should not fail when definition is lazy", () => {
+    const lazyString = z.lazy(() => z.string());
+
+    const lazyObject = z.lazy(() => z.object({ lazyProp: lazyString }));
+
+    const jsonSchema = zodToJsonSchema(lazyObject, {
+      definitions: { lazyString },
+    });
+
+    const expected = {
+      type: "object",
+      properties: { lazyProp: { $ref: "#/definitions/lazyString" } },
+      required: ["lazyProp"],
+      additionalProperties: false,
+      definitions: { lazyString: { type: "string" } },
+      $schema: "http://json-schema.org/draft-07/schema#",
+    };
+
+    expect(jsonSchema).toStrictEqual(expected);
+  });
 });

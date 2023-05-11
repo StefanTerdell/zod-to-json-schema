@@ -3,15 +3,17 @@ import { Options, Targets } from "./Options";
 import { JsonSchema7Type, parseDef } from "./parseDef";
 import { getRefs } from "./Refs";
 
-const zodToJsonSchema = <
-  Target extends Targets = "jsonSchema7"
->(
+const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
   schema: ZodSchema<any>,
   options?: Partial<Options<Target>> | string
 ): (Target extends "jsonSchema7" ? JsonSchema7Type : object) & {
   $schema?: string;
   definitions?: {
-    [key: string]: Target extends "jsonSchema7" ? JsonSchema7Type  : Target extends "jsonSchema2019-09" ? JsonSchema7Type: object;
+    [key: string]: Target extends "jsonSchema7"
+      ? JsonSchema7Type
+      : Target extends "jsonSchema2019-09"
+      ? JsonSchema7Type
+      : object;
   };
 } => {
   const refs = getRefs(options);
@@ -45,7 +47,8 @@ const zodToJsonSchema = <
         : {
             ...refs,
             currentPath: [...refs.basePath, refs.definitionPath, name],
-          }
+          },
+      false
     ) ?? {};
 
   const combined: ReturnType<typeof zodToJsonSchema<Target>> =

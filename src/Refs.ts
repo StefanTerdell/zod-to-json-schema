@@ -14,9 +14,7 @@ export type Seen = {
   jsonSchema: JsonSchema7Type | undefined;
 };
 
-export const getRefs = (
-  options?: string | Partial<Options<Targets>>
-): Refs => {
+export const getRefs = (options?: string | Partial<Options<Targets>>): Refs => {
   const _options = getDefaultOptions(options);
   const currentPath =
     _options.name !== undefined
@@ -32,6 +30,7 @@ export const getRefs = (
         {
           def: def._def,
           path: [..._options.basePath, _options.definitionPath, name],
+          // Resolution of references will be forced even though seen, so it's ok that the schema is undefined here for now.
           jsonSchema: undefined,
         },
       ])
