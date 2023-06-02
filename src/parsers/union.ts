@@ -1,5 +1,6 @@
 import {
   ZodDiscriminatedUnionDef,
+  ZodFirstPartyTypeKind,
   ZodLiteralDef,
   ZodTypeAny,
   ZodUnionDef,
@@ -20,26 +21,39 @@ type JsonSchema7Primitive =
 
 export type JsonSchema7UnionType =
   | JsonSchema7PrimitiveUnionType
-  | JsonSchema7AnyOfType;
+  | JsonSchema7AnyOfType
+  | OpenApi3OneOfType;
 
 type JsonSchema7PrimitiveUnionType =
   | {
-      type: JsonSchema7Primitive | JsonSchema7Primitive[];
-    }
+    type: JsonSchema7Primitive | JsonSchema7Primitive[];
+  }
   | {
-      type: JsonSchema7Primitive | JsonSchema7Primitive[];
-      enum: (string | number | bigint | boolean | null)[];
-    };
+    type: JsonSchema7Primitive | JsonSchema7Primitive[];
+    enum: (string | number | bigint | boolean | null)[];
+  };
 
 type JsonSchema7AnyOfType = {
   anyOf: JsonSchema7Type[];
 };
 
+type OpenApi3OneOfType = {
+  oneOf: JsonSchema7Type[];
+  discriminator?: {
+    propertyName: string;
+  };
+};
+
 export function parseUnionDef(
   def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
   refs: Refs
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
-  if (refs.target === "openApi3") return asAnyOf(def, refs);
+): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | OpenApi3OneOfType | undefined {
+  if (refs.target === "openApi3") {
+    if (def.typeName === ZodFirstPartyTypeKind.ZodDiscriminatedUnion) {
+      return parseDiscriminatedUnionDef(def, refs);
+    }
+    return asAnyOf(def, refs);
+  }
 
   const options: readonly ZodTypeAny[] =
     def.options instanceof Map ? Array.from(def.options.values()) : def.options;
@@ -68,7 +82,7 @@ export function parseUnionDef(
     // all options literals
 
     const types = options.reduce(
-      (acc: JsonSchema7Primitive[], x: { _def: ZodLiteralDef }) => {
+      (acc: JsonSchema7Primitive[], x: { _def: ZodLiteralDef; }) => {
         const type = typeof x._def.value;
         switch (type) {
           case "string":
@@ -139,4 +153,21 @@ const asAnyOf = (
     );
 
   return anyOf.length ? { anyOf } : undefined;
+};
+
+const parseDiscriminatedUnionDef = (
+  def: ZodDiscriminatedUnionDef<any, any>,
+  refs: Refs
+): OpenApi3OneOfType | undefined => {
+  const discriminator = def.discriminator;
+  const { anyOf: oneOf } = (asAnyOf(def, refs) as JsonSchema7AnyOfType) || { anyOf: [] };
+
+  if (!oneOf.length) return undefined;
+
+  return {
+    oneOf,
+    discriminator: {
+      propertyName: discriminator
+    }
+  };
 };

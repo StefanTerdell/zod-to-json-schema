@@ -172,6 +172,53 @@ describe("Unions", () => {
     });
   });
 
+  it("should work with discriminated union type when using openapit3", () => {
+    const discUnion = z.discriminatedUnion("kek", [
+      z.object({ kek: z.literal("A"), lel: z.boolean() }),
+      z.object({ kek: z.literal("B"), lel: z.number() }),
+    ]);
+
+    const jsonSchema = parseUnionDef(discUnion._def, getRefs({
+      target: "openApi3",
+    }));
+
+    expect(jsonSchema).toStrictEqual({
+      oneOf: [
+        {
+          type: "object",
+          properties: {
+            kek: {
+              type: "string",
+              enum: ["A"],
+            },
+            lel: {
+              type: "boolean",
+            },
+          },
+          required: ["kek", "lel"],
+          additionalProperties: false,
+        },
+        {
+          type: "object",
+          properties: {
+            kek: {
+              type: "string",
+              enum: ["B"],
+            },
+            lel: {
+              type: "number",
+            },
+          },
+          required: ["kek", "lel"],
+          additionalProperties: false,
+        },
+      ],
+      discriminator: {
+        propertyName: "kek"
+      }
+    });
+  });
+
   it("should not ignore descriptions in literal unions", () => {
     expect([
       parseUnionDef(
