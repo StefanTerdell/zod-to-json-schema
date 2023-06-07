@@ -1,6 +1,6 @@
 import { ZodDateDef } from "zod";
 import { Refs } from "../Refs";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
+import { ErrorMessages, addErrorMessage, setResponseValueAndErrors } from "../errorMessages";
 import { JsonSchema7NumberType } from "./number";
 
 export type JsonSchema7DateType = {
@@ -15,8 +15,6 @@ export function parseDateDef(
   def: ZodDateDef,
   refs: Refs
 ): JsonSchema7DateType {
-  // console.log('DEF:', def);
-
   const res: JsonSchema7DateType = {
     type: "string",
     format: "date-time",
