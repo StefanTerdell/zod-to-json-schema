@@ -3,6 +3,7 @@ import { z } from "zod";
 import { JsonSchema7Type } from "../../src/parseDef";
 import {
   JsonSchema7StringType,
+  emailPattern,
   parseStringDef,
 } from "../../src/parsers/string";
 import Ajv from "ajv";
@@ -424,5 +425,39 @@ describe("String validations", () => {
     };
     const jsonParsedSchema = parseStringDef(zodSchema._def, errorReferences());
     expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+  });
+
+  it("should be possible to pick format:email, format:idn-email or pattern:zod", () => {
+    expect(parseStringDef(z.string().email()._def, getRefs())).toStrictEqual({
+      type: "string",
+      format: "email",
+    });
+
+    expect(
+      parseStringDef(
+        z.string().email()._def,
+        getRefs({ email: "format:email" })
+      )
+    ).toStrictEqual({
+      type: "string",
+      format: "email",
+    });
+
+    expect(
+      parseStringDef(
+        z.string().email()._def,
+        getRefs({ email: "format:idn-email" })
+      )
+    ).toStrictEqual({
+      type: "string",
+      format: "idn-email",
+    });
+
+    expect(
+      parseStringDef(z.string().email()._def, getRefs({ email: "pattern:zod" }))
+    ).toStrictEqual({
+      type: "string",
+      pattern: emailPattern,
+    });
   });
 });
