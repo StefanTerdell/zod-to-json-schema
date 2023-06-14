@@ -9,8 +9,8 @@ describe("Number validations", () => {
     const parsedSchema = parseDateDef(zodDateSchema._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
-      type: "string",
-      format: 'date-time',
+      type: "integer",
+      format: "unix-time",
       minimum: 86400000,
     };
 
@@ -22,8 +22,8 @@ describe("Number validations", () => {
     const parsedSchema = parseDateDef(zodDateSchema._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
-      type: "string",
-      format: 'date-time',
+      type: "integer",
+      format: "unix-time",
       maximum: 86400000,
     };
 
@@ -35,8 +35,8 @@ describe("Number validations", () => {
     const parsedSchema = parseDateDef(zodDateSchema._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
-      type: "string",
-      format: 'date-time',
+      type: "integer",
+      format: "unix-time",
       minimum: 86400000,
       maximum: 63158400000,
     };
@@ -54,8 +54,8 @@ describe("Number validations", () => {
     const parsedSchema = parseDateDef(zodDateSchema._def, errorReferences());
 
     const jsonSchema: JSONSchema7Type = {
-      type: "string",
-      format: 'date-time',
+      type: "integer",
+      format: "unix-time",
       minimum: 86400000,
       maximum: 63158400000,
       errorMessage: {

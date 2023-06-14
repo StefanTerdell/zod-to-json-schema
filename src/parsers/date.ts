@@ -4,8 +4,8 @@ import { ErrorMessages, addErrorMessage, setResponseValueAndErrors } from "../er
 import { JsonSchema7NumberType } from "./number";
 
 export type JsonSchema7DateType = {
-  type: "string";
-  format: "date-time";
+  type: "integer";
+  format: "unix-time";
   minimum?: number;
   maximum?: number;
   errorMessage?: ErrorMessages<JsonSchema7NumberType>;
@@ -16,8 +16,8 @@ export function parseDateDef(
   refs: Refs
 ): JsonSchema7DateType {
   const res: JsonSchema7DateType = {
-    type: "string",
-    format: "date-time",
+    type: "integer",
+    format: "unix-time",
   };
 
   for (const check of def.checks) {
