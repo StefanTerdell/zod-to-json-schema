@@ -40,7 +40,11 @@ import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown";
 import { Refs, Seen } from "./Refs";
 
 type JsonSchema7RefType = { $ref: string };
-type JsonSchema7Meta = { default?: any; description?: string };
+type JsonSchema7Meta = {
+  default?: any;
+  description?: string;
+  markdownDescription?: string;
+};
 
 export type JsonSchema7TypeUnion =
   | JsonSchema7StringType
@@ -88,7 +92,7 @@ export function parseDef(
   const jsonSchema = selectParser(def, (def as any).typeName, refs);
 
   if (jsonSchema) {
-    addMeta(def, jsonSchema);
+    addMeta(def, refs, jsonSchema);
   }
 
   newItem.jsonSchema = jsonSchema;
@@ -222,8 +226,15 @@ const selectParser = (
 
 const addMeta = (
   def: ZodTypeDef,
+  refs: Refs,
   jsonSchema: JsonSchema7Type
 ): JsonSchema7Type => {
-  if (def.description) jsonSchema.description = def.description;
+  if (def.description) {
+    jsonSchema.description = def.description;
+
+    if (refs.markdownDescription) {
+      jsonSchema.markdownDescription = def.description;
+    }
+  }
   return jsonSchema;
 };

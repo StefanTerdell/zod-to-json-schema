@@ -14,4 +14,17 @@ describe("Meta data", () => {
 
     expect($j).toStrictEqual($e);
   });
+
+  it("should be possible to add a markdownDescription", () => {
+    const $z = z.string().describe("My neat string");
+    const $j = zodToJsonSchema($z, { markdownDescription: true });
+    const $e = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "string",
+      description: "My neat string",
+      markdownDescription: "My neat string"
+    };
+
+    expect($j).toStrictEqual($e);
+  });
 });

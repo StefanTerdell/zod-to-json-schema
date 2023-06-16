@@ -13,6 +13,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   definitionPath: string;
   definitions: Record<string, ZodSchema>;
   errorMessages: boolean;
+  markdownDescription: boolean;
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
 };
 
@@ -27,6 +28,7 @@ export const defaultOptions: Options = {
   strictUnions: false,
   definitions: {},
   errorMessages: false,
+  markdownDescription: false,
   emailStrategy: "format:email",
 };
 
