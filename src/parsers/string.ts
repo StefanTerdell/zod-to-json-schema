@@ -69,7 +69,7 @@ export function parseStringDef(
 
           break;
         case "email":
-          switch (refs.email) {
+          switch (refs.emailStrategy) {
             case "format:email":
               addFormat(res, "email", check.message, refs);
               break;

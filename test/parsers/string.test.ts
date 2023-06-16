@@ -227,7 +227,7 @@ describe("String validations", () => {
     const errorMessages = {
       min: "Not long enough",
       max: "Too long",
-      email: "not email",
+      emailStrategy: "not email",
       url: "not url",
       uuid: "not uuid",
       regex: "didn't match regex " + regex.source,
@@ -257,9 +257,9 @@ describe("String validations", () => {
         },
       },
       {
-        schema: z.string().email(errorMessages.email),
+        schema: z.string().email(errorMessages.emailStrategy),
         errorMessage: {
-          format: errorMessages.email,
+          format: errorMessages.emailStrategy,
         },
       },
       {
@@ -436,7 +436,7 @@ describe("String validations", () => {
     expect(
       parseStringDef(
         z.string().email()._def,
-        getRefs({ email: "format:email" })
+        getRefs({ emailStrategy: "format:email" })
       )
     ).toStrictEqual({
       type: "string",
@@ -446,7 +446,7 @@ describe("String validations", () => {
     expect(
       parseStringDef(
         z.string().email()._def,
-        getRefs({ email: "format:idn-email" })
+        getRefs({ emailStrategy: "format:idn-email" })
       )
     ).toStrictEqual({
       type: "string",
@@ -454,7 +454,7 @@ describe("String validations", () => {
     });
 
     expect(
-      parseStringDef(z.string().email()._def, getRefs({ email: "pattern:zod" }))
+      parseStringDef(z.string().email()._def, getRefs({ emailStrategy: "pattern:zod" }))
     ).toStrictEqual({
       type: "string",
       pattern: emailPattern,
