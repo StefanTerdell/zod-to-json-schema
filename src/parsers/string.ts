@@ -2,11 +2,26 @@ import { ZodStringDef } from "zod";
 import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
 import { Refs } from "../Refs";
 
+export const emailPattern =
+  '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\])|(\\[IPv6:(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))\\])|([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])*(\\.[A-Za-z]{2,})+))$';
+export const cuidPattern = "^c[^\\s-]{8,}$";
+export const cuid2Pattern = "^[a-z][a-z0-9]*$";
+export const ulidPattern = "/[0-9A-HJKMNP-TV-Z]{26}/";
+export const emojiPattern =
+  "/^(p{Extended_Pictographic}|p{Emoji_Component})+$/u";
+
 export type JsonSchema7StringType = {
   type: "string";
   minLength?: number;
   maxLength?: number;
-  format?: "email" | "uri" | "uuid" | "date-time" | "ipv4" | "ipv6";
+  format?:
+    | "email"
+    | "idn-email"
+    | "uri"
+    | "uuid"
+    | "date-time"
+    | "ipv4"
+    | "ipv6";
   pattern?: string;
   allOf?: {
     pattern: string;
@@ -54,7 +69,18 @@ export function parseStringDef(
 
           break;
         case "email":
-          addFormat(res, "email", check.message, refs);
+          switch (refs.email) {
+            case "format:email":
+              addFormat(res, "email", check.message, refs);
+              break;
+            case "format:idn-email":
+              addFormat(res, "idn-email", check.message, refs);
+              break;
+            case "pattern:zod":
+              addPattern(res, emailPattern, check.message, refs);
+              break;
+          }
+
           break;
         case "url":
           addFormat(res, "uri", check.message, refs);
@@ -66,10 +92,10 @@ export function parseStringDef(
           addPattern(res, check.regex.source, check.message, refs);
           break;
         case "cuid":
-          addPattern(res, "^c[^\\s-]{8,}$", check.message, refs);
+          addPattern(res, cuidPattern, check.message, refs);
           break;
         case "cuid2":
-          addPattern(res, "^[a-z][a-z0-9]*$", check.message, refs);
+          addPattern(res, cuid2Pattern, check.message, refs);
           break;
         case "startsWith":
           addPattern(
@@ -130,15 +156,10 @@ export function parseStringDef(
           break;
         }
         case "emoji":
-          addPattern(
-            res,
-            "/^(p{Extended_Pictographic}|p{Emoji_Component})+$/u",
-            check.message,
-            refs
-          );
+          addPattern(res, emojiPattern, check.message, refs);
           break;
         case "ulid": {
-          addPattern(res, "/[0-9A-HJKMNP-TV-Z]{26}/", check.message, refs);
+          addPattern(res, ulidPattern, check.message, refs);
           break;
         }
         case "toLowerCase":
