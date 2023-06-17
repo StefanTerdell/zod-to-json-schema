@@ -3,6 +3,7 @@ import { z } from "zod";
 import { JsonSchema7Type } from "../../src/parseDef";
 import {
   JsonSchema7StringType,
+  emailPattern,
   parseStringDef,
 } from "../../src/parsers/string";
 import Ajv from "ajv";
@@ -226,7 +227,7 @@ describe("String validations", () => {
     const errorMessages = {
       min: "Not long enough",
       max: "Too long",
-      email: "not email",
+      emailStrategy: "not email",
       url: "not url",
       uuid: "not uuid",
       regex: "didn't match regex " + regex.source,
@@ -256,9 +257,9 @@ describe("String validations", () => {
         },
       },
       {
-        schema: z.string().email(errorMessages.email),
+        schema: z.string().email(errorMessages.emailStrategy),
         errorMessage: {
-          format: errorMessages.email,
+          format: errorMessages.emailStrategy,
         },
       },
       {
@@ -424,5 +425,39 @@ describe("String validations", () => {
     };
     const jsonParsedSchema = parseStringDef(zodSchema._def, errorReferences());
     expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+  });
+
+  it("should be possible to pick format:email, format:idn-email or pattern:zod", () => {
+    expect(parseStringDef(z.string().email()._def, getRefs())).toStrictEqual({
+      type: "string",
+      format: "email",
+    });
+
+    expect(
+      parseStringDef(
+        z.string().email()._def,
+        getRefs({ emailStrategy: "format:email" })
+      )
+    ).toStrictEqual({
+      type: "string",
+      format: "email",
+    });
+
+    expect(
+      parseStringDef(
+        z.string().email()._def,
+        getRefs({ emailStrategy: "format:idn-email" })
+      )
+    ).toStrictEqual({
+      type: "string",
+      format: "idn-email",
+    });
+
+    expect(
+      parseStringDef(z.string().email()._def, getRefs({ emailStrategy: "pattern:zod" }))
+    ).toStrictEqual({
+      type: "string",
+      pattern: emailPattern,
+    });
   });
 });
