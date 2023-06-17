@@ -1,20 +1,20 @@
 import { ZodSchema } from "zod";
 
-export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3"
+export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3";
 
-export type Options<Target extends Targets = "jsonSchema7"> =
-  {
-    name: string | undefined;
-    $refStrategy: "root" | "relative" | "none";
-    basePath: string[];
-    effectStrategy: "input" | "any";
-    pipeStrategy: "input" | "all";
-    target: Target;
-    strictUnions: boolean;
-    definitionPath: string;
-    definitions: Record<string, ZodSchema>;
-    errorMessages: boolean;
-  };
+export type Options<Target extends Targets = "jsonSchema7"> = {
+  name: string | undefined;
+  $refStrategy: "root" | "relative" | "none";
+  basePath: string[];
+  effectStrategy: "input" | "any";
+  pipeStrategy: "input" | "all";
+  target: Target;
+  strictUnions: boolean;
+  definitionPath: string;
+  definitions: Record<string, ZodSchema>;
+  errorMessages: boolean;
+  emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
+};
 
 export const defaultOptions: Options = {
   name: undefined,
@@ -27,6 +27,7 @@ export const defaultOptions: Options = {
   strictUnions: false,
   definitions: {},
   errorMessages: false,
+  emailStrategy: "format:email",
 };
 
 export const getDefaultOptions = <Target extends Targets>(
