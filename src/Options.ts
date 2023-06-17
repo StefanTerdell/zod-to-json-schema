@@ -9,6 +9,7 @@ export type Options<Target extends Targets = "jsonSchema7"> =
     basePath: string[];
     effectStrategy: "input" | "any";
     pipeStrategy: "input" | "all";
+    dateStrategy: "string" | "integer";
     target: Target;
     strictUnions: boolean;
     definitionPath: string;
@@ -22,6 +23,7 @@ export const defaultOptions: Options = {
   basePath: ["#"],
   effectStrategy: "input",
   pipeStrategy: "all",
+  dateStrategy: "string",
   definitionPath: "definitions",
   target: "jsonSchema7",
   strictUnions: false,
