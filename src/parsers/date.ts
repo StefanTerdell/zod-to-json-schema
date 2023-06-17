@@ -1,11 +1,11 @@
 import { ZodDateDef } from "zod";
 import { Refs } from "../Refs";
-import { ErrorMessages, addErrorMessage, setResponseValueAndErrors } from "../errorMessages";
+import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
 import { JsonSchema7NumberType } from "./number";
 
 export type JsonSchema7DateType = {
-  type: "integer";
-  format: "unix-time";
+  type: "integer" | "string";
+  format: "unix-time" | "date-time";
   minimum?: number;
   maximum?: number;
   errorMessage?: ErrorMessages<JsonSchema7NumberType>;
@@ -15,6 +15,17 @@ export function parseDateDef(
   def: ZodDateDef,
   refs: Refs
 ): JsonSchema7DateType {
+  if (refs.dateStrategy == "integer") {
+    return integerDateParser(def, refs);
+  } else {
+    return {
+      type: "string",
+      format: "date-time",
+    };
+  }
+}
+
+const integerDateParser = (def: ZodDateDef, refs: Refs ) => {
   const res: JsonSchema7DateType = {
     type: "integer",
     format: "unix-time",
@@ -48,4 +59,4 @@ export function parseDateDef(
   }
 
   return res;
-}
+};

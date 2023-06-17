@@ -36,8 +36,8 @@ describe("All Parsers tests", () => {
           type: "boolean",
         },
         date: {
-          type: "integer",
-          format: "unix-time",
+          type: "string",
+          format: "date-time",
         },
         default: {
           default: 42,
@@ -360,8 +360,8 @@ describe("All Parsers tests", () => {
           type: "boolean",
         },
         date: {
-          type: "integer",
-          format: "unix-time",
+          type: "string",
+          format: "date-time",
         },
         default: {
           default: 42,
