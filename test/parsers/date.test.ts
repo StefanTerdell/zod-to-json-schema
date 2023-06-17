@@ -4,6 +4,20 @@ import { parseDateDef } from "../../src/parsers/date";
 import { getRefs } from "../../src/Refs";
 import { errorReferences } from "./errorReferences";
 describe("Number validations", () => {
+  it("should be possible to date as a string type", () => {
+    const zodDateSchema = z.date();
+    const parsedSchemaWithOption = parseDateDef(zodDateSchema._def, getRefs({ dateStrategy: 'string' }));
+    const parsedSchemaFromDefault = parseDateDef(zodDateSchema._def, getRefs());
+
+    const jsonSchema: JSONSchema7Type = {
+      type: "string",
+      format: "date-time",
+    };
+
+    expect(parsedSchemaWithOption).toStrictEqual(jsonSchema);
+    expect(parsedSchemaFromDefault).toStrictEqual(jsonSchema);
+  });
+
   it("should be possible to describe minimum date", () => {
     const zodDateSchema = z.date().min(new Date("1970-01-02"), { message: "Too old" })
     const parsedSchema = parseDateDef(zodDateSchema._def, getRefs({ dateStrategy: 'integer' }));
@@ -18,7 +32,7 @@ describe("Number validations", () => {
   });
 
   it("should be possible to describe maximum date", () => {
-    const zodDateSchema = z.date().max(new Date("1970-01-02"))
+    const zodDateSchema = z.date().max(new Date("1970-01-02"));
     const parsedSchema = parseDateDef(zodDateSchema._def, getRefs({ dateStrategy: 'integer' }));
 
     const jsonSchema: JSONSchema7Type = {
