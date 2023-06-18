@@ -183,7 +183,7 @@ const selectParser = (
     case ZodFirstPartyTypeKind.ZodBoolean:
       return parseBooleanDef();
     case ZodFirstPartyTypeKind.ZodDate:
-      return parseDateDef();
+      return parseDateDef(def, refs);
     case ZodFirstPartyTypeKind.ZodUndefined:
       return parseUndefinedDef();
     case ZodFirstPartyTypeKind.ZodNull:
