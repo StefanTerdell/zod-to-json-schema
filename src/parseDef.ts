@@ -82,7 +82,11 @@ export function parseDef(
   const seenItem = refs.seen.get(def);
 
   if (seenItem && !forceResolution) {
-    return get$ref(seenItem, refs);
+    const seenSchema = get$ref(seenItem, refs);
+
+    if (seenSchema !== undefined) {
+      return seenSchema;
+    }
   }
 
   const newItem: Seen = { def, path: refs.currentPath, jsonSchema: undefined };
@@ -122,6 +126,21 @@ const get$ref = (
     case "relative":
       return { $ref: getRelativePath(refs.currentPath, item.path) };
     case "none": {
+      if (
+        item.path.length < refs.currentPath.length &&
+        item.path.every((value, index) => refs.currentPath[index] === value)
+      ) {
+        console.warn(
+          `Recursive reference detected at ${refs.currentPath.join(
+            "/"
+          )}! Defaulting to any`
+        );
+        return {};
+      }
+
+      return undefined;
+    }
+    case "seen": {
       if (
         item.path.length < refs.currentPath.length &&
         item.path.every((value, index) => refs.currentPath[index] === value)

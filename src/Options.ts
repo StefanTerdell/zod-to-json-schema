@@ -4,7 +4,7 @@ export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3";
 
 export type Options<Target extends Targets = "jsonSchema7"> = {
   name: string | undefined;
-  $refStrategy: "root" | "relative" | "none";
+  $refStrategy: "root" | "relative" | "none" | "seen";
   basePath: string[];
   effectStrategy: "input" | "any";
   pipeStrategy: "input" | "all";
