@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.21.1",
+  "version": "3.21.2",
   "description": "Converts Zod schemas to Json Schemas",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,8 @@
     "Tom Arad (https://github.com/tomarad)",
     "Isaac Way (https://github.com/iway1)",
     "Andreas Berger (https://github.com/Andy2003)",
-    "Jan Potoms (https://github.com/Janpot)"
+    "Jan Potoms (https://github.com/Janpot)",
+    "Santiago Cammi (https://github.com/scammi)"
   ],
   "repository": {
     "type": "git",
