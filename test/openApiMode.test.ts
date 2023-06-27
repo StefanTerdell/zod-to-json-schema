@@ -48,4 +48,59 @@ describe("Open API target", () => {
 
     expect(swaggerSchema).toStrictEqual(expectedSchema);
   });
+
+  it("should properly reference nullable schemas", () => {
+    const legalReasonSchema = z
+      .object({
+        reason: z.enum(["FOO", "BAR"]),
+      })
+      .strict();
+
+    const identityRequestSchema = z
+      .object({
+        alias: z
+          .object({
+            legalReason: legalReasonSchema.nullish(), // reused here
+          })
+          .strict(),
+        requiredLegalReasonTypes: z
+          .array(legalReasonSchema.shape.reason)
+          .nullish(), // reused here
+      })
+      .strict();
+
+    const result = zodToJsonSchema(identityRequestSchema, {
+      target: "openApi3",
+    });
+
+    const expected = {
+      type: "object",
+      properties: {
+        alias: {
+          type: "object",
+          properties: {
+            legalReason: {
+              type: "object",
+              properties: { reason: { type: "string", enum: ["FOO", "BAR"] } },
+              required: ["reason"],
+              additionalProperties: false,
+              nullable: true,
+            },
+          },
+          additionalProperties: false,
+        },
+        requiredLegalReasonTypes: {
+          type: "array",
+          items: {
+            $ref: "#/properties/alias/properties/legalReason/properties/reason",
+          },
+          nullable: true,
+        },
+      },
+      required: ["alias"],
+      additionalProperties: false,
+    };
+
+    expect(result).toStrictEqual(expected);
+  });
 });
