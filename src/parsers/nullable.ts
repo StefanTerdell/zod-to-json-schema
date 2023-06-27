@@ -41,21 +41,19 @@ export function parseNullableDef(
     };
   }
 
-  const type = parseDef(def.innerType._def, {
+  if (refs.target === "openApi3") {
+    const base = parseDef(def.innerType._def, {
+      ...refs,
+      currentPath: [...refs.currentPath],
+    });
+
+    return base && ({ ...base, nullable: true } as any);
+  }
+
+  const base = parseDef(def.innerType._def, {
     ...refs,
     currentPath: [...refs.currentPath, "anyOf", "0"],
   });
 
-  return type
-    ? refs.target === "openApi3"
-      ? ({ ...type, nullable: true } as any)
-      : {
-          anyOf: [
-            type,
-            {
-              type: "null",
-            },
-          ],
-        }
-    : undefined;
+  return base && { anyOf: [base, { type: "null" }] };
 }
