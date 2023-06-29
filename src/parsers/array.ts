@@ -39,6 +39,21 @@ export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
       refs
     );
   }
-
+  if ( def.exactLength ) {
+    setResponseValueAndErrors(
+      res,
+      "minItems",
+      def.exactLength.value,
+      def.exactLength.message,
+      refs
+    );
+    setResponseValueAndErrors(
+      res,
+      "maxItems",
+      def.exactLength.value,
+      def.exactLength.message,
+      refs
+    );
+  }
   return res;
 }
