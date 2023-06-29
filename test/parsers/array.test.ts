@@ -38,6 +38,21 @@ describe("Arrays and array validations", () => {
     };
     expect(parsedSchema).toStrictEqual(jsonSchema);
   });
+  it("should be possible to describe a string array with an exect length", () => {
+    const parsedSchema = parseArrayDef(
+      z.array(z.string()).length(5)._def,
+      getRefs()
+    );
+    const jsonSchema: JSONSchema7Type = {
+      type: "array",
+      items: {
+        type: "string",
+      },
+      minItems: 5,
+      maxItems: 5,
+    };
+    expect(parsedSchema).toStrictEqual(jsonSchema);
+  });
   it("should be possible to describe a string array with a minimum length of 1 by using nonempty", () => {
     const parsedSchema = parseArrayDef(
       z.array(z.any()).nonempty()._def,
@@ -78,6 +93,26 @@ describe("Arrays and array validations", () => {
       .array(z.any())
       .min(5, minLengthMessage)
       .max(10, maxLengthMessage);
+    const jsonParsedSchema = parseArrayDef(
+      zodArraySchema._def,
+      errorReferences()
+    );
+    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+  });
+  it("should include custom error messages for exactLength", () => {
+    const exactLengthMessage = "Must have exactly 5 items.";
+    const jsonSchema: JSONSchema7Type = {
+      type: "array",
+      minItems: 5,
+      maxItems: 5,
+      errorMessage: {
+        minItems: exactLengthMessage,
+        maxItems: exactLengthMessage,
+      },
+    };
+    const zodArraySchema = z
+      .array(z.any())
+      .length(5, exactLengthMessage)
     const jsonParsedSchema = parseArrayDef(
       zodArraySchema._def,
       errorReferences()
