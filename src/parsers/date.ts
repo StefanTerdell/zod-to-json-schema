@@ -11,10 +11,7 @@ export type JsonSchema7DateType = {
   errorMessage?: ErrorMessages<JsonSchema7NumberType>;
 };
 
-export function parseDateDef(
-  def: ZodDateDef,
-  refs: Refs
-): JsonSchema7DateType {
+export function parseDateDef(def: ZodDateDef, refs: Refs): JsonSchema7DateType {
   if (refs.dateStrategy == "integer") {
     return integerDateParser(def, refs);
   } else {
@@ -25,7 +22,7 @@ export function parseDateDef(
   }
 }
 
-const integerDateParser = (def: ZodDateDef, refs: Refs ) => {
+const integerDateParser = (def: ZodDateDef, refs: Refs) => {
   const res: JsonSchema7DateType = {
     type: "integer",
     format: "unix-time",
@@ -38,7 +35,7 @@ const integerDateParser = (def: ZodDateDef, refs: Refs ) => {
           setResponseValueAndErrors(
             res,
             "minimum",
-            check.value, // This is in milliseconds 
+            check.value, // This is in milliseconds
             check.message,
             refs
           );

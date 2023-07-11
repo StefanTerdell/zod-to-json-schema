@@ -5,7 +5,7 @@ import { Refs } from "../Refs";
 
 export type JsonSchema7SetType = {
   type: "array";
-  uniqueItems: true,
+  uniqueItems: true;
   items?: JsonSchema7Type;
   minItems?: number;
   maxItems?: number;

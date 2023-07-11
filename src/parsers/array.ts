@@ -21,6 +21,7 @@ export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
       currentPath: [...refs.currentPath, "items"],
     });
   }
+
   if (def.minLength) {
     setResponseValueAndErrors(
       res,
@@ -39,7 +40,7 @@ export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
       refs
     );
   }
-  if ( def.exactLength ) {
+  if (def.exactLength) {
     setResponseValueAndErrors(
       res,
       "minItems",
