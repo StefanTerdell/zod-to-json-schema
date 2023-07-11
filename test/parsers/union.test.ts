@@ -172,6 +172,57 @@ describe("Unions", () => {
     });
   });
 
+  it("should work with discriminated union type, discriminator and oneOf", () => {
+    const discUnion = z.discriminatedUnion("kek", [
+      z.object({ kek: z.literal("A"), lel: z.boolean() }),
+      z.object({ kek: z.literal("B"), lel: z.number() }),
+    ]);
+
+    const jsonSchema = parseUnionDef(
+      discUnion._def,
+      getRefs({
+        unionStrategy: "oneOf",
+        discriminator: true,
+      })
+    );
+
+    expect(jsonSchema).toStrictEqual({
+      oneOf: [
+        {
+          type: "object",
+          properties: {
+            kek: {
+              type: "string",
+              const: "A",
+            },
+            lel: {
+              type: "boolean",
+            },
+          },
+          required: ["kek", "lel"],
+          additionalProperties: false,
+        },
+        {
+          type: "object",
+          properties: {
+            kek: {
+              type: "string",
+              const: "B",
+            },
+            lel: {
+              type: "number",
+            },
+          },
+          required: ["kek", "lel"],
+          additionalProperties: false,
+        },
+      ],
+      discriminator: {
+        propertyName: "kek",
+      },
+    });
+  });
+
   it("should not ignore descriptions in literal unions", () => {
     expect([
       parseUnionDef(

@@ -16,6 +16,8 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   errorMessages: boolean;
   markdownDescription: boolean;
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
+  discriminator: boolean;
+  unionStrategy: "anyOf" | "oneOf";
 };
 
 export const defaultOptions: Options = {
@@ -32,6 +34,8 @@ export const defaultOptions: Options = {
   errorMessages: false,
   markdownDescription: false,
   emailStrategy: "format:email",
+  discriminator: false,
+  unionStrategy: "anyOf",
 };
 
 export const getDefaultOptions = <Target extends Targets>(

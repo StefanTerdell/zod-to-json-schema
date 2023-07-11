@@ -20,7 +20,8 @@ type JsonSchema7Primitive =
 
 export type JsonSchema7UnionType =
   | JsonSchema7PrimitiveUnionType
-  | JsonSchema7AnyOfType;
+  | JsonSchema7AnyOfType
+  | JsonSchema7OneOfType;
 
 type JsonSchema7PrimitiveUnionType =
   | {
@@ -33,13 +34,27 @@ type JsonSchema7PrimitiveUnionType =
 
 type JsonSchema7AnyOfType = {
   anyOf: JsonSchema7Type[];
+  discriminator?: {
+    propertyName: string;
+  };
+};
+
+type JsonSchema7OneOfType = {
+  oneOf: JsonSchema7Type[];
+  discriminator?: {
+    propertyName: string;
+  };
 };
 
 export function parseUnionDef(
   def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
   refs: Refs
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
-  if (refs.target === "openApi3") return asAnyOf(def, refs);
+):
+  | JsonSchema7PrimitiveUnionType
+  | JsonSchema7AnyOfType
+  | JsonSchema7OneOfType
+  | undefined {
+  if (refs.target === "openApi3") return asUnionOf(def, refs);
 
   const options: readonly ZodTypeAny[] =
     def.options instanceof Map ? Array.from(def.options.values()) : def.options;
@@ -113,14 +128,18 @@ export function parseUnionDef(
     };
   }
 
-  return asAnyOf(def, refs);
+  return asUnionOf(def, refs);
 }
 
-const asAnyOf = (
+const asUnionOf = (
   def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
   refs: Refs
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined => {
-  const anyOf = (
+):
+  | JsonSchema7PrimitiveUnionType
+  | JsonSchema7AnyOfType
+  | JsonSchema7OneOfType
+  | undefined => {
+  const unionOf = (
     (def.options instanceof Map
       ? Array.from(def.options.values())
       : def.options) as any[]
@@ -128,7 +147,7 @@ const asAnyOf = (
     .map((x, i) =>
       parseDef(x._def, {
         ...refs,
-        currentPath: [...refs.currentPath, "anyOf", `${i}`],
+        currentPath: [...refs.currentPath, refs.unionStrategy, `${i}`],
       })
     )
     .filter(
@@ -138,5 +157,18 @@ const asAnyOf = (
           (typeof x === "object" && Object.keys(x).length > 0))
     );
 
-  return anyOf.length ? { anyOf } : undefined;
+  const discriminator =
+    refs.discriminator &&
+    def.typeName === "ZodDiscriminatedUnion" &&
+    typeof def.discriminator === "string"
+      ? ({ discriminator: { propertyName: def.discriminator } } as const)
+      : {};
+
+  if (!unionOf.length) {
+    return undefined;
+  }
+
+  return refs.unionStrategy === "anyOf"
+    ? { anyOf: unionOf, ...discriminator }
+    : { oneOf: unionOf, ...discriminator };
 };
