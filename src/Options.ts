@@ -1,6 +1,6 @@
 import { ZodSchema } from "zod";
-import { Refs } from "./Refs";
-import { JsonSchema7Type } from "./parseDef";
+import type { Refs } from "./Refs";
+import type { JsonSchema7Type } from "./parseDef";
 
 export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3";
 
