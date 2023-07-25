@@ -98,7 +98,7 @@ export function parseDef(
   if (jsonSchema) {
     addMeta(def, refs, jsonSchema);
 
-    refs.onParseDef?.(refs, jsonSchema);
+    refs.onParseDef?.(def, refs, jsonSchema);
   }
 
   newItem.jsonSchema = jsonSchema;

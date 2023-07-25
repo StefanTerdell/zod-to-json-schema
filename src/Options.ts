@@ -1,4 +1,4 @@
-import { ZodSchema } from "zod";
+import { ZodSchema, type ZodTypeDef } from "zod";
 import type { Refs } from "./Refs";
 import type { JsonSchema7Type } from "./parseDef";
 
@@ -18,7 +18,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   errorMessages: boolean;
   markdownDescription: boolean;
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
-  onParseDef: ((refs: Refs, schema: JsonSchema7Type) => void) | undefined;
+  onParseDef: ((def: ZodTypeDef, refs: Refs, schema: JsonSchema7Type) => void) | undefined;
 };
 
 export const defaultOptions: Options = {
