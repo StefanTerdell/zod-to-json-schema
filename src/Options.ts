@@ -1,4 +1,6 @@
 import { ZodSchema } from "zod";
+import { Refs } from "./Refs";
+import { JsonSchema7Type } from "./parseDef";
 
 export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3";
 
@@ -16,6 +18,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   errorMessages: boolean;
   markdownDescription: boolean;
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
+  onParseDef: ((refs: Refs, schema: JsonSchema7Type) => void) | undefined;
 };
 
 export const defaultOptions: Options = {
@@ -32,6 +35,7 @@ export const defaultOptions: Options = {
   errorMessages: false,
   markdownDescription: false,
   emailStrategy: "format:email",
+  onParseDef: undefined,
 };
 
 export const getDefaultOptions = <Target extends Targets>(
