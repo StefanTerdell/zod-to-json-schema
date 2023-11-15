@@ -1,15 +1,15 @@
-import { JSONSchema7Type } from "json-schema.js";
-import { z } from "zod";
-import { parseMapDef } from "../../src/parsers/map.js";
-import Ajv from "ajv";
-import { getRefs } from "../../src/Refs.js";
-import { suite } from "../suite.js";
-const ajv = new Ajv();
+import { JSONSchema7Type } from "json-schema.js"
+import { z } from "zod"
+import { parseMapDef } from "../../src/parsers/map.js"
+import Ajv from "ajv"
+import { getRefs } from "../../src/Refs.js"
+import { suite } from "../suite.js"
+const ajv = new Ajv()
 suite("map", (test) => {
   test("should be possible to use Map", (assert) => {
-    const mapSchema = z.map(z.string(), z.number());
+    const mapSchema = z.map(z.string(), z.number())
 
-    const parsedSchema = parseMapDef(mapSchema._def, getRefs());
+    const parsedSchema = parseMapDef(mapSchema._def, getRefs())
 
     const jsonSchema: JSONSchema7Type = {
       type: "array",
@@ -27,19 +27,37 @@ suite("map", (test) => {
         minItems: 2,
         maxItems: 2,
       },
-    };
+    }
 
-    assert(parsedSchema, jsonSchema);
+    assert(parsedSchema, jsonSchema)
 
-    const myMap: z.infer<typeof mapSchema> = new Map<string, number>();
-    myMap.set("hello", 123);
+    const myMap: z.infer<typeof mapSchema> = new Map<string, number>()
+    myMap.set("hello", 123)
 
-    ajv.validate(jsonSchema, [...myMap]);
-    const ajvResult = !ajv.errors;
+    ajv.validate(jsonSchema, [...myMap])
+    const ajvResult = !ajv.errors
 
-    const zodResult = mapSchema.safeParse(myMap).success;
+    const zodResult = mapSchema.safeParse(myMap).success
 
-    assert(zodResult, true);
-    assert(ajvResult, true);
-  });
-});
+    assert(zodResult, true)
+    assert(ajvResult, true)
+  })
+
+  test("should be possible to use additionalProperties-pattern (record)", (assert) => {
+    assert(
+      parseMapDef(
+        z.map(z.string().min(1), z.number())._def,
+        getRefs({ mapStrategy: "record" }),
+      ),
+      {
+        type: "object",
+        additionalProperties: {
+          type: "number",
+        },
+        propertyNames: {
+          minLength: 1
+        }
+      },
+    )
+  })
+})

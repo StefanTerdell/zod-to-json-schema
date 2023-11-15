@@ -1,4 +1,4 @@
-import { ZodFirstPartyTypeKind, ZodRecordDef, ZodTypeAny } from "zod";
+import { ZodFirstPartyTypeKind, ZodMapDef, ZodRecordDef, ZodTypeAny } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef.js";
 import { Refs } from "../Refs.js";
 import { JsonSchema7EnumType } from "./enum.js";
@@ -16,7 +16,7 @@ export type JsonSchema7RecordType = {
 };
 
 export function parseRecordDef(
-  def: ZodRecordDef<ZodTypeAny, ZodTypeAny>,
+  def: ZodRecordDef<ZodTypeAny, ZodTypeAny> | ZodMapDef,
   refs: Refs
 ): JsonSchema7RecordType {
   if (
