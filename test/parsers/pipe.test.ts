@@ -1,23 +1,22 @@
-import { z } from "zod";
-import { parsePipelineDef } from "../../src/parsers/pipeline";
-import { getRefs } from "../../src/Refs";
+import { z } from "zod"
+import { parsePipelineDef } from "../../src/parsers/pipeline"
+import { getRefs } from "../../src/Refs"
+import { suite } from "../suite"
 
-describe("pipe", () => {
-  it("Should create an allOf schema with all its inner schemas represented", () => {
-    const schema = z.number().pipe(z.number().int());
+suite("pipe", (test) => {
+  test("Should create an allOf schema with all its inner schemas represented", (assert) => {
+    const schema = z.number().pipe(z.number().int())
 
-    expect(parsePipelineDef(schema._def, getRefs())).toStrictEqual({
+    assert(parsePipelineDef(schema._def, getRefs()), {
       allOf: [{ type: "number" }, { type: "integer" }],
-    });
-  });
+    })
+  })
 
-  it("Should parse the input schema if that strategy is selected", () => {
-    const schema = z.number().pipe(z.number().int());
+  test("Should parse the input schema if that strategy is selected", (assert) => {
+    const schema = z.number().pipe(z.number().int())
 
-    expect(
-      parsePipelineDef(schema._def, getRefs({ pipeStrategy: "input" }))
-    ).toStrictEqual({
+    assert(parsePipelineDef(schema._def, getRefs({ pipeStrategy: "input" })), {
       type: "number",
-    });
-  });
-});
+    })
+  })
+})

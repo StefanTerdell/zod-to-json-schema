@@ -3,9 +3,10 @@ import { z } from "zod";
 import { parseMapDef } from "../../src/parsers/map";
 import Ajv from "ajv";
 import { getRefs } from "../../src/Refs";
+import { suite } from "../suite";
 const ajv = new Ajv();
-describe("map", () => {
-  it("should be possible to use Map", () => {
+suite("map", (test) => {
+  test("should be possible to use Map", (assert) => {
     const mapSchema = z.map(z.string(), z.number());
 
     const parsedSchema = parseMapDef(mapSchema._def, getRefs());
@@ -28,7 +29,7 @@ describe("map", () => {
       },
     };
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
 
     const myMap: z.infer<typeof mapSchema> = new Map<string, number>();
     myMap.set("hello", 123);
@@ -38,7 +39,7 @@ describe("map", () => {
 
     const zodResult = mapSchema.safeParse(myMap).success;
 
-    expect(zodResult).toBe(true);
-    expect(ajvResult).toBe(true);
+    assert(zodResult, true);
+    assert(ajvResult, true);
   });
 });

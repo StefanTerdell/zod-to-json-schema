@@ -2,10 +2,10 @@
   "name": "zod-to-json-schema",
   "version": "3.21.4",
   "description": "Converts Zod schemas to Json Schemas",
-  "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "dev": "jest --watch",
+    "gen": "tsx test/createIndex.ts",
+    "test": "tsx test/index.ts",
+    "dev": "tsx watch test/index.ts",
     "build": "npm i && jest && rimraf dist && tsc && node copyPackageFiles.js",
     "dryrun": "npm run build && npm pub ./dist/ --dry-run"
   },
@@ -40,14 +40,14 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
     "@types/json-schema": "^7.0.9",
+    "@types/node": "^20.9.0",
     "ajv": "^8.6.3",
     "ajv-formats": "^2.1.1",
-    "jest": "^29.5.0",
+    "fast-diff": "^1.3.0",
     "json-schema-deref-sync": "^0.14.0",
     "rimraf": "^3.0.2",
-    "ts-jest": "^29.1.0",
+    "tsx": "^4.1.2",
     "typescript": "^5.1.3",
     "zod": "^3.21.4"
   },

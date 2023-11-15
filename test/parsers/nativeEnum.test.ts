@@ -1,9 +1,10 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseNativeEnumDef } from "../../src/parsers/nativeEnum";
+import { suite } from "../suite";
 
-describe("Native enums", () => {
-  it("should be possible to convert a basic native number enum", () => {
+suite("Native enums", (test) => {
+  test("should be possible to convert a basic native number enum", (assert) => {
     enum MyEnum {
       val1,
       val2,
@@ -15,10 +16,10 @@ describe("Native enums", () => {
       type: "number",
       enum: [0, 1, 2],
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema)
   });
 
-  it("should be possible to convert a native string enum", () => {
+  test("should be possible to convert a native string enum", (assert) => {
     enum MyEnum {
       val1 = "a",
       val2 = "b",
@@ -30,10 +31,10 @@ describe("Native enums", () => {
       type: "string",
       enum: ["a", "b", "c"],
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema)
   });
 
-  it("should be possible to convert a mixed value native enum", () => {
+  test("should be possible to convert a mixed value native enum", (assert) => {
     enum MyEnum {
       val1 = "a",
       val2 = 1,
@@ -45,10 +46,10 @@ describe("Native enums", () => {
       type: ["string", "number"],
       enum: ["a", 1, "c"],
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema)
   });
 
-  it("should be possible to convert a native const assertion object", () => {
+  test("should be possible to convert a native const assertion object", (assert) => {
     const MyConstAssertionObject = {
       val1: 0,
       val2: 1,
@@ -62,10 +63,10 @@ describe("Native enums", () => {
       type: "number",
       enum: [0, 1, 2],
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema)
   });
 
-  it("should be possible to convert a native const assertion string object", () => {
+  test("should be possible to convert a native const assertion string object", (assert) => {
     const MyConstAssertionObject = {
       val1: "a",
       val2: "b",
@@ -79,10 +80,10 @@ describe("Native enums", () => {
       type: "string",
       enum: ["a", "b", "c"],
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema)
   });
 
-  it("should be possible to convert a mixed value native const assertion string object", () => {
+  test("should be possible to convert a mixed value native const assertion string object", (assert) => {
     const MyConstAssertionObject = {
       val1: "a",
       val2: 1,
@@ -96,6 +97,6 @@ describe("Native enums", () => {
       type: ["string", "number"],
       enum: ["a", 1, "c"],
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema)
   });
 });

@@ -1,11 +1,12 @@
-import { JSONSchema7Type } from "json-schema";
-import { z } from "zod";
-import { parseDef } from "../../src/parseDef";
-import { getRefs } from "../../src/Refs";
+import { JSONSchema7Type } from "json-schema"
+import { z } from "zod"
+import { parseDef } from "../../src/parseDef"
+import { getRefs } from "../../src/Refs"
+import { suite } from "../suite"
 
-describe("Standalone optionals", () => {
-  it("should work as unions with undefined", () => {
-    const parsedSchema = parseDef(z.string().optional()._def, getRefs());
+suite("Standalone optionals", (test) => {
+  test("should work as unions with undefined", (assert) => {
+    const parsedSchema = parseDef(z.string().optional()._def, getRefs())
 
     const jsonSchema: JSONSchema7Type = {
       anyOf: [
@@ -16,16 +17,16 @@ describe("Standalone optionals", () => {
           type: "string",
         },
       ],
-    };
+    }
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
-  });
+    assert(parsedSchema, jsonSchema)
+  })
 
-  it("should not affect object properties", () => {
+  test("should not affect object properties", (assert) => {
     const parsedSchema = parseDef(
       z.object({ myProperty: z.string().optional() })._def,
-      getRefs()
-    );
+      getRefs(),
+    )
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -35,16 +36,16 @@ describe("Standalone optionals", () => {
         },
       },
       additionalProperties: false,
-    };
+    }
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
-  });
+    assert(parsedSchema, jsonSchema)
+  })
 
-  it("should work with nested properties", () => {
+  test("should work with nested properties", (assert) => {
     const parsedSchema = parseDef(
       z.object({ myProperty: z.string().optional().array() })._def,
-      getRefs()
-    );
+      getRefs(),
+    )
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -58,18 +59,18 @@ describe("Standalone optionals", () => {
       },
       required: ["myProperty"],
       additionalProperties: false,
-    };
+    }
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
-  });
+    assert(parsedSchema, jsonSchema)
+  })
 
-  it("should work with nested properties as object properties", () => {
+  test("should work with nested properties as object properties", (assert) => {
     const parsedSchema = parseDef(
       z.object({
         myProperty: z.object({ myInnerProperty: z.string().optional() }),
       })._def,
-      getRefs()
-    );
+      getRefs(),
+    )
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -86,20 +87,20 @@ describe("Standalone optionals", () => {
       },
       required: ["myProperty"],
       additionalProperties: false,
-    };
+    }
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
-  });
+    assert(parsedSchema, jsonSchema)
+  })
 
-  it("should work with nested properties with nested object property parents", () => {
+  test("should work with nested properties with nested object property parents", (assert) => {
     const parsedSchema = parseDef(
       z.object({
         myProperty: z.object({
           myInnerProperty: z.string().optional().array(),
         }),
       })._def,
-      getRefs()
-    );
+      getRefs(),
+    )
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -125,17 +126,17 @@ describe("Standalone optionals", () => {
       },
       required: ["myProperty"],
       additionalProperties: false,
-    };
+    }
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
-  });
+    assert(parsedSchema, jsonSchema)
+  })
 
-  it("should work with ref pathing", () => {
-    const recurring = z.string();
+  test("should work with ref pathing", (assert) => {
+    const recurring = z.string()
 
-    const schema = z.tuple([recurring.optional(), recurring]);
+    const schema = z.tuple([recurring.optional(), recurring])
 
-    const parsedSchema = parseDef(schema._def, getRefs());
+    const parsedSchema = parseDef(schema._def, getRefs())
 
     const jsonSchema: JSONSchema7Type = {
       type: "array",
@@ -145,8 +146,8 @@ describe("Standalone optionals", () => {
         { anyOf: [{ not: {} }, { type: "string" }] },
         { $ref: "#/items/0/anyOf/1" },
       ],
-    };
+    }
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
-  });
-});
+    assert(parsedSchema, jsonSchema)
+  })
+})

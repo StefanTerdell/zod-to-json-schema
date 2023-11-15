@@ -1,11 +1,14 @@
-import { JSONSchema7Type } from "json-schema";
-import { z } from "zod";
-import { parseDef } from "../src/parseDef";
-import Ajv from "ajv";
-import { getRefs } from "../src/Refs";
-const ajv = new Ajv();
-describe("Basic parsing", () => {
-  it("should return a proper json schema with some common types without validation", () => {
+import { JSONSchema7Type } from "json-schema"
+import { z } from "zod"
+import { parseDef } from "../src/parseDef"
+import Ajv from "ajv"
+import { getRefs } from "../src/Refs"
+const ajv = new Ajv()
+
+import { suite } from "./suite"
+
+suite("Basic parsing", (test) => {
+  test("should return a proper json schema with some common types without validation", (assert) => {
     const zodSchema = z.object({
       requiredString: z.string(),
       optionalString: z.string().optional(),
@@ -25,7 +28,7 @@ describe("Basic parsing", () => {
       ]),
       objectOrNull: z.object({ myString: z.string() }).nullable(),
       passthrough: z.object({ myString: z.string() }).passthrough(),
-    });
+    })
     const expectedJsonSchema: JSONSchema7Type = {
       type: "object",
       properties: {
@@ -150,19 +153,19 @@ describe("Basic parsing", () => {
         "passthrough",
       ],
       additionalProperties: false,
-    };
-    const parsedSchema = parseDef(zodSchema._def, getRefs());
-    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
-    expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
-  });
+    }
+    const parsedSchema = parseDef(zodSchema._def, getRefs())
+    assert(parsedSchema, expectedJsonSchema)
+    assert(ajv.validateSchema(parsedSchema!), true)
+  })
 
-  it("should handle a nullable string properly", () => {
-    const shorthand = z.string().nullable();
-    const union = z.union([z.string(), z.null()]);
+  test("should handle a nullable string properly", (assert) => {
+    const shorthand = z.string().nullable()
+    const union = z.union([z.string(), z.null()])
 
-    const expected = { type: ["string", "null"] };
+    const expected = { type: ["string", "null"] }
 
-    expect(parseDef(shorthand._def, getRefs())).toStrictEqual(expected);
-    expect(parseDef(union._def, getRefs())).toStrictEqual(expected);
-  });
-});
+    assert(parseDef(shorthand._def, getRefs()), expected)
+    assert(parseDef(union._def, getRefs()), expected)
+  })
+})

@@ -1,27 +1,28 @@
-import { z } from "zod";
-import { parseRecordDef } from "../../src/parsers/record";
-import { getRefs } from "../../src/Refs";
+import { z } from "zod"
+import { parseRecordDef } from "../../src/parsers/record"
+import { getRefs } from "../../src/Refs"
+import { suite } from "../suite"
 
-describe("records", () => {
-  it("should be possible to describe a simple record", () => {
-    const schema = z.record(z.number());
+suite("records", (test) => {
+  test("should be possible to describe a simple record", (assert) => {
+    const schema = z.record(z.number())
 
-    const parsedSchema = parseRecordDef(schema._def, getRefs());
+    const parsedSchema = parseRecordDef(schema._def, getRefs())
     const expectedSchema = {
       type: "object",
       additionalProperties: {
         type: "number",
       },
-    };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
-  });
+    }
+    assert(parsedSchema, expectedSchema)
+  })
 
-  it("should be possible to describe a complex record with checks", () => {
+  test("should be possible to describe a complex record with checks", (assert) => {
     const schema = z.record(
-      z.object({ foo: z.number().min(2) }).catchall(z.string().cuid())
-    );
+      z.object({ foo: z.number().min(2) }).catchall(z.string().cuid()),
+    )
 
-    const parsedSchema = parseRecordDef(schema._def, getRefs());
+    const parsedSchema = parseRecordDef(schema._def, getRefs())
     const expectedSchema = {
       type: "object",
       additionalProperties: {
@@ -38,14 +39,14 @@ describe("records", () => {
           pattern: "^c[^\\s-]{8,}$",
         },
       },
-    };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
-  });
+    }
+    assert(parsedSchema, expectedSchema)
+  })
 
-  it("should be possible to describe a key schema", () => {
-    const schema = z.record(z.string().uuid(), z.number());
+  test("should be possible to describe a key schema", (assert) => {
+    const schema = z.record(z.string().uuid(), z.number())
 
-    const parsedSchema = parseRecordDef(schema._def, getRefs());
+    const parsedSchema = parseRecordDef(schema._def, getRefs())
     const expectedSchema = {
       type: "object",
       additionalProperties: {
@@ -54,13 +55,13 @@ describe("records", () => {
       propertyNames: {
         format: "uuid",
       },
-    };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
-  });
+    }
+    assert(parsedSchema, expectedSchema)
+  })
 
-  it("should be possible to describe a key with an enum", () => {
-    const schema = z.record(z.enum(["foo", "bar"]), z.number());
-    const parsedSchema = parseRecordDef(schema._def, getRefs());
+  test("should be possible to describe a key with an enum", (assert) => {
+    const schema = z.record(z.enum(["foo", "bar"]), z.number())
+    const parsedSchema = parseRecordDef(schema._def, getRefs())
     const expectedSchema = {
       type: "object",
       additionalProperties: {
@@ -69,7 +70,7 @@ describe("records", () => {
       propertyNames: {
         enum: ["foo", "bar"],
       },
-    };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
-  });
-});
+    }
+    assert(parsedSchema, expectedSchema)
+  })
+})

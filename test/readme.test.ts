@@ -1,18 +1,19 @@
-import { z } from "zod";
-import zodToJsonSchema from "..";
+import { z } from "zod"
+import zodToJsonSchema from ".."
+import { suite } from "./suite"
 
-describe("The readme example", () => {
-  it("should be valid", () => {
+suite("The readme example", (test) => {
+  test("should be valid", (assert) => {
     const mySchema = z
       .object({
         myString: z.string().min(5),
         myUnion: z.union([z.number(), z.boolean()]),
       })
-      .describe("My neat object schema");
+      .describe("My neat object schema")
 
-    const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
+    const jsonSchema = zodToJsonSchema(mySchema, "mySchema")
 
-    expect(jsonSchema).toStrictEqual({
+    assert(jsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "#/definitions/mySchema",
       definitions: {
@@ -32,10 +33,10 @@ describe("The readme example", () => {
           required: ["myString", "myUnion"],
         },
       },
-    });
-  });
-  it("should have a valid error message example", () => {
-    const EmailSchema = z.string().email("Invalid email").min(5, "Too short");
+    })
+  })
+  test("should have a valid error message example", (assert) => {
+    const EmailSchema = z.string().email("Invalid email").min(5, "Too short")
     const expected = {
       $schema: "http://json-schema.org/draft-07/schema#",
       type: "string",
@@ -45,10 +46,10 @@ describe("The readme example", () => {
         format: "Invalid email",
         minLength: "Too short",
       },
-    };
+    }
     const parsedJsonSchema = zodToJsonSchema(EmailSchema, {
       errorMessages: true,
-    });
-    expect(parsedJsonSchema).toStrictEqual(expected);
-  });
-});
+    })
+    assert(parsedJsonSchema, expected)
+  })
+})

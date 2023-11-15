@@ -1,42 +1,41 @@
-import { JSONSchema7Type } from "json-schema";
-import { z } from "zod";
-import { parseNullableDef } from "../../src/parsers/nullable";
-import { parseObjectDef } from "../../src/parsers/object";
-import { getRefs } from "../../src/Refs";
+import { z } from "zod"
+import { parseObjectDef } from "../../src/parsers/object"
+import { getRefs } from "../../src/Refs"
+import { suite } from "../suite"
 
-describe("nullable", () => {
-  it("should be possible to properly reference nested nullable primitives", () => {
-    const nullablePrimitive = z.string().nullable();
+suite("nullable", (test) => {
+  test("should be possible to properly reference nested nullable primitives", (assert) => {
+    const nullablePrimitive = z.string().nullable()
 
     const schema = z.object({
       one: nullablePrimitive,
       two: nullablePrimitive,
-    });
+    })
 
-    const jsonSchema: any = parseObjectDef(schema._def, getRefs());
+    const jsonSchema: any = parseObjectDef(schema._def, getRefs())
 
-    expect(jsonSchema.properties.one.type).toStrictEqual(["string", "null"]);
-    expect(jsonSchema.properties.two.$ref).toStrictEqual("#/properties/one");
-  });
+    assert(jsonSchema.properties.one.type, ["string", "null"])
+    assert(jsonSchema.properties.two.$ref, "#/properties/one")
+  })
 
-  it("should be possible to properly reference nested nullable primitives", () => {
-    const three = z.string();
+  test("should be possible to properly reference nested nullable primitives", (assert) => {
+    const three = z.string()
 
     const nullableObject = z
       .object({
         three,
       })
-      .nullable();
+      .nullable()
 
     const schema = z.object({
       one: nullableObject,
       two: nullableObject,
       three,
-    });
+    })
 
-    const jsonSchema: any = parseObjectDef(schema._def, getRefs());
+    const jsonSchema: any = parseObjectDef(schema._def, getRefs())
 
-    expect(jsonSchema.properties.one).toStrictEqual({
+    assert(jsonSchema.properties.one, {
       anyOf: [
         {
           type: "object",
@@ -52,10 +51,11 @@ describe("nullable", () => {
           type: "null",
         },
       ],
-    });
-    expect(jsonSchema.properties.two.$ref).toStrictEqual("#/properties/one");
-    expect(jsonSchema.properties.three.$ref).toStrictEqual(
-      "#/properties/one/anyOf/0/properties/three"
-    );
-  });
-});
+    })
+    assert(jsonSchema.properties.two.$ref, "#/properties/one")
+    assert(
+      jsonSchema.properties.three.$ref,
+      "#/properties/one/anyOf/0/properties/three",
+    )
+  })
+})
