@@ -38,6 +38,7 @@ import {
 import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union.js";
 import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown.js";
 import { Refs, Seen } from "./Refs.js";
+import { parseReadonlyDef } from "./parsers/readonly.js";
 
 type JsonSchema7RefType = { $ref: string };
 type JsonSchema7Meta = {
@@ -230,6 +231,8 @@ const selectParser = (
       return parseDefaultDef(def, refs);
     case ZodFirstPartyTypeKind.ZodBranded:
       return parseBrandedDef(def, refs);
+    case ZodFirstPartyTypeKind.ZodReadonly:
+      return parseReadonlyDef(def, refs);
     case ZodFirstPartyTypeKind.ZodCatch:
       return parseCatchDef(def, refs);
     case ZodFirstPartyTypeKind.ZodPipeline:
