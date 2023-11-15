@@ -1,7 +1,7 @@
 import { z } from "zod"
-import { parseRecordDef } from "../../src/parsers/record"
-import { getRefs } from "../../src/Refs"
-import { suite } from "../suite"
+import { parseRecordDef } from "../../src/parsers/record.js"
+import { getRefs } from "../../src/Refs.js"
+import { suite } from "../suite.js"
 
 suite("records", (test) => {
   test("should be possible to describe a simple record", (assert) => {

@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { parseObjectDef } from "../../src/parsers/object";
-import { getRefs } from "../../src/Refs";
-import { suite } from "../suite";
+import { parseObjectDef } from "../../src/parsers/object.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
 suite("objects", (test) => {
   test("should be possible to describe catchAll schema", (assert) => {

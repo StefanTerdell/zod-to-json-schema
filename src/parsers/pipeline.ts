@@ -1,7 +1,7 @@
 import { ZodPipelineDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../Refs";
-import { JsonSchema7AllOfType } from "./intersection";
+import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { Refs } from "../Refs.js";
+import { JsonSchema7AllOfType } from "./intersection.js";
 
 export const parsePipelineDef = (
   def: ZodPipelineDef<any, any>,

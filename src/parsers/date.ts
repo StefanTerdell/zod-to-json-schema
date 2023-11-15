@@ -1,7 +1,7 @@
 import { ZodDateDef } from "zod";
-import { Refs } from "../Refs";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
-import { JsonSchema7NumberType } from "./number";
+import { Refs } from "../Refs.js";
+import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
+import { JsonSchema7NumberType } from "./number.js";
 
 export type JsonSchema7DateType = {
   type: "integer" | "string";

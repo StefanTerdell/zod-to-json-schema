@@ -1,17 +1,17 @@
-import { JSONSchema7Type } from "json-schema"
+import { JSONSchema7Type } from "json-schema.js"
 import { z } from "zod"
-import { JsonSchema7Type } from "../../src/parseDef"
+import { JsonSchema7Type } from "../../src/parseDef.js"
 import {
   JsonSchema7StringType,
   emailPattern,
   parseStringDef,
-} from "../../src/parsers/string"
+} from "../../src/parsers/string.js"
 import Ajv from "ajv"
 import addFormats from "ajv-formats"
-import { ErrorMessages } from "../../src/errorMessages"
-import { errorReferences } from "./errorReferences"
-import { getRefs } from "../../src/Refs"
-import { suite } from "../suite"
+import { ErrorMessages } from "../../src/errorMessages.js"
+import { errorReferences } from "./errorReferences.js"
+import { getRefs } from "../../src/Refs.js"
+import { suite } from "../suite.js"
 
 const ajv = addFormats(new Ajv())
 

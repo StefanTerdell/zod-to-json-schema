@@ -1,8 +1,8 @@
-import { JSONSchema7Type } from "json-schema";
-import { parseBigintDef } from "../../src/parsers/bigint";
+import { JSONSchema7Type } from "json-schema.js";
+import { parseBigintDef } from "../../src/parsers/bigint.js";
 import { z } from "zod";
-import { getRefs } from "../../src/Refs";
-import { suite } from "../suite";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 suite("bigint", (test) => {
   test("should be possible to use bigint", (assert) => {
     const parsedSchema = parseBigintDef(z.bigint()._def, getRefs());

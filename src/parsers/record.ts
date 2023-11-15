@@ -1,9 +1,9 @@
 import { ZodFirstPartyTypeKind, ZodRecordDef, ZodTypeAny } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../Refs";
-import { JsonSchema7EnumType } from "./enum";
-import { JsonSchema7ObjectType } from "./object";
-import { JsonSchema7StringType, parseStringDef } from "./string";
+import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { Refs } from "../Refs.js";
+import { JsonSchema7EnumType } from "./enum.js";
+import { JsonSchema7ObjectType } from "./object.js";
+import { JsonSchema7StringType, parseStringDef } from "./string.js";
 
 type JsonSchema7RecordPropertyNamesType =
   | Omit<JsonSchema7StringType, "type">

@@ -1,6 +1,6 @@
-import { zodToJsonSchema } from "../src/zodToJsonSchema";
-import { allParsersSchema } from "./allParsersSchema";
-import { suite } from "./suite";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { allParsersSchema } from "./allParsersSchema.js";
+import { suite } from "./suite.js";
 
 suite("All Parsers tests", (test) => {
   test("With JSON schema target, should produce valid json schema (7)", (assert) => {

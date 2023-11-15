@@ -1,8 +1,8 @@
-import { JSONSchema7Type } from "json-schema";
+import { JSONSchema7Type } from "json-schema.js";
 import { z } from "zod";
-import { parseDefaultDef } from "../../src/parsers/default";
-import { getRefs } from "../../src/Refs";
-import { suite } from "../suite";
+import { parseDefaultDef } from "../../src/parsers/default.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
 suite("promise", (test) => {
   test("should be possible to use default on objects", (assert) => {

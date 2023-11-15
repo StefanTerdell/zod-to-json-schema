@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { zodToJsonSchema } from "../src/zodToJsonSchema"
-import { suite } from "./suite"
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js"
+import { suite } from "./suite.js"
 
 suite("Root schema result after parsing", (it) => {
   it("should return the schema directly in the root if no name is passed", (assert) => {

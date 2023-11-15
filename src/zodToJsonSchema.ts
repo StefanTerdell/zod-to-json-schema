@@ -1,7 +1,7 @@
 import { ZodSchema } from "zod";
-import { Options, Targets } from "./Options";
-import { JsonSchema7Type, parseDef } from "./parseDef";
-import { getRefs } from "./Refs";
+import { Options, Targets } from "./Options.js";
+import { JsonSchema7Type, parseDef } from "./parseDef.js";
+import { getRefs } from "./Refs.js";
 
 const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
   schema: ZodSchema<any>,

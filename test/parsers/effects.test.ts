@@ -1,8 +1,8 @@
-import { JSONSchema7Type } from "json-schema"
+import { JSONSchema7Type } from "json-schema.js"
 import { z } from "zod"
-import { parseEffectsDef } from "../../src/parsers/effects"
-import { getRefs } from "../../src/Refs"
-import { suite } from "../suite"
+import { parseEffectsDef } from "../../src/parsers/effects.js"
+import { getRefs } from "../../src/Refs.js"
+import { suite } from "../suite.js"
 
 suite("effects", (test) => {
   test("should be possible to use refine", (assert) => {

@@ -1,6 +1,6 @@
 import { z } from "zod"
-import zodToJsonSchema from ".."
-import { suite } from "./suite"
+import zodToJsonSchema from "../src"
+import { suite } from "./suite.js"
 
 suite("The readme example", (test) => {
   test("should be valid", (assert) => {

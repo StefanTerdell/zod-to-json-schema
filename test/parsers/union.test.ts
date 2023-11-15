@@ -1,8 +1,8 @@
-import { JSONSchema7Type } from "json-schema"
+import { JSONSchema7Type } from "json-schema.js"
 import { z } from "zod"
-import { parseUnionDef } from "../../src/parsers/union"
-import { getRefs } from "../../src/Refs"
-import { suite } from "../suite"
+import { parseUnionDef } from "../../src/parsers/union.js"
+import { getRefs } from "../../src/Refs.js"
+import { suite } from "../suite.js"
 const deref = require("json-schema-deref-sync")
 
 suite("Unions", (test) => {

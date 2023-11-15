@@ -1,7 +1,7 @@
-import { JSONSchema7 } from "json-schema";
+import { JSONSchema7 } from "json-schema.js";
 import { z } from "zod";
-import { zodToJsonSchema } from "../src/zodToJsonSchema";
-import { suite } from "./suite";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { suite } from "./suite.js";
 suite("Meta data", (it) => {
   it("should be possible to use description", (assert) => {
     const $z = z.string().describe("My neat string");

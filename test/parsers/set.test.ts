@@ -1,9 +1,9 @@
-import { JSONSchema7Type } from "json-schema"
+import { JSONSchema7Type } from "json-schema.js"
 import { z } from "zod"
-import { parseSetDef } from "../../src/parsers/set"
-import { getRefs } from "../../src/Refs"
-import { errorReferences } from "./errorReferences"
-import { suite } from "../suite"
+import { parseSetDef } from "../../src/parsers/set.js"
+import { getRefs } from "../../src/Refs.js"
+import { errorReferences } from "./errorReferences.js"
+import { suite } from "../suite.js"
 
 suite("set", (test) => {
   test("should include min and max size error messages if they're passed.", (assert) => {

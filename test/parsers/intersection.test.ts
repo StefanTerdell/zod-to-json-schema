@@ -1,7 +1,7 @@
 import { z } from "zod"
-import { parseIntersectionDef } from "../../src/parsers/intersection"
-import { getRefs } from "../../src/Refs"
-import { suite } from "../suite"
+import { parseIntersectionDef } from "../../src/parsers/intersection.js"
+import { getRefs } from "../../src/Refs.js"
+import { suite } from "../suite.js"
 
 suite("intersections", (test) => {
   test("should be possible to use intersections", (assert) => {

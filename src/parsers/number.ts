@@ -3,8 +3,8 @@ import {
   addErrorMessage,
   ErrorMessages,
   setResponseValueAndErrors,
-} from "../errorMessages";
-import { Refs } from "../Refs";
+} from "../errorMessages.js";
+import { Refs } from "../Refs.js";
 
 export type JsonSchema7NumberType = {
   type: "number" | "integer";

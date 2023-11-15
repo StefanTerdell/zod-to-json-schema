@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { zodToJsonSchema } from "../src/zodToJsonSchema"
-import { suite } from "./suite"
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js"
+import { suite } from "./suite.js"
 
 suite("Open API target", (test) => {
   test("should use nullable boolean property and not use $schema property", (assert) => {

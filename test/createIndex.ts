@@ -1,4 +1,4 @@
-import { readdirSync, writeFileSync, statSync } from "fs"
+import { readdirSync, writeFileSync, statSync } from "fs.js"
 
 function checkDir(dir: string): string[] {
   return readdirSync(dir).reduce((a: string[], n) => {

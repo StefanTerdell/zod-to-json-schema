@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { parseTupleDef } from "../../src/parsers/tuple";
-import { getRefs } from "../../src/Refs";
-import { suite } from "../suite";
+import { parseTupleDef } from "../../src/parsers/tuple.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
 suite("objects", (test) => {
   test("should be possible to describe a simple tuple schema", (assert) => {

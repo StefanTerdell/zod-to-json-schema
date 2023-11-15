@@ -2,12 +2,22 @@
   "name": "zod-to-json-schema",
   "version": "3.21.4",
   "description": "Converts Zod schemas to Json Schemas",
+  "types": "dist/types/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "exports": {
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js"
+  },
   "scripts": {
-    "gen": "tsx test/createIndex.ts",
-    "test": "tsx test/index.ts",
+    "build:types": "tsc -p tsconfig.types.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json && node postcjs.js",
+    "build:esm": "tsc -p tsconfig.esm.json && node postesm.js",
+    "build": "npm i && npm test && rimraf ./dist && npm run build:types && npm run build:cjs && npm run build:esm",
+    "dry": "npm run build && npm pub --dry-run",
     "dev": "tsx watch test/index.ts",
-    "build": "npm i && jest && rimraf dist && tsc && node copyPackageFiles.js",
-    "dryrun": "npm run build && npm pub ./dist/ --dry-run"
+    "test": "tsx test/index.ts",
+    "gen": "tsx test/createIndex.ts"
   },
   "keywords": [
     "zod",
@@ -50,6 +60,5 @@
     "tsx": "^4.1.2",
     "typescript": "^5.1.3",
     "zod": "^3.21.4"
-  },
-  "types": "index.d.ts"
+  }
 }

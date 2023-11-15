@@ -1,8 +1,8 @@
-import { JSONSchema7Type } from "json-schema";
+import { JSONSchema7Type } from "json-schema.js";
 import { z } from "zod";
-import { parsePromiseDef } from "../../src/parsers/promise";
-import { getRefs } from "../../src/Refs";
-import { suite } from "../suite";
+import { parsePromiseDef } from "../../src/parsers/promise.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
 suite("promise", (test) => {
   test("should be possible to use promise", (assert) => {

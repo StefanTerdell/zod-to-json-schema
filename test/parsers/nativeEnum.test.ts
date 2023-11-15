@@ -1,7 +1,7 @@
-import { JSONSchema7Type } from "json-schema";
+import { JSONSchema7Type } from "json-schema.js";
 import { z } from "zod";
-import { parseNativeEnumDef } from "../../src/parsers/nativeEnum";
-import { suite } from "../suite";
+import { parseNativeEnumDef } from "../../src/parsers/nativeEnum.js";
+import { suite } from "../suite.js";
 
 suite("Native enums", (test) => {
   test("should be possible to convert a basic native number enum", (assert) => {

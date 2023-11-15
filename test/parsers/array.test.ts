@@ -1,10 +1,10 @@
-import { JSONSchema7Type } from "json-schema"
+import { JSONSchema7Type } from "json-schema.js"
 import { z } from "zod"
-import { parseArrayDef } from "../../src/parsers/array"
-import { getRefs } from "../../src/Refs"
-import { errorReferences } from "./errorReferences"
+import { parseArrayDef } from "../../src/parsers/array.js"
+import { getRefs } from "../../src/Refs.js"
+import { errorReferences } from "./errorReferences.js"
 const deref = require("json-schema-deref-sync")
-import { suite } from "../suite"
+import { suite } from "../suite.js"
 
 suite("Arrays and array validations", (test) => {
   test("should be possible to describe a simple array", (assert) => {

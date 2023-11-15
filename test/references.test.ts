@@ -1,8 +1,8 @@
 import Ajv from "ajv"
-import { JSONSchema7 } from "json-schema"
+import { JSONSchema7 } from "json-schema.js"
 import { z } from "zod"
-import { zodToJsonSchema } from "../src/zodToJsonSchema"
-import { suite } from "./suite"
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js"
+import { suite } from "./suite.js"
 const ajv = new Ajv()
 const deref = require("json-schema-deref-sync")
 

@@ -1,9 +1,9 @@
-import { JSONSchema7Type } from "json-schema";
+import { JSONSchema7Type } from "json-schema.js";
 import { z } from "zod";
-import { parseMapDef } from "../../src/parsers/map";
+import { parseMapDef } from "../../src/parsers/map.js";
 import Ajv from "ajv";
-import { getRefs } from "../../src/Refs";
-import { suite } from "../suite";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 const ajv = new Ajv();
 suite("map", (test) => {
   test("should be possible to use Map", (assert) => {

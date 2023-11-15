@@ -1,8 +1,8 @@
-import { JSONSchema7Type } from "json-schema"
+import { JSONSchema7Type } from "json-schema.js"
 import { z } from "zod"
-import { parseDef } from "../../src/parseDef"
-import { getRefs } from "../../src/Refs"
-import { suite } from "../suite"
+import { parseDef } from "../../src/parseDef.js"
+import { getRefs } from "../../src/Refs.js"
+import { suite } from "../suite.js"
 
 suite("Standalone optionals", (test) => {
   test("should work as unions with undefined", (assert) => {
