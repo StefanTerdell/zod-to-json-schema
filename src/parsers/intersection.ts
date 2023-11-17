@@ -1,24 +1,20 @@
-import { ZodIntersectionDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef.js";
-import { Refs } from "../Refs.js";
-import { JsonSchema7StringType } from "./string.js";
-
-export type JsonSchema7AllOfType = {
-  allOf: JsonSchema7Type[];
-  unevaluatedProperties?: boolean;
-};
+import { ZodIntersectionDef } from "zod"
+import { parseDef } from "../parseDef.js"
+import { Refs } from "../Refs.js"
+import { JsonSchema, JsonSchemaObject } from "../JsonSchema.js"
 
 const isJsonSchema7AllOfType = (
-  type: JsonSchema7Type | JsonSchema7StringType
-): type is JsonSchema7AllOfType => {
-  if ("type" in type && type.type === "string") return false;
-  return "allOf" in type;
-};
+  type: JsonSchema,
+): type is JsonSchemaObject & { allOf: JsonSchema[] } => {
+  if (typeof type !== "object") return false
+  if ("type" in type && type.type === "string") return false
+  return "allOf" in type
+}
 
 export function parseIntersectionDef(
   def: ZodIntersectionDef,
-  refs: Refs
-): JsonSchema7AllOfType | JsonSchema7Type | undefined {
+  refs: Refs,
+): JsonSchema | undefined {
   const allOf = [
     parseDef(def.left._def, {
       ...refs,
@@ -28,44 +24,42 @@ export function parseIntersectionDef(
       ...refs,
       currentPath: [...refs.currentPath, "allOf", "1"],
     }),
-  ].filter((x): x is JsonSchema7Type => !!x);
+  ].filter((x): x is JsonSchema => !!x)
 
-  let unevaluatedProperties:
-    | Pick<JsonSchema7AllOfType, "unevaluatedProperties">
-    | undefined =
+  let unevaluatedProperties=
     refs.target === "jsonSchema2019-09"
       ? { unevaluatedProperties: false }
-      : undefined;
+      : undefined
 
-  const mergedAllOf: JsonSchema7Type[] = [];
+  const mergedAllOf: JsonSchema[] = []
   // If either of the schemas is an allOf, merge them into a single allOf
   allOf.forEach((schema) => {
     if (isJsonSchema7AllOfType(schema)) {
-      mergedAllOf.push(...schema.allOf);
+      mergedAllOf.push(...schema.allOf)
       if (schema.unevaluatedProperties === undefined) {
         // If one of the schemas has no unevaluatedProperties set,
         // the merged schema should also have no unevaluatedProperties set
-        unevaluatedProperties = undefined;
+        unevaluatedProperties = undefined
       }
     } else {
-      let nestedSchema: JsonSchema7Type = schema;
-      if (
+      let nestedSchema: JsonSchema= schema
+      if (typeof schema === "object" &&
         "additionalProperties" in schema &&
         schema.additionalProperties === false
       ) {
-        const { additionalProperties, ...rest } = schema;
-        nestedSchema = rest;
+        const { additionalProperties, ...rest } = schema
+        nestedSchema = rest
       } else {
         // As soon as one of the schemas has additionalProperties set not to false, we allow unevaluatedProperties
-        unevaluatedProperties = undefined;
+        unevaluatedProperties = undefined
       }
-      mergedAllOf.push(nestedSchema);
+      mergedAllOf.push(nestedSchema)
     }
-  });
+  })
   return mergedAllOf.length
     ? {
         allOf: mergedAllOf,
         ...unevaluatedProperties,
       }
-    : undefined;
+    : undefined
 }

@@ -1,32 +1,24 @@
-import { ZodDateDef } from "zod";
-import { Refs } from "../Refs.js";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
-import { JsonSchema7NumberType } from "./number.js";
+import { ZodDateDef } from "zod"
+import { Refs } from "../Refs.js"
+import { setResponseValueAndErrors } from "../errorMessages.js"
+import { JsonSchema } from "../JsonSchema.js"
 
-export type JsonSchema7DateType = {
-  type: "integer" | "string";
-  format: "unix-time" | "date-time";
-  minimum?: number;
-  maximum?: number;
-  errorMessage?: ErrorMessages<JsonSchema7NumberType>;
-};
-
-export function parseDateDef(def: ZodDateDef, refs: Refs): JsonSchema7DateType {
+export function parseDateDef(def: ZodDateDef, refs: Refs): JsonSchema {
   if (refs.dateStrategy == "integer") {
-    return integerDateParser(def, refs);
+    return integerDateParser(def, refs)
   } else {
     return {
       type: "string",
       format: "date-time",
-    };
+    }
   }
 }
 
 const integerDateParser = (def: ZodDateDef, refs: Refs) => {
-  const res: JsonSchema7DateType = {
+  const res: JsonSchema = {
     type: "integer",
     format: "unix-time",
-  };
+  }
 
   for (const check of def.checks) {
     switch (check.kind) {
@@ -37,10 +29,10 @@ const integerDateParser = (def: ZodDateDef, refs: Refs) => {
             "minimum",
             check.value, // This is in milliseconds
             check.message,
-            refs
-          );
+            refs,
+          )
         }
-        break;
+        break
       case "max":
         if (refs.target === "jsonSchema7") {
           setResponseValueAndErrors(
@@ -48,12 +40,12 @@ const integerDateParser = (def: ZodDateDef, refs: Refs) => {
             "maximum",
             check.value, // This is in milliseconds
             check.message,
-            refs
-          );
+            refs,
+          )
         }
-        break;
+        break
     }
   }
 
-  return res;
-};
+  return res
+}

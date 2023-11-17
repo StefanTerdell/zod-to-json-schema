@@ -1,46 +1,20 @@
-import { ZodStringDef } from "zod";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
-import { Refs } from "../Refs.js";
+import { ZodStringDef } from "zod"
+import { setResponseValueAndErrors } from "../errorMessages.js"
+import { Refs } from "../Refs.js"
+import { JsonSchema, JsonSchemaObject } from "../JsonSchema.js"
 
 export const emailPattern =
-  '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\])|(\\[IPv6:(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))\\])|([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])*(\\.[A-Za-z]{2,})+))$';
-export const cuidPattern = "^c[^\\s-]{8,}$";
-export const cuid2Pattern = "^[a-z][a-z0-9]*$";
-export const ulidPattern = "/[0-9A-HJKMNP-TV-Z]{26}/";
+  '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\])|(\\[IPv6:(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))\\])|([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])*(\\.[A-Za-z]{2,})+))$'
+export const cuidPattern = "^c[^\\s-]{8,}$"
+export const cuid2Pattern = "^[a-z][a-z0-9]*$"
+export const ulidPattern = "/[0-9A-HJKMNP-TV-Z]{26}/"
 export const emojiPattern =
-  "/^(p{Extended_Pictographic}|p{Emoji_Component})+$/u";
+  "/^(p{Extended_Pictographic}|p{Emoji_Component})+$/u"
 
-export type JsonSchema7StringType = {
-  type: "string";
-  minLength?: number;
-  maxLength?: number;
-  format?:
-    | "email"
-    | "idn-email"
-    | "uri"
-    | "uuid"
-    | "date-time"
-    | "ipv4"
-    | "ipv6";
-  pattern?: string;
-  allOf?: {
-    pattern: string;
-    errorMessage?: ErrorMessages<{ pattern: string }>;
-  }[];
-  anyOf?: {
-    format: string;
-    errorMessage?: ErrorMessages<{ format: string }>;
-  }[];
-  errorMessage?: ErrorMessages<JsonSchema7StringType>;
-};
-
-export function parseStringDef(
-  def: ZodStringDef,
-  refs: Refs
-): JsonSchema7StringType {
-  const res: JsonSchema7StringType = {
+export function parseStringDef(def: ZodStringDef, refs: Refs): JsonSchema {
+  const res: JsonSchemaObject = {
     type: "string",
-  };
+  }
 
   if (def.checks) {
     for (const check of def.checks) {
@@ -53,9 +27,9 @@ export function parseStringDef(
               ? Math.max(res.minLength, check.value)
               : check.value,
             check.message,
-            refs
-          );
-          break;
+            refs,
+          )
+          break
         case "max":
           setResponseValueAndErrors(
             res,
@@ -64,59 +38,59 @@ export function parseStringDef(
               ? Math.min(res.maxLength, check.value)
               : check.value,
             check.message,
-            refs
-          );
+            refs,
+          )
 
-          break;
+          break
         case "email":
           switch (refs.emailStrategy) {
             case "format:email":
-              addFormat(res, "email", check.message, refs);
-              break;
+              addFormat(res, "email", check.message, refs)
+              break
             case "format:idn-email":
-              addFormat(res, "idn-email", check.message, refs);
-              break;
+              addFormat(res, "idn-email", check.message, refs)
+              break
             case "pattern:zod":
-              addPattern(res, emailPattern, check.message, refs);
-              break;
+              addPattern(res, emailPattern, check.message, refs)
+              break
           }
 
-          break;
+          break
         case "url":
-          addFormat(res, "uri", check.message, refs);
-          break;
+          addFormat(res, "uri", check.message, refs)
+          break
         case "uuid":
-          addFormat(res, "uuid", check.message, refs);
-          break;
+          addFormat(res, "uuid", check.message, refs)
+          break
         case "regex":
-          addPattern(res, check.regex.source, check.message, refs);
-          break;
+          addPattern(res, check.regex.source, check.message, refs)
+          break
         case "cuid":
-          addPattern(res, cuidPattern, check.message, refs);
-          break;
+          addPattern(res, cuidPattern, check.message, refs)
+          break
         case "cuid2":
-          addPattern(res, cuid2Pattern, check.message, refs);
-          break;
+          addPattern(res, cuid2Pattern, check.message, refs)
+          break
         case "startsWith":
           addPattern(
             res,
             "^" + escapeNonAlphaNumeric(check.value),
             check.message,
-            refs
-          );
-          break;
+            refs,
+          )
+          break
         case "endsWith":
           addPattern(
             res,
             escapeNonAlphaNumeric(check.value) + "$",
             check.message,
-            refs
-          );
-          break;
+            refs,
+          )
+          break
 
         case "datetime":
-          addFormat(res, "date-time", check.message, refs);
-          break;
+          addFormat(res, "date-time", check.message, refs)
+          break
         case "length":
           setResponseValueAndErrors(
             res,
@@ -125,8 +99,8 @@ export function parseStringDef(
               ? Math.max(res.minLength, check.value)
               : check.value,
             check.message,
-            refs
-          );
+            refs,
+          )
           setResponseValueAndErrors(
             res,
             "maxLength",
@@ -134,62 +108,65 @@ export function parseStringDef(
               ? Math.min(res.maxLength, check.value)
               : check.value,
             check.message,
-            refs
-          );
-          break;
+            refs,
+          )
+          break
         case "includes": {
           addPattern(
             res,
             escapeNonAlphaNumeric(check.value),
             check.message,
-            refs
-          );
-          break;
+            refs,
+          )
+          break
         }
         case "ip": {
           if (check.version !== "v6") {
-            addFormat(res, "ipv4", check.message, refs);
+            addFormat(res, "ipv4", check.message, refs)
           }
           if (check.version !== "v4") {
-            addFormat(res, "ipv6", check.message, refs);
+            addFormat(res, "ipv6", check.message, refs)
           }
-          break;
+          break
         }
         case "emoji":
-          addPattern(res, emojiPattern, check.message, refs);
-          break;
+          addPattern(res, emojiPattern, check.message, refs)
+          break
         case "ulid": {
-          addPattern(res, ulidPattern, check.message, refs);
-          break;
+          addPattern(res, ulidPattern, check.message, refs)
+          break
         }
         case "toLowerCase":
         case "toUpperCase":
         case "trim":
           // I have no idea why these are checks in Zod 🤷
-          break;
+          break
         default:
-          ((_: never) => {})(check);
+          ;((_: never) => {})(check)
       }
     }
   }
 
-  return res;
+  return res
 }
 
 const escapeNonAlphaNumeric = (value: string) =>
   Array.from(value)
     .map((c) => (/[a-zA-Z0-9]/.test(c) ? c : `\\${c}`))
-    .join("");
+    .join("")
 
 const addFormat = (
-  schema: JsonSchema7StringType,
-  value: Required<JsonSchema7StringType>["format"],
+  schema: JsonSchemaObject,
+  value: string,
   message: string | undefined,
-  refs: Refs
+  refs: Refs,
 ) => {
-  if (schema.format || schema.anyOf?.some((x) => x.format)) {
+  if (
+    schema.format ||
+    schema.anyOf?.some((x) => typeof x === "object" && x.format)
+  ) {
     if (!schema.anyOf) {
-      schema.anyOf = [];
+      schema.anyOf = []
     }
 
     if (schema.format) {
@@ -199,12 +176,12 @@ const addFormat = (
           refs.errorMessages && {
             errorMessage: { format: schema.errorMessage.format },
           }),
-      });
-      delete schema.format;
+      })
+      delete schema.format
       if (schema.errorMessage) {
-        delete schema.errorMessage.format;
+        delete schema.errorMessage.format
         if (Object.keys(schema.errorMessage).length === 0) {
-          delete schema.errorMessage;
+          delete schema.errorMessage
         }
       }
     }
@@ -213,21 +190,24 @@ const addFormat = (
       format: value,
       ...(message &&
         refs.errorMessages && { errorMessage: { format: message } }),
-    });
+    })
   } else {
-    setResponseValueAndErrors(schema, "format", value, message, refs);
+    setResponseValueAndErrors(schema, "format", value, message, refs)
   }
-};
+}
 
 const addPattern = (
-  schema: JsonSchema7StringType,
+  schema: JsonSchemaObject,
   value: string,
   message: string | undefined,
-  refs: Refs
+  refs: Refs,
 ) => {
-  if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
+  if (
+    schema.pattern ||
+    schema.allOf?.some((x) => typeof x === "object" && x.pattern)
+  ) {
     if (!schema.allOf) {
-      schema.allOf = [];
+      schema.allOf = []
     }
 
     if (schema.pattern) {
@@ -237,12 +217,12 @@ const addPattern = (
           refs.errorMessages && {
             errorMessage: { pattern: schema.errorMessage.pattern },
           }),
-      });
-      delete schema.pattern;
+      })
+      delete schema.pattern
       if (schema.errorMessage) {
-        delete schema.errorMessage.pattern;
+        delete schema.errorMessage.pattern
         if (Object.keys(schema.errorMessage).length === 0) {
-          delete schema.errorMessage;
+          delete schema.errorMessage
         }
       }
     }
@@ -251,8 +231,8 @@ const addPattern = (
       pattern: value,
       ...(message &&
         refs.errorMessages && { errorMessage: { pattern: message } }),
-    });
+    })
   } else {
-    setResponseValueAndErrors(schema, "pattern", value, message, refs);
+    setResponseValueAndErrors(schema, "pattern", value, message, refs)
   }
-};
+}

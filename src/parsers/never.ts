@@ -1,8 +1,6 @@
-export type JsonSchema7NeverType = {
-  not: {};
-};
+import { JsonSchema } from "../JsonSchema";
 
-export function parseNeverDef(): JsonSchema7NeverType {
+export function parseNeverDef(): JsonSchema {
   return {
     not: {},
   };

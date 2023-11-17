@@ -1,6 +1,6 @@
 import { ZodTypeDef } from "zod";
 import { getDefaultOptions, Options, Targets } from "./Options.js";
-import { JsonSchema7Type } from "./parseDef.js";
+import { JsonSchema } from "./JsonSchema.js";
 
 export type Refs = {
   seen: Map<ZodTypeDef, Seen>;
@@ -11,7 +11,7 @@ export type Refs = {
 export type Seen = {
   def: ZodTypeDef;
   path: string[];
-  jsonSchema: JsonSchema7Type | undefined;
+  jsonSchema: JsonSchema | undefined;
 };
 
 export const getRefs = (options?: string | Partial<Options<Targets>>): Refs => {

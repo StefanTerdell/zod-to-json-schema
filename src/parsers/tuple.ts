@@ -1,24 +1,12 @@
 import { ZodTupleDef, ZodTupleItems, ZodTypeAny } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import {  parseDef } from "../parseDef.js";
 import { Refs } from "../Refs.js";
-
-export type JsonSchema7TupleType = {
-  type: "array";
-  minItems: number;
-  items: JsonSchema7Type[];
-} & (
-  | {
-      maxItems: number;
-    }
-  | {
-      additionalItems?: JsonSchema7Type;
-    }
-);
+import { JsonSchema } from "../JsonSchema.js";
 
 export function parseTupleDef(
   def: ZodTupleDef<ZodTupleItems | [], ZodTypeAny | null>,
   refs: Refs
-): JsonSchema7TupleType {
+): JsonSchema {
   if (def.rest) {
     return {
       type: "array",
@@ -31,7 +19,7 @@ export function parseTupleDef(
           })
         )
         .reduce(
-          (acc: JsonSchema7Type[], x) => (x === undefined ? acc : [...acc, x]),
+          (acc: JsonSchema[], x) => (x === undefined ? acc : [...acc, x]),
           []
         ),
       additionalItems: parseDef(def.rest._def, {
@@ -52,7 +40,7 @@ export function parseTupleDef(
           })
         )
         .reduce(
-          (acc: JsonSchema7Type[], x) => (x === undefined ? acc : [...acc, x]),
+          (acc: JsonSchema[], x) => (x === undefined ? acc : [...acc, x]),
           []
         ),
     };

@@ -1,8 +1,6 @@
-export type JsonSchema7UndefinedType = {
-  not: {};
-};
+import { JsonSchema } from "../JsonSchema";
 
-export function parseUndefinedDef(): JsonSchema7UndefinedType {
+export function parseUndefinedDef(): JsonSchema {
   return {
     not: {},
   };

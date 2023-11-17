@@ -1,8 +1,6 @@
-export type JsonSchema7BooleanType = {
-  type: "boolean";
-};
+import { JsonSchema } from "../JsonSchema";
 
-export function parseBooleanDef(): JsonSchema7BooleanType {
+export function parseBooleanDef(): JsonSchema {
   return {
     type: "boolean",
   };

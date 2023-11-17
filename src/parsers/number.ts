@@ -1,37 +1,21 @@
-import { ZodNumberDef } from "zod";
-import {
-  addErrorMessage,
-  ErrorMessages,
-  setResponseValueAndErrors,
-} from "../errorMessages.js";
-import { Refs } from "../Refs.js";
+import { ZodNumberDef } from "zod"
+import { addErrorMessage, setResponseValueAndErrors } from "../errorMessages.js"
+import { Refs } from "../Refs.js"
+import { JsonSchema, JsonSchemaObject } from "../JsonSchema.js"
 
-export type JsonSchema7NumberType = {
-  type: "number" | "integer";
-  minimum?: number;
-  exclusiveMinimum?: number;
-  maximum?: number;
-  exclusiveMaximum?: number;
-  multipleOf?: number;
-  errorMessage?: ErrorMessages<JsonSchema7NumberType>;
-};
-
-export function parseNumberDef(
-  def: ZodNumberDef,
-  refs: Refs
-): JsonSchema7NumberType {
-  const res: JsonSchema7NumberType = {
+export function parseNumberDef(def: ZodNumberDef, refs: Refs): JsonSchema {
+  const res: JsonSchemaObject = {
     type: "number",
-  };
+  }
 
-  if (!def.checks) return res;
+  if (!def.checks) return res
 
   for (const check of def.checks) {
     switch (check.kind) {
       case "int":
-        res.type = "integer";
-        addErrorMessage(res, "type", check.message, refs);
-        break;
+        res.type = "integer"
+        addErrorMessage(res, "type", check.message, refs)
+        break
       case "min":
         if (refs.target === "jsonSchema7") {
           if (check.inclusive) {
@@ -40,30 +24,30 @@ export function parseNumberDef(
               "minimum",
               check.value,
               check.message,
-              refs
-            );
+              refs,
+            )
           } else {
             setResponseValueAndErrors(
               res,
               "exclusiveMinimum",
               check.value,
               check.message,
-              refs
-            );
+              refs,
+            )
           }
         } else {
           if (!check.inclusive) {
-            res.exclusiveMinimum = true as any;
+            res.exclusiveMinimum = true as any
           }
           setResponseValueAndErrors(
             res,
             "minimum",
             check.value,
             check.message,
-            refs
-          );
+            refs,
+          )
         }
-        break;
+        break
       case "max":
         if (refs.target === "jsonSchema7") {
           if (check.inclusive) {
@@ -72,40 +56,40 @@ export function parseNumberDef(
               "maximum",
               check.value,
               check.message,
-              refs
-            );
+              refs,
+            )
           } else {
             setResponseValueAndErrors(
               res,
               "exclusiveMaximum",
               check.value,
               check.message,
-              refs
-            );
+              refs,
+            )
           }
         } else {
           if (!check.inclusive) {
-            res.exclusiveMaximum = true as any;
+            res.exclusiveMaximum = true as any
           }
           setResponseValueAndErrors(
             res,
             "maximum",
             check.value,
             check.message,
-            refs
-          );
+            refs,
+          )
         }
-        break;
+        break
       case "multipleOf":
         setResponseValueAndErrors(
           res,
           "multipleOf",
           check.value,
           check.message,
-          refs
-        );
-        break;
+          refs,
+        )
+        break
     }
   }
-  return res;
+  return res
 }

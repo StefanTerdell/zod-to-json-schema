@@ -1,13 +1,9 @@
-import { ZodEnumDef } from "zod";
+import { ZodEnumDef } from "zod"
+import { JsonSchema } from "../JsonSchema"
 
-export type JsonSchema7EnumType = {
-  type: "string";
-  enum: string[];
-};
-
-export function parseEnumDef(def: ZodEnumDef): JsonSchema7EnumType {
+export function parseEnumDef(def: ZodEnumDef): JsonSchema {
   return {
     type: "string",
     enum: def.values,
-  };
+  }
 }

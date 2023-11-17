@@ -1,10 +1,11 @@
-import { ZodPromiseDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef.js";
-import { Refs } from "../Refs.js";
+import { ZodPromiseDef } from "zod"
+import { parseDef } from "../parseDef.js"
+import { Refs } from "../Refs.js"
+import { JsonSchema } from "../JsonSchema.js"
 
 export function parsePromiseDef(
   def: ZodPromiseDef,
-  refs: Refs
-): JsonSchema7Type | undefined {
-  return parseDef(def.type._def, refs);
+  refs: Refs,
+): JsonSchema | undefined {
+  return parseDef(def.type._def, refs)
 }

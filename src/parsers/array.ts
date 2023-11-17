@@ -1,25 +1,18 @@
-import { ZodArrayDef, ZodFirstPartyTypeKind } from "zod";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
-import { JsonSchema7Type, parseDef } from "../parseDef.js";
-import { Refs } from "../Refs.js";
-
-export type JsonSchema7ArrayType = {
-  type: "array";
-  items?: JsonSchema7Type;
-  minItems?: number;
-  maxItems?: number;
-  errorMessages?: ErrorMessages<JsonSchema7ArrayType, "items">;
-};
+import { ZodArrayDef, ZodFirstPartyTypeKind } from "zod"
+import { setResponseValueAndErrors } from "../errorMessages.js"
+import { parseDef } from "../parseDef.js"
+import { Refs } from "../Refs.js"
+import { JsonSchema } from "../JsonSchema.js"
 
 export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
-  const res: JsonSchema7ArrayType = {
+  const res: JsonSchema = {
     type: "array",
-  };
+  }
   if (def.type?._def?.typeName !== ZodFirstPartyTypeKind.ZodAny) {
     res.items = parseDef(def.type._def, {
       ...refs,
       currentPath: [...refs.currentPath, "items"],
-    });
+    })
   }
 
   if (def.minLength) {
@@ -28,8 +21,8 @@ export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
       "minItems",
       def.minLength.value,
       def.minLength.message,
-      refs
-    );
+      refs,
+    )
   }
   if (def.maxLength) {
     setResponseValueAndErrors(
@@ -37,8 +30,8 @@ export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
       "maxItems",
       def.maxLength.value,
       def.maxLength.message,
-      refs
-    );
+      refs,
+    )
   }
   if (def.exactLength) {
     setResponseValueAndErrors(
@@ -46,15 +39,15 @@ export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
       "minItems",
       def.exactLength.value,
       def.exactLength.message,
-      refs
-    );
+      refs,
+    )
     setResponseValueAndErrors(
       res,
       "maxItems",
       def.exactLength.value,
       def.exactLength.message,
-      refs
-    );
+      refs,
+    )
   }
-  return res;
+  return res
 }

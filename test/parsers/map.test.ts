@@ -1,4 +1,4 @@
-import { JSONSchema7Type } from "json-schema.js"
+import { JSONSchema7Type } from "json-schema"
 import { z } from "zod"
 import { parseMapDef } from "../../src/parsers/map.js"
 import Ajv from "ajv"

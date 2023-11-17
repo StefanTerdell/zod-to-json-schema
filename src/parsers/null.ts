@@ -1,10 +1,7 @@
-import { Refs } from "../Refs.js";
+import { JsonSchema } from "../JsonSchema.js"
+import { Refs } from "../Refs.js"
 
-export type JsonSchema7NullType = {
-  type: "null";
-};
-
-export function parseNullDef(refs: Refs): JsonSchema7NullType {
+export function parseNullDef(refs: Refs): JsonSchema {
   return refs.target === "openApi3"
     ? ({
         enum: ["null"],
@@ -12,5 +9,5 @@ export function parseNullDef(refs: Refs): JsonSchema7NullType {
       } as any)
     : {
         type: "null",
-      };
+      }
 }

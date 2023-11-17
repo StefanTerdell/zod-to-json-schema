@@ -1,4 +1,4 @@
-import { JSONSchema7 } from "json-schema.js";
+import { JSONSchema7 } from "json-schema";
 import { z } from "zod";
 import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
 import { suite } from "./suite.js";

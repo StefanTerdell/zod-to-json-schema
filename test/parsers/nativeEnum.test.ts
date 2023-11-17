@@ -1,4 +1,4 @@
-import { JSONSchema7Type } from "json-schema.js";
+import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseNativeEnumDef } from "../../src/parsers/nativeEnum.js";
 import { suite } from "../suite.js";

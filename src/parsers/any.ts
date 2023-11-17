@@ -1,5 +1,5 @@
-export type JsonSchema7AnyType = {};
+import { JsonSchema } from "../JsonSchema"
 
-export function parseAnyDef(): JsonSchema7AnyType {
-  return {};
+export function parseAnyDef(): JsonSchema {
+  return {}
 }

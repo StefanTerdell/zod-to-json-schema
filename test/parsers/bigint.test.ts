@@ -1,4 +1,4 @@
-import { JSONSchema7Type } from "json-schema.js";
+import { JSONSchema7Type } from "json-schema";
 import { parseBigintDef } from "../../src/parsers/bigint.js";
 import { z } from "zod";
 import { getRefs } from "../../src/Refs.js";
