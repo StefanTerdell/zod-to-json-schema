@@ -2,12 +2,18 @@
   "name": "zod-to-json-schema",
   "version": "3.21.4",
   "description": "Converts Zod schemas to Json Schemas",
-  "types": "dist/types/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "exports": {
-    "import": "./dist/esm/index.js",
-    "require": "./dist/cjs/index.js"
+    "import": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/esm/index.js"
+    },
+    "require": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/cjs/index.js"
+    }
   },
   "scripts": {
     "build:types": "tsc -p tsconfig.types.json",
