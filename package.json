@@ -21,9 +21,10 @@
     "build:esm": "tsc -p tsconfig.esm.json && node postesm.js",
     "build": "npm i && npm test && rimraf ./dist && npm run build:types && npm run build:cjs && npm run build:esm",
     "dry": "npm run build && npm pub --dry-run",
-    "dev": "tsx watch test/index.ts",
+    "test:watch": "tsx watch test/index.ts",
+    "test:gen": "tsx test/createIndex.ts",
     "test": "tsx test/index.ts",
-    "gen": "tsx test/createIndex.ts"
+    "gen": "tsx createIndex.ts"
   },
   "keywords": [
     "zod",
