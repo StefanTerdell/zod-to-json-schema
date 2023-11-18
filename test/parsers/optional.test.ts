@@ -1,12 +1,12 @@
-import { JSONSchema7Type } from "json-schema"
-import { z } from "zod"
-import { parseDef } from "../../src/parseDef.js"
-import { getRefs } from "../../src/Refs.js"
-import { suite } from "../suite.js"
+import { JSONSchema7Type } from "json-schema";
+import { z } from "zod";
+import { parseDef } from "../../src/parseDef.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
 suite("Standalone optionals", (test) => {
   test("should work as unions with undefined", (assert) => {
-    const parsedSchema = parseDef(z.string().optional()._def, getRefs())
+    const parsedSchema = parseDef(z.string().optional()._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
       anyOf: [
@@ -17,16 +17,16 @@ suite("Standalone optionals", (test) => {
           type: "string",
         },
       ],
-    }
+    };
 
-    assert(parsedSchema, jsonSchema)
-  })
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("should not affect object properties", (assert) => {
     const parsedSchema = parseDef(
       z.object({ myProperty: z.string().optional() })._def,
       getRefs(),
-    )
+    );
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -36,16 +36,16 @@ suite("Standalone optionals", (test) => {
         },
       },
       additionalProperties: false,
-    }
+    };
 
-    assert(parsedSchema, jsonSchema)
-  })
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("should work with nested properties", (assert) => {
     const parsedSchema = parseDef(
       z.object({ myProperty: z.string().optional().array() })._def,
       getRefs(),
-    )
+    );
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -59,10 +59,10 @@ suite("Standalone optionals", (test) => {
       },
       required: ["myProperty"],
       additionalProperties: false,
-    }
+    };
 
-    assert(parsedSchema, jsonSchema)
-  })
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("should work with nested properties as object properties", (assert) => {
     const parsedSchema = parseDef(
@@ -70,7 +70,7 @@ suite("Standalone optionals", (test) => {
         myProperty: z.object({ myInnerProperty: z.string().optional() }),
       })._def,
       getRefs(),
-    )
+    );
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -87,10 +87,10 @@ suite("Standalone optionals", (test) => {
       },
       required: ["myProperty"],
       additionalProperties: false,
-    }
+    };
 
-    assert(parsedSchema, jsonSchema)
-  })
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("should work with nested properties with nested object property parents", (assert) => {
     const parsedSchema = parseDef(
@@ -100,7 +100,7 @@ suite("Standalone optionals", (test) => {
         }),
       })._def,
       getRefs(),
-    )
+    );
 
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -126,17 +126,17 @@ suite("Standalone optionals", (test) => {
       },
       required: ["myProperty"],
       additionalProperties: false,
-    }
+    };
 
-    assert(parsedSchema, jsonSchema)
-  })
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("should work with ref pathing", (assert) => {
-    const recurring = z.string()
+    const recurring = z.string();
 
-    const schema = z.tuple([recurring.optional(), recurring])
+    const schema = z.tuple([recurring.optional(), recurring]);
 
-    const parsedSchema = parseDef(schema._def, getRefs())
+    const parsedSchema = parseDef(schema._def, getRefs());
 
     const jsonSchema: JSONSchema7Type = {
       type: "array",
@@ -146,8 +146,8 @@ suite("Standalone optionals", (test) => {
         { anyOf: [{ not: {} }, { type: "string" }] },
         { $ref: "#/items/0/anyOf/1" },
       ],
-    }
+    };
 
-    assert(parsedSchema, jsonSchema)
-  })
-})
+    assert(parsedSchema, jsonSchema);
+  });
+});

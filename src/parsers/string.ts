@@ -18,21 +18,22 @@ export const zodPatterns = {
   /**
    * `a-z` was added to replicate /i flag
    */
-  email: "^(?!\\.)(?!.*\\.\\.)([a-zA-Z0-9_+-\\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\\-]*\\.)+[a-zA-Z]{2,}$",
+  email:
+    "^(?!\\.)(?!.*\\.\\.)([a-zA-Z0-9_+-\\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\\-]*\\.)+[a-zA-Z]{2,}$",
   emoji: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
   /**
-   * Unused 
+   * Unused
    */
   uuid: "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$",
   /**
-   * Unused 
+   * Unused
    */
   ipv4: "^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$",
   /**
-   * Unused 
+   * Unused
    */
   ipv6: "^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$",
-} as const
+} as const;
 
 export type JsonSchema7StringType = {
   type: "string";
@@ -60,14 +61,16 @@ export type JsonSchema7StringType = {
 
 export function parseStringDef(
   def: ZodStringDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7StringType {
   const res: JsonSchema7StringType = {
     type: "string",
   };
 
   function processPattern(value: string): string {
-    return refs.patternStrategy === "escape" ? escapeNonAlphaNumeric(value) : value
+    return refs.patternStrategy === "escape"
+      ? escapeNonAlphaNumeric(value)
+      : value;
   }
 
   if (def.checks) {
@@ -81,7 +84,7 @@ export function parseStringDef(
               ? Math.max(res.minLength, check.value)
               : check.value,
             check.message,
-            refs
+            refs,
           );
           break;
         case "max":
@@ -92,7 +95,7 @@ export function parseStringDef(
               ? Math.min(res.maxLength, check.value)
               : check.value,
             check.message,
-            refs
+            refs,
           );
 
           break;
@@ -130,7 +133,7 @@ export function parseStringDef(
             res,
             "^" + processPattern(check.value),
             check.message,
-            refs
+            refs,
           );
           break;
         case "endsWith":
@@ -138,7 +141,7 @@ export function parseStringDef(
             res,
             processPattern(check.value) + "$",
             check.message,
-            refs
+            refs,
           );
           break;
 
@@ -153,7 +156,7 @@ export function parseStringDef(
               ? Math.max(res.minLength, check.value)
               : check.value,
             check.message,
-            refs
+            refs,
           );
           setResponseValueAndErrors(
             res,
@@ -162,16 +165,11 @@ export function parseStringDef(
               ? Math.min(res.maxLength, check.value)
               : check.value,
             check.message,
-            refs
+            refs,
           );
           break;
         case "includes": {
-          addPattern(
-            res,
-            processPattern(check.value),
-            check.message,
-            refs
-          );
+          addPattern(res, processPattern(check.value), check.message, refs);
           break;
         }
         case "ip": {
@@ -213,7 +211,7 @@ const addFormat = (
   schema: JsonSchema7StringType,
   value: Required<JsonSchema7StringType>["format"],
   message: string | undefined,
-  refs: Refs
+  refs: Refs,
 ) => {
   if (schema.format || schema.anyOf?.some((x) => x.format)) {
     if (!schema.anyOf) {
@@ -251,7 +249,7 @@ const addPattern = (
   schema: JsonSchema7StringType,
   value: string,
   message: string | undefined,
-  refs: Refs
+  refs: Refs,
 ) => {
   if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
     if (!schema.allOf) {

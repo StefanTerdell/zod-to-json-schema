@@ -4,7 +4,7 @@ import { Refs } from "../Refs.js";
 
 export function parseEffectsDef(
   _def: ZodEffectsDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7Type | undefined {
   return refs.effectStrategy === "input"
     ? parseDef(_def.schema._def, refs)

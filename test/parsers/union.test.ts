@@ -1,21 +1,21 @@
-import { JSONSchema7Type } from "json-schema"
-import { z } from "zod"
-import { parseUnionDef } from "../../src/parsers/union.js"
-import { getRefs } from "../../src/Refs.js"
-import { suite } from "../suite.js"
-const deref = require("json-schema-deref-sync")
+import { JSONSchema7Type } from "json-schema";
+import { z } from "zod";
+import { parseUnionDef } from "../../src/parsers/union.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
+const deref = require("json-schema-deref-sync");
 
 suite("Unions", (test) => {
   test("Should be possible to get a simple type array from a union of only unvalidated primitives", (assert) => {
     const parsedSchema = parseUnionDef(
       z.union([z.string(), z.number(), z.boolean(), z.null()])._def,
       getRefs(),
-    )
+    );
     const jsonSchema: JSONSchema7Type = {
       type: ["string", "number", "boolean", "null"],
-    }
-    assert(parsedSchema, jsonSchema)
-  })
+    };
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("Should be possible to get a simple type array with enum values from a union of literals", (assert) => {
     const parsedSchema = parseUnionDef(
@@ -26,13 +26,13 @@ suite("Unions", (test) => {
         z.literal(null),
       ])._def,
       getRefs(),
-    )
+    );
     const jsonSchema: JSONSchema7Type = {
       type: ["string", "number", "boolean", "null"],
       enum: ["string", 123, true, null],
-    }
-    assert(parsedSchema, jsonSchema)
-  })
+    };
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("Should be possible to create a union with objects, arrays and validated primitives as an anyOf", (assert) => {
     const parsedSchema = parseUnionDef(
@@ -43,7 +43,7 @@ suite("Unions", (test) => {
         z.number(),
       ])._def,
       getRefs(),
-    )
+    );
     const jsonSchema: JSONSchema7Type = {
       anyOf: [
         {
@@ -73,16 +73,16 @@ suite("Unions", (test) => {
           type: "number",
         },
       ],
-    }
-    assert(parsedSchema, jsonSchema)
-  })
+    };
+    assert(parsedSchema, jsonSchema);
+  });
 
   test("should be possible to deref union schemas", (assert) => {
-    const recurring = z.object({ foo: z.boolean() })
+    const recurring = z.object({ foo: z.boolean() });
 
-    const union = z.union([recurring, recurring, recurring])
+    const union = z.union([recurring, recurring, recurring]);
 
-    const jsonSchema = parseUnionDef(union._def, getRefs())
+    const jsonSchema = parseUnionDef(union._def, getRefs());
 
     assert(jsonSchema, {
       anyOf: [
@@ -103,41 +103,41 @@ suite("Unions", (test) => {
           $ref: "#/anyOf/0",
         },
       ],
-    })
+    });
 
-    const resolvedSchema = deref(jsonSchema)
-    assert(resolvedSchema.anyOf[0],resolvedSchema.anyOf[1])
-    assert(resolvedSchema.anyOf[1],resolvedSchema.anyOf[2])
-  })
+    const resolvedSchema = deref(jsonSchema);
+    assert(resolvedSchema.anyOf[0], resolvedSchema.anyOf[1]);
+    assert(resolvedSchema.anyOf[1], resolvedSchema.anyOf[2]);
+  });
 
   test("nullable primitives should come out fine", (assert) => {
-    const union = z.union([z.string(), z.null()])
+    const union = z.union([z.string(), z.null()]);
 
-    const jsonSchema = parseUnionDef(union._def, getRefs())
+    const jsonSchema = parseUnionDef(union._def, getRefs());
 
     assert(jsonSchema, {
       type: ["string", "null"],
-    })
-  })
+    });
+  });
 
   test("should join a union of Zod enums into a single enum", (assert) => {
-    const union = z.union([z.enum(["a", "b", "c"]), z.enum(["c", "d", "e"])])
+    const union = z.union([z.enum(["a", "b", "c"]), z.enum(["c", "d", "e"])]);
 
-    const jsonSchema = parseUnionDef(union._def, getRefs())
+    const jsonSchema = parseUnionDef(union._def, getRefs());
 
     assert(jsonSchema, {
       type: "string",
       enum: ["a", "b", "c", "d", "e"],
-    })
-  })
+    });
+  });
 
   test("should work with discriminated union type", (assert) => {
     const discUnion = z.discriminatedUnion("kek", [
       z.object({ kek: z.literal("A"), lel: z.boolean() }),
       z.object({ kek: z.literal("B"), lel: z.number() }),
-    ])
+    ]);
 
-    const jsonSchema = parseUnionDef(discUnion._def, getRefs())
+    const jsonSchema = parseUnionDef(discUnion._def, getRefs());
 
     assert(jsonSchema, {
       anyOf: [
@@ -170,8 +170,8 @@ suite("Unions", (test) => {
           additionalProperties: false,
         },
       ],
-    })
-  })
+    });
+  });
 
   test("should not ignore descriptions in literal unions", (assert) => {
     assert(
@@ -199,6 +199,6 @@ suite("Unions", (test) => {
           ],
         },
       ],
-    )
-  })
-})
+    );
+  });
+});

@@ -12,7 +12,7 @@ suite("Meta data", (it) => {
       description: "My neat string",
     };
 
-    assert($j, $e)
+    assert($j, $e);
   });
 
   it("should be possible to add a markdownDescription", (assert) => {
@@ -25,7 +25,7 @@ suite("Meta data", (it) => {
       markdownDescription: "My neat string",
     };
 
-    assert($j, $e)
+    assert($j, $e);
   });
 
   it("should handle optional schemas with different descriptions", (assert) => {

@@ -10,14 +10,14 @@ suite("bigint", (test) => {
       type: "integer",
       format: "int64",
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   // Jest doesn't like bigints. 🤷
   test("should be possible to define gt/lt", (assert) => {
     const parsedSchema = parseBigintDef(
       z.bigint().gte(BigInt(10)).lte(BigInt(20))._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema = {
       type: "integer",
@@ -25,6 +25,6 @@ suite("bigint", (test) => {
       minimum: BigInt(10),
       maximum: BigInt(20),
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 });

@@ -4,7 +4,7 @@ import { Refs } from "../Refs.js";
 
 export function parsePromiseDef(
   def: ZodPromiseDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7Type | undefined {
   return parseDef(def.type._def, refs);
 }

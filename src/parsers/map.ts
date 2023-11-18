@@ -14,9 +14,12 @@ export type JsonSchema7MapType = {
   };
 };
 
-export function parseMapDef(def: ZodMapDef, refs: Refs): JsonSchema7MapType | JsonSchema7RecordType {
+export function parseMapDef(
+  def: ZodMapDef,
+  refs: Refs,
+): JsonSchema7MapType | JsonSchema7RecordType {
   if (refs.mapStrategy === "record") {
-    return parseRecordDef(def, refs)
+    return parseRecordDef(def, refs);
   }
 
   const keys =

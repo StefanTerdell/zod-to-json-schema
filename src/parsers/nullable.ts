@@ -14,11 +14,11 @@ export type JsonSchema7NullableType =
 
 export function parseNullableDef(
   def: ZodNullableDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7NullableType | undefined {
   if (
     ["ZodString", "ZodNumber", "ZodBigInt", "ZodBoolean", "ZodNull"].includes(
-      def.innerType._def.typeName
+      def.innerType._def.typeName,
     ) &&
     (!def.innerType._def.checks || !def.innerType._def.checks.length)
   ) {

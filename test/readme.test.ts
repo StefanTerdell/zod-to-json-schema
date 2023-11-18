@@ -1,6 +1,6 @@
-import { z } from "zod"
-import zodToJsonSchema from "../src"
-import { suite } from "./suite.js"
+import { z } from "zod";
+import zodToJsonSchema from "../src";
+import { suite } from "./suite.js";
 
 suite("The readme example", (test) => {
   test("should be valid", (assert) => {
@@ -9,9 +9,9 @@ suite("The readme example", (test) => {
         myString: z.string().min(5),
         myUnion: z.union([z.number(), z.boolean()]),
       })
-      .describe("My neat object schema")
+      .describe("My neat object schema");
 
-    const jsonSchema = zodToJsonSchema(mySchema, "mySchema")
+    const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
 
     assert(jsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
@@ -33,10 +33,10 @@ suite("The readme example", (test) => {
           required: ["myString", "myUnion"],
         },
       },
-    })
-  })
+    });
+  });
   test("should have a valid error message example", (assert) => {
-    const EmailSchema = z.string().email("Invalid email").min(5, "Too short")
+    const EmailSchema = z.string().email("Invalid email").min(5, "Too short");
     const expected = {
       $schema: "http://json-schema.org/draft-07/schema#",
       type: "string",
@@ -46,10 +46,10 @@ suite("The readme example", (test) => {
         format: "Invalid email",
         minLength: "Too short",
       },
-    }
+    };
     const parsedJsonSchema = zodToJsonSchema(EmailSchema, {
       errorMessages: true,
-    })
-    assert(parsedJsonSchema, expected)
-  })
-})
+    });
+    assert(parsedJsonSchema, expected);
+  });
+});

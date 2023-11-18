@@ -9,7 +9,7 @@ export type JsonSchema7AllOfType = {
 };
 
 const isJsonSchema7AllOfType = (
-  type: JsonSchema7Type | JsonSchema7StringType
+  type: JsonSchema7Type | JsonSchema7StringType,
 ): type is JsonSchema7AllOfType => {
   if ("type" in type && type.type === "string") return false;
   return "allOf" in type;
@@ -17,7 +17,7 @@ const isJsonSchema7AllOfType = (
 
 export function parseIntersectionDef(
   def: ZodIntersectionDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7AllOfType | JsonSchema7Type | undefined {
   const allOf = [
     parseDef(def.left._def, {

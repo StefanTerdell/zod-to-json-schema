@@ -37,7 +37,7 @@ const integerDateParser = (def: ZodDateDef, refs: Refs) => {
             "minimum",
             check.value, // This is in milliseconds
             check.message,
-            refs
+            refs,
           );
         }
         break;
@@ -48,7 +48,7 @@ const integerDateParser = (def: ZodDateDef, refs: Refs) => {
             "maximum",
             check.value, // This is in milliseconds
             check.message,
-            refs
+            refs,
           );
         }
         break;

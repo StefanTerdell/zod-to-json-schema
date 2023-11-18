@@ -8,7 +8,7 @@ suite("promise", (test) => {
   test("should be possible to use default on objects", (assert) => {
     const parsedSchema = parseDefaultDef(
       z.object({ foo: z.boolean() }).default({ foo: true })._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema: JSONSchema7Type = {
       type: "object",
@@ -23,19 +23,19 @@ suite("promise", (test) => {
         foo: true,
       },
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   test("should be possible to use default on primitives", (assert) => {
     const parsedSchema = parseDefaultDef(
       z.string().default("default")._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       default: "default",
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   test("default with transform", (assert) => {
@@ -50,6 +50,6 @@ suite("promise", (test) => {
       default: "default",
     };
 
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 });

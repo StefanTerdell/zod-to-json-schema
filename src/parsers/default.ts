@@ -4,7 +4,7 @@ import { Refs } from "../Refs.js";
 
 export function parseDefaultDef(
   _def: ZodDefaultDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7Type & { default: any } {
   return {
     ...parseDef(_def.innerType._def, refs),

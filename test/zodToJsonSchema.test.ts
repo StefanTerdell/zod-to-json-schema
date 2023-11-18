@@ -1,13 +1,13 @@
-import { z } from "zod"
-import { zodToJsonSchema } from "../src/zodToJsonSchema.js"
-import { suite } from "./suite.js"
+import { z } from "zod";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { suite } from "./suite.js";
 
 suite("Root schema result after parsing", (it) => {
   it("should return the schema directly in the root if no name is passed", (assert) => {
     assert(zodToJsonSchema(z.any()), {
       $schema: "http://json-schema.org/draft-07/schema#",
-    })
-  })
+    });
+  });
   it('should return the schema inside a named property in "definitions" if a name is passed', (assert) => {
     assert(zodToJsonSchema(z.any(), "MySchema"), {
       $schema: "http://json-schema.org/draft-07/schema#",
@@ -15,8 +15,8 @@ suite("Root schema result after parsing", (it) => {
       definitions: {
         MySchema: {},
       },
-    })
-  })
+    });
+  });
 
   it('should return the schema inside a named property in "$defs" if a name and definitionPath is passed in options', (assert) => {
     assert(
@@ -28,8 +28,8 @@ suite("Root schema result after parsing", (it) => {
           MySchema: {},
         },
       },
-    )
-  })
+    );
+  });
 
   it("should not scrub 'any'-schemas from unions when strictUnions=false", (assert) => {
     assert(
@@ -41,8 +41,8 @@ suite("Root schema result after parsing", (it) => {
         $schema: "http://json-schema.org/draft-07/schema#",
         anyOf: [{}, {}, { type: "string" }, { type: "number" }],
       },
-    )
-  })
+    );
+  });
 
   it("should scrub 'any'-schemas from unions when strictUnions=true", (assert) => {
     assert(
@@ -54,8 +54,8 @@ suite("Root schema result after parsing", (it) => {
         $schema: "http://json-schema.org/draft-07/schema#",
         anyOf: [{ type: "string" }, { type: "number" }],
       },
-    )
-  })
+    );
+  });
 
   it("should scrub 'any'-schemas from unions when strictUnions=true in objects", (assert) => {
     assert(
@@ -78,19 +78,19 @@ suite("Root schema result after parsing", (it) => {
         },
         type: "object",
       },
-    )
-  })
+    );
+  });
 
   it("Definitions play nice with named schemas", (assert) => {
-    const MySpecialStringSchema = z.string()
-    const MyArraySchema = z.array(MySpecialStringSchema)
+    const MySpecialStringSchema = z.string();
+    const MyArraySchema = z.array(MySpecialStringSchema);
 
     const result = zodToJsonSchema(MyArraySchema, {
       definitions: {
         MySpecialStringSchema,
         MyArraySchema,
       },
-    })
+    });
 
     assert(result, {
       $schema: "http://json-schema.org/draft-07/schema#",
@@ -104,6 +104,6 @@ suite("Root schema result after parsing", (it) => {
           },
         },
       },
-    })
-  })
-})
+    });
+  });
+});

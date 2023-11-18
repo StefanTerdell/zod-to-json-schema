@@ -21,7 +21,10 @@ import {
 } from "./parsers/nativeEnum.js";
 import { JsonSchema7NeverType, parseNeverDef } from "./parsers/never.js";
 import { JsonSchema7NullType, parseNullDef } from "./parsers/null.js";
-import { JsonSchema7NullableType, parseNullableDef } from "./parsers/nullable.js";
+import {
+  JsonSchema7NullableType,
+  parseNullableDef,
+} from "./parsers/nullable.js";
 import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number.js";
 import { JsonSchema7ObjectType, parseObjectDef } from "./parsers/object.js";
 import { parseOptionalDef } from "./parsers/optional.js";
@@ -78,7 +81,7 @@ export type JsonSchema7Type = JsonSchema7TypeUnion & JsonSchema7Meta;
 export function parseDef(
   def: ZodTypeDef,
   refs: Refs,
-  forceResolution = false // Forces a new schema to be instantiated even though its def has been seen. Used for improving refs in definitions. See https://github.com/StefanTerdell/zod-to-json-schema/pull/61.
+  forceResolution = false, // Forces a new schema to be instantiated even though its def has been seen. Used for improving refs in definitions. See https://github.com/StefanTerdell/zod-to-json-schema/pull/61.
 ): JsonSchema7Type | undefined {
   const seenItem = refs.seen.get(def);
 
@@ -107,7 +110,7 @@ export function parseDef(
 
 const get$ref = (
   item: Seen,
-  refs: Refs
+  refs: Refs,
 ):
   | {
       $ref: string;
@@ -133,8 +136,8 @@ const get$ref = (
       ) {
         console.warn(
           `Recursive reference detected at ${refs.currentPath.join(
-            "/"
-          )}! Defaulting to any`
+            "/",
+          )}! Defaulting to any`,
         );
         return {};
       }
@@ -148,8 +151,8 @@ const get$ref = (
       ) {
         console.warn(
           `Recursive reference detected at ${refs.currentPath.join(
-            "/"
-          )}! Defaulting to any`
+            "/",
+          )}! Defaulting to any`,
         );
         return {};
       } else {
@@ -170,7 +173,7 @@ const getRelativePath = (pathA: string[], pathB: string[]) => {
 const selectParser = (
   def: any,
   typeName: ZodFirstPartyTypeKind,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7Type | undefined => {
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
@@ -249,7 +252,7 @@ const selectParser = (
 const addMeta = (
   def: ZodTypeDef,
   refs: Refs,
-  jsonSchema: JsonSchema7Type
+  jsonSchema: JsonSchema7Type,
 ): JsonSchema7Type => {
   if (def.description) {
     jsonSchema.description = def.description;

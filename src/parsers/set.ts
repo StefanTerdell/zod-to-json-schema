@@ -30,7 +30,7 @@ export function parseSetDef(def: ZodSetDef, refs: Refs): JsonSchema7SetType {
       "minItems",
       def.minSize.value,
       def.minSize.message,
-      refs
+      refs,
     );
   }
 
@@ -40,7 +40,7 @@ export function parseSetDef(def: ZodSetDef, refs: Refs): JsonSchema7SetType {
       "maxItems",
       def.maxSize.value,
       def.maxSize.message,
-      refs
+      refs,
     );
   }
 

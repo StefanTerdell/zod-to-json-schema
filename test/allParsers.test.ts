@@ -547,7 +547,7 @@ suite("All Parsers tests", (test) => {
           type: "object",
           additionalProperties: {
             type: "boolean",
-          }
+          },
         },
         recordBooleanBoolean: {
           type: "object",
@@ -679,7 +679,7 @@ suite("All Parsers tests", (test) => {
         string: "hello",
       },
       description: "watup",
-    }; 
+    };
     assert(jsonSchema, expectedOutput);
   });
 });

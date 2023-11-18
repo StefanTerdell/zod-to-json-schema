@@ -4,7 +4,7 @@ import { Refs } from "../Refs.js";
 
 export const parseOptionalDef = (
   def: ZodOptionalDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7Type | undefined => {
   if (refs.currentPath.toString() === refs.propertyPath?.toString()) {
     return parseDef(def.innerType._def, refs);

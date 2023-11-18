@@ -1,11 +1,11 @@
-import { JSONSchema7Type } from "json-schema"
-import { z } from "zod"
-import { parseDef } from "../src/parseDef.js"
-import Ajv from "ajv"
-import { getRefs } from "../src/Refs.js"
-const ajv = new Ajv()
+import { JSONSchema7Type } from "json-schema";
+import { z } from "zod";
+import { parseDef } from "../src/parseDef.js";
+import Ajv from "ajv";
+import { getRefs } from "../src/Refs.js";
+const ajv = new Ajv();
 
-import { suite } from "./suite.js"
+import { suite } from "./suite.js";
 
 suite("Basic parsing", (test) => {
   test("should return a proper json schema with some common types without validation", (assert) => {
@@ -28,7 +28,7 @@ suite("Basic parsing", (test) => {
       ]),
       objectOrNull: z.object({ myString: z.string() }).nullable(),
       passthrough: z.object({ myString: z.string() }).passthrough(),
-    })
+    });
     const expectedJsonSchema: JSONSchema7Type = {
       type: "object",
       properties: {
@@ -153,19 +153,19 @@ suite("Basic parsing", (test) => {
         "passthrough",
       ],
       additionalProperties: false,
-    }
-    const parsedSchema = parseDef(zodSchema._def, getRefs())
-    assert(parsedSchema, expectedJsonSchema)
-    assert(ajv.validateSchema(parsedSchema!), true)
-  })
+    };
+    const parsedSchema = parseDef(zodSchema._def, getRefs());
+    assert(parsedSchema, expectedJsonSchema);
+    assert(ajv.validateSchema(parsedSchema!), true);
+  });
 
   test("should handle a nullable string properly", (assert) => {
-    const shorthand = z.string().nullable()
-    const union = z.union([z.string(), z.null()])
+    const shorthand = z.string().nullable();
+    const union = z.union([z.string(), z.null()]);
 
-    const expected = { type: ["string", "null"] }
+    const expected = { type: ["string", "null"] };
 
-    assert(parseDef(shorthand._def, getRefs()), expected)
-    assert(parseDef(union._def, getRefs()), expected)
-  })
-})
+    assert(parseDef(shorthand._def, getRefs()), expected);
+    assert(parseDef(union._def, getRefs()), expected);
+  });
+});

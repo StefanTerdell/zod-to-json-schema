@@ -16,7 +16,7 @@ suite("Native enums", (test) => {
       type: "number",
       enum: [0, 1, 2],
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   test("should be possible to convert a native string enum", (assert) => {
@@ -31,7 +31,7 @@ suite("Native enums", (test) => {
       type: "string",
       enum: ["a", "b", "c"],
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   test("should be possible to convert a mixed value native enum", (assert) => {
@@ -46,7 +46,7 @@ suite("Native enums", (test) => {
       type: ["string", "number"],
       enum: ["a", 1, "c"],
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   test("should be possible to convert a native const assertion object", (assert) => {
@@ -57,13 +57,13 @@ suite("Native enums", (test) => {
     } as const;
 
     const parsedSchema = parseNativeEnumDef(
-      z.nativeEnum(MyConstAssertionObject)._def
+      z.nativeEnum(MyConstAssertionObject)._def,
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
       enum: [0, 1, 2],
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   test("should be possible to convert a native const assertion string object", (assert) => {
@@ -74,13 +74,13 @@ suite("Native enums", (test) => {
     } as const;
 
     const parsedSchema = parseNativeEnumDef(
-      z.nativeEnum(MyConstAssertionObject)._def
+      z.nativeEnum(MyConstAssertionObject)._def,
     );
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       enum: ["a", "b", "c"],
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 
   test("should be possible to convert a mixed value native const assertion string object", (assert) => {
@@ -91,12 +91,12 @@ suite("Native enums", (test) => {
     } as const;
 
     const parsedSchema = parseNativeEnumDef(
-      z.nativeEnum(MyConstAssertionObject)._def
+      z.nativeEnum(MyConstAssertionObject)._def,
     );
     const jsonSchema: JSONSchema7Type = {
       type: ["string", "number"],
       enum: ["a", 1, "c"],
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 });

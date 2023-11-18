@@ -37,7 +37,7 @@ type JsonSchema7AnyOfType = {
 
 export function parseUnionDef(
   def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
   if (refs.target === "openApi3") return asAnyOf(def, refs);
 
@@ -49,7 +49,7 @@ export function parseUnionDef(
     options.every(
       (x) =>
         x._def.typeName in primitiveMappings &&
-        (!x._def.checks || !x._def.checks.length)
+        (!x._def.checks || !x._def.checks.length),
     )
   ) {
     // all types in union are primitive and lack checks, so might as well squash into {type: [...]}
@@ -86,7 +86,7 @@ export function parseUnionDef(
             return acc;
         }
       },
-      []
+      [],
     );
 
     if (types.length === options.length) {
@@ -95,9 +95,12 @@ export function parseUnionDef(
       const uniqueTypes = types.filter((x, i, a) => a.indexOf(x) === i);
       return {
         type: uniqueTypes.length > 1 ? uniqueTypes : uniqueTypes[0],
-        enum: options.reduce((acc, x) => {
-          return acc.includes(x._def.value) ? acc : [...acc, x._def.value];
-        }, [] as (string | number | bigint | boolean | null)[]),
+        enum: options.reduce(
+          (acc, x) => {
+            return acc.includes(x._def.value) ? acc : [...acc, x._def.value];
+          },
+          [] as (string | number | bigint | boolean | null)[],
+        ),
       };
     }
   } else if (options.every((x) => x._def.typeName === "ZodEnum")) {
@@ -108,7 +111,7 @@ export function parseUnionDef(
           ...acc,
           ...x._def.values.filter((x: string) => !acc.includes(x)),
         ],
-        []
+        [],
       ),
     };
   }
@@ -118,7 +121,7 @@ export function parseUnionDef(
 
 const asAnyOf = (
   def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined => {
   const anyOf = (
     (def.options instanceof Map
@@ -129,13 +132,13 @@ const asAnyOf = (
       parseDef(x._def, {
         ...refs,
         currentPath: [...refs.currentPath, "anyOf", `${i}`],
-      })
+      }),
     )
     .filter(
       (x): x is JsonSchema7Type =>
         !!x &&
         (!refs.strictUnions ||
-          (typeof x === "object" && Object.keys(x).length > 0))
+          (typeof x === "object" && Object.keys(x).length > 0)),
     );
 
   return anyOf.length ? { anyOf } : undefined;

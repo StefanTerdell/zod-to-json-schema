@@ -33,7 +33,7 @@ export const getRefs = (options?: string | Partial<Options<Targets>>): Refs => {
           // Resolution of references will be forced even though seen, so it's ok that the schema is undefined here for now.
           jsonSchema: undefined,
         },
-      ])
+      ]),
     ),
   };
 };

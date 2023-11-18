@@ -10,6 +10,6 @@ suite("promise", (test) => {
     const jsonSchema: JSONSchema7Type = {
       type: "string",
     };
-    assert(parsedSchema, jsonSchema)
+    assert(parsedSchema, jsonSchema);
   });
 });

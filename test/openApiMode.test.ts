@@ -1,6 +1,6 @@
-import { z } from "zod"
-import { zodToJsonSchema } from "../src/zodToJsonSchema.js"
-import { suite } from "./suite.js"
+import { z } from "zod";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { suite } from "./suite.js";
 
 suite("Open API target", (test) => {
   test("should use nullable boolean property and not use $schema property", (assert) => {
@@ -8,11 +8,11 @@ suite("Open API target", (test) => {
       companyId: z.string().nullable(),
       name: z.string().nullable().optional(),
       something: z.literal("hej"),
-    })
+    });
 
     const swaggerSchema = zodToJsonSchema(editCompanySchema, {
       target: "openApi3",
-    })
+    });
 
     const expectedSchema = {
       // $schema: "http://json-schema.org/draft-07/schema#",
@@ -24,17 +24,17 @@ suite("Open API target", (test) => {
       },
       required: ["companyId", "something"],
       type: "object",
-    }
+    };
 
-    assert(swaggerSchema, expectedSchema)
-  })
+    assert(swaggerSchema, expectedSchema);
+  });
 
   test("should not use the enumNames keyword from the records parser when an enum is present", (assert) => {
-    const recordSchema = z.record(z.enum(["a", "b", "c"]), z.boolean())
+    const recordSchema = z.record(z.enum(["a", "b", "c"]), z.boolean());
 
     const swaggerSchema = zodToJsonSchema(recordSchema, {
       target: "openApi3",
-    })
+    });
 
     const expectedSchema = {
       type: "object",
@@ -45,17 +45,17 @@ suite("Open API target", (test) => {
         c: { $ref: "#/properties/a" },
       },
       additionalProperties: false,
-    }
+    };
 
-    assert(swaggerSchema, expectedSchema)
-  })
+    assert(swaggerSchema, expectedSchema);
+  });
 
   test("should properly reference nullable schemas", (assert) => {
     const legalReasonSchema = z
       .object({
         reason: z.enum(["FOO", "BAR"]),
       })
-      .strict()
+      .strict();
 
     const identityRequestSchema = z
       .object({
@@ -68,11 +68,11 @@ suite("Open API target", (test) => {
           .array(legalReasonSchema.shape.reason)
           .nullish(), // reused here
       })
-      .strict()
+      .strict();
 
     const result = zodToJsonSchema(identityRequestSchema, {
       target: "openApi3",
-    })
+    });
 
     const expected = {
       type: "object",
@@ -100,8 +100,8 @@ suite("Open API target", (test) => {
       },
       required: ["alias"],
       additionalProperties: false,
-    }
+    };
 
-    assert(result, expected)
-  })
-})
+    assert(result, expected);
+  });
+});
