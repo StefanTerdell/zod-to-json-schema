@@ -36,7 +36,7 @@ suite("records", (test) => {
         required: ["foo"],
         additionalProperties: {
           type: "string",
-          pattern: "^c[^\\s-]{8,}$",
+          pattern: "^[cC][^\\s-]{8,}$",
         },
       },
     }

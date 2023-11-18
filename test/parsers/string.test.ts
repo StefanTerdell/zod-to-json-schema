@@ -3,7 +3,7 @@ import { z } from "zod"
 import { JsonSchema7Type } from "../../src/parseDef.js"
 import {
   JsonSchema7StringType,
-  emailPattern,
+  zodPatterns,
   parseStringDef,
 } from "../../src/parsers/string.js"
 import Ajv from "ajv"
@@ -153,7 +153,7 @@ suite("String validations", (test) => {
     const parsedSchema = parseStringDef(z.string().cuid()._def, getRefs())
     const jsonSchema: JsonSchema7Type = {
       type: "string",
-      pattern: "^c[^\\s-]{8,}$",
+      pattern: "^[cC][^\\s-]{8,}$",
     }
     assert(parsedSchema, jsonSchema)
     ajv.validate(parsedSchema, "herpderp")
@@ -162,8 +162,8 @@ suite("String validations", (test) => {
         instancePath: "",
         schemaPath: "#/pattern",
         keyword: "pattern",
-        params: { pattern: "^c[^\\s-]{8,}$" },
-        message: 'must match pattern "^c[^\\s-]{8,}$"',
+        params: { pattern: "^[cC][^\\s-]{8,}$" },
+        message: 'must match pattern "^[cC][^\\s-]{8,}$"',
       },
     ])
     assert(ajv.validate(parsedSchema, "ckopqwooh000001la8mbi2im9"), true)
@@ -461,7 +461,7 @@ suite("String validations", (test) => {
       ),
       {
         type: "string",
-        pattern: emailPattern,
+        pattern: zodPatterns.email,
       },
     )
   })

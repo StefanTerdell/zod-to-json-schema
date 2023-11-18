@@ -270,7 +270,7 @@ suite("All Parsers tests", (test) => {
         },
         stringCuid: {
           type: "string",
-          pattern: "^c[^\\s-]{8,}$",
+          pattern: "^[cC][^\\s-]{8,}$",
         },
         tuple: {
           type: "array",
@@ -591,7 +591,7 @@ suite("All Parsers tests", (test) => {
         },
         stringCuid: {
           type: "string",
-          pattern: "^c[^\\s-]{8,}$",
+          pattern: "^[cC][^\\s-]{8,}$",
         },
         tuple: {
           type: "array",

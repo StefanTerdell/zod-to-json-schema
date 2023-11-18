@@ -2,13 +2,37 @@ import { ZodStringDef } from "zod";
 import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
 import { Refs } from "../Refs.js";
 
-export const emailPattern =
-  '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\])|(\\[IPv6:(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))\\])|([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])*(\\.[A-Za-z]{2,})+))$';
-export const cuidPattern = "^c[^\\s-]{8,}$";
-export const cuid2Pattern = "^[a-z][a-z0-9]*$";
-export const ulidPattern = "/[0-9A-HJKMNP-TV-Z]{26}/";
-export const emojiPattern =
-  "/^(p{Extended_Pictographic}|p{Emoji_Component})+$/u";
+/**
+ * Generated from the .source property of regular expressins found here:
+ * https://github.com/colinhacks/zod/blob/master/src/types.ts.
+ *
+ * Escapes have been doubled, and expressions with /i flag have been changed accordingly
+ */
+export const zodPatterns = {
+  /**
+   * `c` was changed to `[cC]` to replicate /i flag
+   */
+  cuid: "^[cC][^\\s-]{8,}$",
+  cuid2: "^[a-z][a-z0-9]*$",
+  ulid: "^[0-9A-HJKMNP-TV-Z]{26}$",
+  /**
+   * `a-z` was added to replicate /i flag
+   */
+  email: "^(?!\\.)(?!.*\\.\\.)([a-zA-Z0-9_+-\\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\\-]*\\.)+[a-zA-Z]{2,}$",
+  emoji: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
+  /**
+   * Unused 
+   */
+  uuid: "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$",
+  /**
+   * Unused 
+   */
+  ipv4: "^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$",
+  /**
+   * Unused 
+   */
+  ipv6: "^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$",
+} as const
 
 export type JsonSchema7StringType = {
   type: "string";
@@ -41,6 +65,10 @@ export function parseStringDef(
   const res: JsonSchema7StringType = {
     type: "string",
   };
+
+  function processPattern(value: string): string {
+    return refs.patternStrategy === "escape" ? escapeNonAlphaNumeric(value) : value
+  }
 
   if (def.checks) {
     for (const check of def.checks) {
@@ -77,7 +105,7 @@ export function parseStringDef(
               addFormat(res, "idn-email", check.message, refs);
               break;
             case "pattern:zod":
-              addPattern(res, emailPattern, check.message, refs);
+              addPattern(res, zodPatterns.email, check.message, refs);
               break;
           }
 
@@ -92,15 +120,15 @@ export function parseStringDef(
           addPattern(res, check.regex.source, check.message, refs);
           break;
         case "cuid":
-          addPattern(res, cuidPattern, check.message, refs);
+          addPattern(res, zodPatterns.cuid, check.message, refs);
           break;
         case "cuid2":
-          addPattern(res, cuid2Pattern, check.message, refs);
+          addPattern(res, zodPatterns.cuid2, check.message, refs);
           break;
         case "startsWith":
           addPattern(
             res,
-            "^" + escapeNonAlphaNumeric(check.value),
+            "^" + processPattern(check.value),
             check.message,
             refs
           );
@@ -108,7 +136,7 @@ export function parseStringDef(
         case "endsWith":
           addPattern(
             res,
-            escapeNonAlphaNumeric(check.value) + "$",
+            processPattern(check.value) + "$",
             check.message,
             refs
           );
@@ -140,7 +168,7 @@ export function parseStringDef(
         case "includes": {
           addPattern(
             res,
-            escapeNonAlphaNumeric(check.value),
+            processPattern(check.value),
             check.message,
             refs
           );
@@ -156,10 +184,10 @@ export function parseStringDef(
           break;
         }
         case "emoji":
-          addPattern(res, emojiPattern, check.message, refs);
+          addPattern(res, zodPatterns.emoji, check.message, refs);
           break;
         case "ulid": {
-          addPattern(res, ulidPattern, check.message, refs);
+          addPattern(res, zodPatterns.ulid, check.message, refs);
           break;
         }
         case "toLowerCase":
