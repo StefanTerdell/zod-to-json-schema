@@ -1,6 +1,5 @@
 # Zod to Json Schema
 
-[![Build](https://img.shields.io/github/actions/workflow/status/stefanterdell/zod-to-json-schema/tests.yml?branch=master)](https://github.com/StefanTerdell/zod-to-json-schema)
 [![NPM Version](https://img.shields.io/npm/v/zod-to-json-schema.svg)](https://npmjs.org/package/zod-to-json-schema)
 [![NPM Downloads](https://img.shields.io/npm/dw/zod-to-json-schema.svg)](https://npmjs.org/package/zod-to-json-schema)
 
