@@ -1,4 +1,4 @@
-import { JSONSchema7Type } from "json-schema.js"
+import { JSONSchema7Type } from "json-schema"
 import { z } from "zod"
 import { parseDef } from "../src/parseDef.js"
 import Ajv from "ajv"
