@@ -1,5 +1,4 @@
 export * from "./errorMessages.js";
-export * from "./index.js";
 export * from "./Options.js";
 export * from "./parseDef.js";
 export * from "./parsers/any.js";

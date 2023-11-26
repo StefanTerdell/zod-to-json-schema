@@ -19,7 +19,7 @@
     "build:types": "tsc -p tsconfig.types.json",
     "build:cjs": "tsc -p tsconfig.cjs.json && node postcjs.js",
     "build:esm": "tsc -p tsconfig.esm.json && node postesm.js",
-    "build": "npm i && npm test && rimraf ./dist && npm run build:types && npm run build:cjs && npm run build:esm",
+    "build": "npm i && npm run gen && npm test && rimraf ./dist && npm run build:types && npm run build:cjs && npm run build:esm",
     "dry": "npm run build && npm pub --dry-run",
     "test:watch": "tsx watch test/index.ts",
     "test:gen": "tsx test/createIndex.ts",
