@@ -19,4 +19,12 @@ suite("pipe", (test) => {
       type: "number",
     });
   });
+
+  test("Should parse the output schema (last schema in pipe) if that strategy is selected", (assert) => {
+    const schema = z.string().pipe(z.date()).pipe(z.number().int());
+
+    assert(parsePipelineDef(schema._def, getRefs({ pipeStrategy: "output" })), {
+      type: "integer",
+    });
+  });
 });

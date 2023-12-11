@@ -7,7 +7,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   $refStrategy: "root" | "relative" | "none" | "seen";
   basePath: string[];
   effectStrategy: "input" | "any";
-  pipeStrategy: "input" | "all";
+  pipeStrategy: "input" | "output" | "all";
   dateStrategy: "string" | "integer";
   mapStrategy: "entries" | "record";
   target: Target;
@@ -39,7 +39,7 @@ export const defaultOptions: Options = {
 };
 
 export const getDefaultOptions = <Target extends Targets>(
-  options: Partial<Options<Target>> | string | undefined,
+  options: Partial<Options<Target>> | string | undefined
 ) =>
   (typeof options === "string"
     ? {
