@@ -94,16 +94,17 @@ export function parseDef(
   refs.seen.set(def, newItem);
 
   const jsonSchema = selectParser(def, (def as any).typeName, refs);
+  const fallbackJsonSchema = refs.onParseDef?.(def, refs, jsonSchema);
 
-  if (jsonSchema) {
-    addMeta(def, refs, jsonSchema);
+  const resolvedJsonSchema = jsonSchema ?? fallbackJsonSchema ?? undefined;
 
-    refs.onParseDef?.(def, refs, jsonSchema);
+  if (resolvedJsonSchema) {
+    addMeta(def, refs, resolvedJsonSchema);
   }
 
-  newItem.jsonSchema = jsonSchema;
+  newItem.jsonSchema = resolvedJsonSchema;
 
-  return jsonSchema;
+  return resolvedJsonSchema;
 }
 
 const get$ref = (

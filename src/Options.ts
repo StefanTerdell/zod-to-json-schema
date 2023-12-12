@@ -18,7 +18,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   errorMessages: boolean;
   markdownDescription: boolean;
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
-  onParseDef: ((def: ZodTypeDef, refs: Refs, schema: JsonSchema7Type) => void) | undefined;
+  onParseDef: ((def: ZodTypeDef, refs: Refs, schema: JsonSchema7Type | undefined) => JsonSchema7Type | void) | undefined;
 };
 
 export const defaultOptions: Options = {
