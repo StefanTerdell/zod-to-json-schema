@@ -3,7 +3,7 @@ import { z } from "zod";
 import { parseUnionDef } from "../../src/parsers/union.js";
 import { getRefs } from "../../src/Refs.js";
 import { suite } from "../suite.js";
-const deref = require("json-schema-deref-sync");
+import deref from "local-ref-resolver"
 
 suite("Unions", (test) => {
   test("Should be possible to get a simple type array from a union of only unvalidated primitives", (assert) => {

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
 import { suite } from "./suite.js";
 const ajv = new Ajv();
-const deref = require("json-schema-deref-sync");
+import deref from "local-ref-resolver";
 
 suite("Pathing", (test) => {
   test("should handle recurring properties with paths", (assert) => {
@@ -122,7 +122,7 @@ suite("Pathing", (test) => {
         subcategories: {
           type: "array",
           items: {
-            $ref: "#/",
+            $ref: "#",
           },
         },
       },

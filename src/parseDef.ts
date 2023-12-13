@@ -119,31 +119,10 @@ const get$ref = (
   | undefined => {
   switch (refs.$refStrategy) {
     case "root":
-      return {
-        $ref:
-          item.path.length === 0
-            ? ""
-            : item.path.length === 1
-            ? `${item.path[0]}/`
-            : item.path.join("/"),
-      };
+      return { $ref: item.path.join("/") };
     case "relative":
       return { $ref: getRelativePath(refs.currentPath, item.path) };
-    case "none": {
-      if (
-        item.path.length < refs.currentPath.length &&
-        item.path.every((value, index) => refs.currentPath[index] === value)
-      ) {
-        console.warn(
-          `Recursive reference detected at ${refs.currentPath.join(
-            "/",
-          )}! Defaulting to any`,
-        );
-        return {};
-      }
-
-      return undefined;
-    }
+    case "none":
     case "seen": {
       if (
         item.path.length < refs.currentPath.length &&
@@ -154,10 +133,11 @@ const get$ref = (
             "/",
           )}! Defaulting to any`,
         );
+
         return {};
-      } else {
-        return item.jsonSchema;
       }
+
+      return refs.$refStrategy === "seen" ? {} : undefined;
     }
   }
 };
