@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { zodToJsonSchema } from "../src/zodToJsonSchema";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { suite } from "./suite.js";
 
-describe("Open API target", () => {
-  it("should use nullable boolean property and not use $schema property", () => {
+suite("Open API target", (test) => {
+  test("should use nullable boolean property and not use $schema property", (assert) => {
     const editCompanySchema = z.object({
       companyId: z.string().nullable(),
       name: z.string().nullable().optional(),
@@ -25,10 +26,10 @@ describe("Open API target", () => {
       type: "object",
     };
 
-    expect(swaggerSchema).toStrictEqual(expectedSchema);
+    assert(swaggerSchema, expectedSchema);
   });
 
-  it("should not use the enumNames keyword from the records parser when an enum is present", () => {
+  test("should not use the enumNames keyword from the records parser when an enum is present", (assert) => {
     const recordSchema = z.record(z.enum(["a", "b", "c"]), z.boolean());
 
     const swaggerSchema = zodToJsonSchema(recordSchema, {
@@ -46,10 +47,10 @@ describe("Open API target", () => {
       additionalProperties: false,
     };
 
-    expect(swaggerSchema).toStrictEqual(expectedSchema);
+    assert(swaggerSchema, expectedSchema);
   });
 
-  it("should properly reference nullable schemas", () => {
+  test("should properly reference nullable schemas", (assert) => {
     const legalReasonSchema = z
       .object({
         reason: z.enum(["FOO", "BAR"]),
@@ -101,6 +102,6 @@ describe("Open API target", () => {
       additionalProperties: false,
     };
 
-    expect(result).toStrictEqual(expected);
+    assert(result, expected);
   });
 });

@@ -1,14 +1,15 @@
 import { z } from "zod";
-import { zodToJsonSchema } from "../src/zodToJsonSchema";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { suite } from "./suite.js";
 
-describe("Root schema result after parsing", () => {
-  it("should return the schema directly in the root if no name is passed", () => {
-    expect(zodToJsonSchema(z.any())).toStrictEqual({
+suite("Root schema result after parsing", (it) => {
+  it("should return the schema directly in the root if no name is passed", (assert) => {
+    assert(zodToJsonSchema(z.any()), {
       $schema: "http://json-schema.org/draft-07/schema#",
     });
   });
-  it('should return the schema inside a named property in "definitions" if a name is passed', () => {
-    expect(zodToJsonSchema(z.any(), "MySchema")).toStrictEqual({
+  it('should return the schema inside a named property in "definitions" if a name is passed', (assert) => {
+    assert(zodToJsonSchema(z.any(), "MySchema"), {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: `#/definitions/MySchema`,
       definitions: {
@@ -17,44 +18,47 @@ describe("Root schema result after parsing", () => {
     });
   });
 
-  it('should return the schema inside a named property in "$defs" if a name and definitionPath is passed in options', () => {
-    expect(
-      zodToJsonSchema(z.any(), { name: "MySchema", definitionPath: "$defs" })
-    ).toStrictEqual({
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: `#/$defs/MySchema`,
-      $defs: {
-        MySchema: {},
+  it('should return the schema inside a named property in "$defs" if a name and definitionPath is passed in options', (assert) => {
+    assert(
+      zodToJsonSchema(z.any(), { name: "MySchema", definitionPath: "$defs" }),
+      {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        $ref: `#/$defs/MySchema`,
+        $defs: {
+          MySchema: {},
+        },
       },
-    });
+    );
   });
 
-  it("should not scrub 'any'-schemas from unions when strictUnions=false", () => {
-    expect(
+  it("should not scrub 'any'-schemas from unions when strictUnions=false", (assert) => {
+    assert(
       zodToJsonSchema(
         z.union([z.any(), z.instanceof(String), z.string(), z.number()]),
-        { strictUnions: false }
-      )
-    ).toStrictEqual({
-      $schema: "http://json-schema.org/draft-07/schema#",
-      anyOf: [{}, {}, { type: "string" }, { type: "number" }],
-    });
+        { strictUnions: false },
+      ),
+      {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        anyOf: [{}, {}, { type: "string" }, { type: "number" }],
+      },
+    );
   });
 
-  it("should scrub 'any'-schemas from unions when strictUnions=true", () => {
-    expect(
+  it("should scrub 'any'-schemas from unions when strictUnions=true", (assert) => {
+    assert(
       zodToJsonSchema(
         z.union([z.any(), z.instanceof(String), z.string(), z.number()]),
-        { strictUnions: true }
-      )
-    ).toStrictEqual({
-      $schema: "http://json-schema.org/draft-07/schema#",
-      anyOf: [{ type: "string" }, { type: "number" }],
-    });
+        { strictUnions: true },
+      ),
+      {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        anyOf: [{ type: "string" }, { type: "number" }],
+      },
+    );
   });
 
-  it("should scrub 'any'-schemas from unions when strictUnions=true in objects", () => {
-    expect(
+  it("should scrub 'any'-schemas from unions when strictUnions=true in objects", (assert) => {
+    assert(
       zodToJsonSchema(
         z.object({
           field: z.union([
@@ -64,19 +68,20 @@ describe("Root schema result after parsing", () => {
             z.number(),
           ]),
         }),
-        { strictUnions: true }
-      )
-    ).toStrictEqual({
-      $schema: "http://json-schema.org/draft-07/schema#",
-      additionalProperties: false,
-      properties: {
-        field: { anyOf: [{ type: "string" }, { type: "number" }] },
+        { strictUnions: true },
+      ),
+      {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        additionalProperties: false,
+        properties: {
+          field: { anyOf: [{ type: "string" }, { type: "number" }] },
+        },
+        type: "object",
       },
-      type: "object",
-    });
+    );
   });
 
-  it("Definitions play nice with named schemas", () => {
+  it("Definitions play nice with named schemas", (assert) => {
     const MySpecialStringSchema = z.string();
     const MyArraySchema = z.array(MySpecialStringSchema);
 
@@ -87,7 +92,7 @@ describe("Root schema result after parsing", () => {
       },
     });
 
-    expect(result).toStrictEqual({
+    assert(result, {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "#/definitions/MyArraySchema",
       definitions: {

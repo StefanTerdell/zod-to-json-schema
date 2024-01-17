@@ -1,11 +1,12 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
-import { parseMapDef } from "../../src/parsers/map";
+import { parseMapDef } from "../../src/parsers/map.js";
 import Ajv from "ajv";
-import { getRefs } from "../../src/Refs";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 const ajv = new Ajv();
-describe("map", () => {
-  it("should be possible to use Map", () => {
+suite("map", (test) => {
+  test("should be possible to use Map", (assert) => {
     const mapSchema = z.map(z.string(), z.number());
 
     const parsedSchema = parseMapDef(mapSchema._def, getRefs());
@@ -28,7 +29,7 @@ describe("map", () => {
       },
     };
 
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
 
     const myMap: z.infer<typeof mapSchema> = new Map<string, number>();
     myMap.set("hello", 123);
@@ -38,7 +39,25 @@ describe("map", () => {
 
     const zodResult = mapSchema.safeParse(myMap).success;
 
-    expect(zodResult).toBe(true);
-    expect(ajvResult).toBe(true);
+    assert(zodResult, true);
+    assert(ajvResult, true);
+  });
+
+  test("should be possible to use additionalProperties-pattern (record)", (assert) => {
+    assert(
+      parseMapDef(
+        z.map(z.string().min(1), z.number())._def,
+        getRefs({ mapStrategy: "record" }),
+      ),
+      {
+        type: "object",
+        additionalProperties: {
+          type: "number",
+        },
+        propertyNames: {
+          minLength: 1,
+        },
+      },
+    );
   });
 });

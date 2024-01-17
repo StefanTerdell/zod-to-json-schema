@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { parseTupleDef } from "../../src/parsers/tuple";
-import { getRefs } from "../../src/Refs";
+import { parseTupleDef } from "../../src/parsers/tuple.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
-describe("objects", () => {
-  it("should be possible to describe a simple tuple schema", () => {
+suite("objects", (test) => {
+  test("should be possible to describe a simple tuple schema", (assert) => {
     const schema = z.tuple([z.string(), z.number()]);
 
     const parsedSchema = parseTupleDef(schema._def, getRefs());
@@ -13,10 +14,10 @@ describe("objects", () => {
       minItems: 2,
       maxItems: 2,
     };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
+    assert(parsedSchema, expectedSchema);
   });
 
-  it("should be possible to describe a tuple schema with rest()", () => {
+  test("should be possible to describe a tuple schema with rest()", (assert) => {
     const schema = z.tuple([z.string(), z.number()]).rest(z.boolean());
 
     const parsedSchema = parseTupleDef(schema._def, getRefs());
@@ -28,6 +29,6 @@ describe("objects", () => {
         type: "boolean",
       },
     };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
+    assert(parsedSchema, expectedSchema);
   });
 });

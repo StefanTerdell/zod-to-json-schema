@@ -1,8 +1,9 @@
 import { z } from "zod";
-import zodToJsonSchema from "..";
+import zodToJsonSchema from "../src";
+import { suite } from "./suite.js";
 
-describe("The readme example", () => {
-  it("should be valid", () => {
+suite("The readme example", (test) => {
+  test("should be valid", (assert) => {
     const mySchema = z
       .object({
         myString: z.string().min(5),
@@ -12,7 +13,7 @@ describe("The readme example", () => {
 
     const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
 
-    expect(jsonSchema).toStrictEqual({
+    assert(jsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "#/definitions/mySchema",
       definitions: {
@@ -34,7 +35,7 @@ describe("The readme example", () => {
       },
     });
   });
-  it("should have a valid error message example", () => {
+  test("should have a valid error message example", (assert) => {
     const EmailSchema = z.string().email("Invalid email").min(5, "Too short");
     const expected = {
       $schema: "http://json-schema.org/draft-07/schema#",
@@ -49,6 +50,6 @@ describe("The readme example", () => {
     const parsedJsonSchema = zodToJsonSchema(EmailSchema, {
       errorMessages: true,
     });
-    expect(parsedJsonSchema).toStrictEqual(expected);
+    assert(parsedJsonSchema, expected);
   });
 });

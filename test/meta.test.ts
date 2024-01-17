@@ -1,9 +1,9 @@
 import { JSONSchema7 } from "json-schema";
 import { z } from "zod";
-import { zodToJsonSchema } from "../src/zodToJsonSchema";
-
-describe("Meta data", () => {
-  it("should be possible to use description", () => {
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { suite } from "./suite.js";
+suite("Meta data", (it) => {
+  it("should be possible to use description", (assert) => {
     const $z = z.string().describe("My neat string");
     const $j = zodToJsonSchema($z);
     const $e: JSONSchema7 = {
@@ -12,10 +12,10 @@ describe("Meta data", () => {
       description: "My neat string",
     };
 
-    expect($j).toStrictEqual($e);
+    assert($j, $e);
   });
 
-  it("should be possible to add a markdownDescription", () => {
+  it("should be possible to add a markdownDescription", (assert) => {
     const $z = z.string().describe("My neat string");
     const $j = zodToJsonSchema($z, { markdownDescription: true });
     const $e = {
@@ -25,10 +25,10 @@ describe("Meta data", () => {
       markdownDescription: "My neat string",
     };
 
-    expect($j).toStrictEqual($e);
+    assert($j, $e);
   });
 
-  it("should handle optional schemas with different descriptions", () => {
+  it("should handle optional schemas with different descriptions", (assert) => {
     const recurringSchema = z.object({});
     const zodSchema = z
       .object({
@@ -43,7 +43,7 @@ describe("Meta data", () => {
       $refStrategy: "none",
     });
 
-    expect(jsonSchema).toStrictEqual({
+    assert(jsonSchema, {
       additionalProperties: false,
       description: "sssssssss",
       properties: {

@@ -1,12 +1,13 @@
 import Ajv from "ajv";
 import { JSONSchema7 } from "json-schema";
 import { z } from "zod";
-import { zodToJsonSchema } from "../src/zodToJsonSchema";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { suite } from "./suite.js";
 const ajv = new Ajv();
-const deref = require("json-schema-deref-sync");
+import deref from "local-ref-resolver";
 
-describe("Pathing", () => {
-  it("should handle recurring properties with paths", () => {
+suite("Pathing", (test) => {
+  test("should handle recurring properties with paths", (assert) => {
     const addressSchema = z.object({
       street: z.string(),
       number: z.number(),
@@ -42,11 +43,11 @@ describe("Pathing", () => {
     };
 
     const parsedSchema = zodToJsonSchema(someAddresses);
-    expect(parsedSchema).toStrictEqual(jsonSchema);
-    expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+    assert(parsedSchema, jsonSchema);
+    assert(ajv.validateSchema(parsedSchema!), true);
   });
 
-  it("Should properly reference union participants", () => {
+  test("Should properly reference union participants", (assert) => {
     const participant = z.object({ str: z.string() });
 
     const schema = z.object({
@@ -84,16 +85,17 @@ describe("Pathing", () => {
     };
 
     const parsedSchema = zodToJsonSchema(schema);
-    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
-    expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+    assert(parsedSchema, expectedJsonSchema);
+    assert(ajv.validateSchema(parsedSchema!), true);
 
     const resolvedSchema = deref(expectedJsonSchema);
-    expect(resolvedSchema.properties.part).toBe(
-      resolvedSchema.properties.union.anyOf[0]
+    assert(
+      resolvedSchema.properties.part,
+      resolvedSchema.properties.union.anyOf[0],
     );
   });
 
-  it("Should be able to handle recursive schemas", () => {
+  test("Should be able to handle recursive schemas", (assert) => {
     type Category = {
       name: string;
       subcategories: Category[];
@@ -105,7 +107,7 @@ describe("Pathing", () => {
       z.object({
         name: z.string(),
         subcategories: z.array(categorySchema),
-      })
+      }),
     );
 
     const parsedSchema = zodToJsonSchema(categorySchema);
@@ -120,7 +122,7 @@ describe("Pathing", () => {
         subcategories: {
           type: "array",
           items: {
-            $ref: "#/",
+            $ref: "#",
           },
         },
       },
@@ -128,14 +130,14 @@ describe("Pathing", () => {
       additionalProperties: false,
     };
 
-    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
-    expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+    assert(parsedSchema, expectedJsonSchema);
+    assert(ajv.validateSchema(parsedSchema!), true);
 
     const resolvedSchema = deref(parsedSchema);
-    expect(resolvedSchema.properties.subcategories.items).toBe(resolvedSchema);
+    assert(resolvedSchema.properties.subcategories.items, resolvedSchema);
   });
 
-  it("Should be able to handle complex & nested recursive schemas", () => {
+  test("Should be able to handle complex & nested recursive schemas", (assert) => {
     type Category = {
       name: string;
       inner: {
@@ -151,7 +153,7 @@ describe("Pathing", () => {
         inner: z.object({
           subcategories: z.record(categorySchema).nullable().optional(),
         }),
-      })
+      }),
     );
 
     const inObjectSchema = z.object({
@@ -198,11 +200,11 @@ describe("Pathing", () => {
       },
     };
 
-    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
-    expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+    assert(parsedSchema, expectedJsonSchema);
+    assert(ajv.validateSchema(parsedSchema!), true);
   });
 
-  it("should work with relative references", () => {
+  test("should work with relative references", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -228,10 +230,10 @@ describe("Pathing", () => {
       additionalProperties: false,
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("should be possible to override the base path", () => {
+  test("should be possible to override the base path", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -257,10 +259,10 @@ describe("Pathing", () => {
       additionalProperties: false,
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("should be possible to override the base path with name", () => {
+  test("should be possible to override the base path with name", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -292,10 +294,10 @@ describe("Pathing", () => {
       },
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("should be possible to opt out of $ref building", () => {
+  test("should be possible to opt out of $ref building", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -321,11 +323,13 @@ describe("Pathing", () => {
       additionalProperties: false,
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("When opting out of ref building and using recursive schemas, should warn and default to any", () => {
-    global.console = { ...global.console, warn: jest.fn() };
+  test("When opting out of ref building and using recursive schemas, should warn and default to any", (assert) => {
+    const was = console.warn;
+    let warning = "";
+    console.warn = (x: any) => (warning = x);
 
     type Category = {
       name: string;
@@ -338,7 +342,7 @@ describe("Pathing", () => {
       z.object({
         name: z.string(),
         subcategories: z.array(categorySchema),
-      })
+      }),
     );
 
     const parsedSchema = zodToJsonSchema(categorySchema, {
@@ -361,13 +365,16 @@ describe("Pathing", () => {
       additionalProperties: false,
     };
 
-    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
-    expect(console.warn).toBeCalledWith(
-      "Recursive reference detected at #/properties/subcategories/items! Defaulting to any"
+    assert(parsedSchema, expectedJsonSchema);
+    assert(
+      warning,
+      "Recursive reference detected at #/properties/subcategories/items! Defaulting to any",
     );
+
+    console.warn = was;
   });
 
-  it("should be possible to override get proper references even when picking optional definitions path $defs", () => {
+  test("should be possible to override get proper references even when picking optional definitions path $defs", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -399,10 +406,10 @@ describe("Pathing", () => {
       },
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("should be possible to override get proper references even when picking optional definitions path definitions", () => {
+  test("should be possible to override get proper references even when picking optional definitions path definitions", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -434,10 +441,10 @@ describe("Pathing", () => {
       },
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("should preserve correct $ref when overriding name with string", () => {
+  test("should preserve correct $ref when overriding name with string", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -466,10 +473,10 @@ describe("Pathing", () => {
       },
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("should preserve correct $ref when overriding name with object property", () => {
+  test("should preserve correct $ref when overriding name with object property", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -498,10 +505,10 @@ describe("Pathing", () => {
       },
     };
 
-    expect(jsonSchema).toStrictEqual(exptectedResult);
+    assert(jsonSchema, exptectedResult);
   });
 
-  it("should be possible to preload a single definition", () => {
+  test("should be possible to preload a single definition", (assert) => {
     const myRecurringSchema = z.string();
     const myObjectSchema = z.object({
       a: myRecurringSchema,
@@ -512,7 +519,7 @@ describe("Pathing", () => {
       definitions: { myRecurringSchema },
     });
 
-    expect(myJsonSchema).toStrictEqual({
+    assert(myJsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       required: ["a", "b"],
@@ -533,7 +540,7 @@ describe("Pathing", () => {
     });
   });
 
-  it("should be possible to preload multiple definitions", () => {
+  test("should be possible to preload multiple definitions", (assert) => {
     const myRecurringSchema = z.string();
     const mySecondRecurringSchema = z.object({
       x: myRecurringSchema,
@@ -548,7 +555,7 @@ describe("Pathing", () => {
       definitions: { myRecurringSchema, mySecondRecurringSchema },
     });
 
-    expect(myJsonSchema).toStrictEqual({
+    assert(myJsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       required: ["a", "b", "c"],
@@ -582,7 +589,7 @@ describe("Pathing", () => {
     });
   });
 
-  it("should be possible to preload multiple definitions and have a named schema", () => {
+  test("should be possible to preload multiple definitions and have a named schema", (assert) => {
     const myRecurringSchema = z.string();
     const mySecondRecurringSchema = z.object({
       x: myRecurringSchema,
@@ -598,7 +605,7 @@ describe("Pathing", () => {
       name: "mySchemaName",
     });
 
-    expect(myJsonSchema).toStrictEqual({
+    assert(myJsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "#/definitions/mySchemaName",
       definitions: {
@@ -635,7 +642,7 @@ describe("Pathing", () => {
     });
   });
 
-  it("should be possible to preload multiple definitions and have a named schema and set the definitions path", () => {
+  test("should be possible to preload multiple definitions and have a named schema and set the definitions path", (assert) => {
     const myRecurringSchema = z.string();
     const mySecondRecurringSchema = z.object({
       x: myRecurringSchema,
@@ -652,7 +659,7 @@ describe("Pathing", () => {
       definitionPath: "$defs",
     });
 
-    expect(myJsonSchema).toStrictEqual({
+    assert(myJsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "#/$defs/mySchemaName",
       $defs: {
@@ -689,7 +696,7 @@ describe("Pathing", () => {
     });
   });
 
-  it("should be possible to preload a single definition with custom basePath", () => {
+  test("should be possible to preload a single definition with custom basePath", (assert) => {
     const myRecurringSchema = z.string();
     const myObjectSchema = z.object({
       a: myRecurringSchema,
@@ -701,7 +708,7 @@ describe("Pathing", () => {
       basePath: ["hello"],
     });
 
-    expect(myJsonSchema).toStrictEqual({
+    assert(myJsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       required: ["a", "b"],
@@ -722,7 +729,7 @@ describe("Pathing", () => {
     });
   });
 
-  it("should be possible to preload a single definition with custom basePath and name", () => {
+  test("should be possible to preload a single definition with custom basePath and name", (assert) => {
     const myRecurringSchema = z.string();
     const myObjectSchema = z.object({
       a: myRecurringSchema,
@@ -735,7 +742,7 @@ describe("Pathing", () => {
       name: "kex",
     });
 
-    expect(myJsonSchema).toStrictEqual({
+    assert(myJsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "hello/definitions/kex",
       definitions: {
@@ -759,7 +766,7 @@ describe("Pathing", () => {
     });
   });
 
-  it("should be possible for a preloaded definition to circularly reference itself", () => {
+  test("should be possible for a preloaded definition to circularly reference itself", (assert) => {
     const myRecurringSchema: any = z.object({
       circular: z.lazy(() => myRecurringSchema),
     });
@@ -775,7 +782,7 @@ describe("Pathing", () => {
       name: "kex",
     });
 
-    expect(myJsonSchema).toStrictEqual({
+    assert(myJsonSchema, {
       $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "hello/definitions/kex",
       definitions: {
@@ -806,7 +813,7 @@ describe("Pathing", () => {
     });
   });
 
-  it("should handle the user example", () => {
+  test("should handle the user example", (assert) => {
     interface User {
       id: string;
       headUser?: User;
@@ -816,44 +823,45 @@ describe("Pathing", () => {
       z.object({
         id: z.string(),
         headUser: userSchema.optional(),
-      })
+      }),
     );
 
     const schema = z.object({ user: userSchema });
 
-    expect(
+    assert(
       zodToJsonSchema(schema, {
         definitions: { userSchema },
-      })
-    ).toStrictEqual({
-      $schema: "http://json-schema.org/draft-07/schema#",
-      type: "object",
-      properties: {
-        user: {
-          $ref: "#/definitions/userSchema",
-        },
-      },
-      required: ["user"],
-      additionalProperties: false,
-      definitions: {
-        userSchema: {
-          type: "object",
-          properties: {
-            id: {
-              type: "string",
-            },
-            headUser: {
-              $ref: "#/definitions/userSchema",
-            },
+      }),
+      {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        type: "object",
+        properties: {
+          user: {
+            $ref: "#/definitions/userSchema",
           },
-          required: ["id"],
-          additionalProperties: false,
+        },
+        required: ["user"],
+        additionalProperties: false,
+        definitions: {
+          userSchema: {
+            type: "object",
+            properties: {
+              id: {
+                type: "string",
+              },
+              headUser: {
+                $ref: "#/definitions/userSchema",
+              },
+            },
+            required: ["id"],
+            additionalProperties: false,
+          },
         },
       },
-    });
+    );
   });
 
-  it("should handle mutual recursion", () => {
+  test("should handle mutual recursion", (assert) => {
     const leafSchema = z.object({
       prop: z.string(),
     });
@@ -870,7 +878,7 @@ describe("Pathing", () => {
       nodes: nodeSchema,
     });
 
-    expect(
+    assert(
       zodToJsonSchema(treeSchema, {
         name: "Tree",
         definitions: {
@@ -878,59 +886,60 @@ describe("Pathing", () => {
           NodeChild: nodeChildSchema,
           Node: nodeSchema,
         },
-      })
-    ).toStrictEqual({
-      $ref: "#/definitions/Tree",
-      definitions: {
-        Leaf: {
-          type: "object",
-          properties: {
-            prop: {
-              type: "string",
-            },
-          },
-          required: ["prop"],
-          additionalProperties: false,
-        },
-        Node: {
-          type: "object",
-          properties: {
-            children: {
-              type: "array",
-              items: {
-                $ref: "#/definitions/NodeChild",
+      }),
+      {
+        $ref: "#/definitions/Tree",
+        definitions: {
+          Leaf: {
+            type: "object",
+            properties: {
+              prop: {
+                type: "string",
               },
             },
+            required: ["prop"],
+            additionalProperties: false,
           },
-          required: ["children"],
-          additionalProperties: false,
-        },
-        NodeChild: {
-          anyOf: [
-            {
-              $ref: "#/definitions/Leaf",
+          Node: {
+            type: "object",
+            properties: {
+              children: {
+                type: "array",
+                items: {
+                  $ref: "#/definitions/NodeChild",
+                },
+              },
             },
-            {
-              $ref: "#/definitions/Node",
-            },
-          ],
-        },
-        Tree: {
-          type: "object",
-          properties: {
-            nodes: {
-              $ref: "#/definitions/Node",
-            },
+            required: ["children"],
+            additionalProperties: false,
           },
-          required: ["nodes"],
-          additionalProperties: false,
+          NodeChild: {
+            anyOf: [
+              {
+                $ref: "#/definitions/Leaf",
+              },
+              {
+                $ref: "#/definitions/Node",
+              },
+            ],
+          },
+          Tree: {
+            type: "object",
+            properties: {
+              nodes: {
+                $ref: "#/definitions/Node",
+              },
+            },
+            required: ["nodes"],
+            additionalProperties: false,
+          },
         },
+        $schema: "http://json-schema.org/draft-07/schema#",
       },
-      $schema: "http://json-schema.org/draft-07/schema#",
-    });
+    );
   });
 
-  it("should not fail when definition is lazy", () => {
+  test("should not fail when definition is lazy", (assert) => {
     const lazyString = z.lazy(() => z.string());
 
     const lazyObject = z.lazy(() => z.object({ lazyProp: lazyString }));
@@ -948,6 +957,6 @@ describe("Pathing", () => {
       $schema: "http://json-schema.org/draft-07/schema#",
     };
 
-    expect(jsonSchema).toStrictEqual(expected);
+    assert(jsonSchema, expected);
   });
 });

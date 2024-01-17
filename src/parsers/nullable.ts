@@ -1,8 +1,8 @@
 import { ZodNullableDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../Refs";
-import { JsonSchema7NullType } from "./null";
-import { primitiveMappings } from "./union";
+import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { Refs } from "../Refs.js";
+import { JsonSchema7NullType } from "./null.js";
+import { primitiveMappings } from "./union.js";
 
 export type JsonSchema7NullableType =
   | {
@@ -14,11 +14,11 @@ export type JsonSchema7NullableType =
 
 export function parseNullableDef(
   def: ZodNullableDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7NullableType | undefined {
   if (
     ["ZodString", "ZodNumber", "ZodBigInt", "ZodBoolean", "ZodNull"].includes(
-      def.innerType._def.typeName
+      def.innerType._def.typeName,
     ) &&
     (!def.innerType._def.checks || !def.innerType._def.checks.length)
   ) {

@@ -1,59 +1,60 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
-import { parseNumberDef } from "../../src/parsers/number";
-import { getRefs } from "../../src/Refs";
-import { errorReferences } from "./errorReferences";
-describe("Number validations", () => {
-  it("should be possible to describe minimum number", () => {
+import { parseNumberDef } from "../../src/parsers/number.js";
+import { getRefs } from "../../src/Refs.js";
+import { errorReferences } from "./errorReferences.js";
+import { suite } from "../suite.js";
+suite("Number validations", (test) => {
+  test("should be possible to describe minimum number", (assert) => {
     const parsedSchema = parseNumberDef(z.number().min(5)._def, getRefs());
     const jsonSchema: JSONSchema7Type = {
       type: "number",
       minimum: 5,
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
   });
-  it("should be possible to describe maximum number", () => {
+  test("should be possible to describe maximum number", (assert) => {
     const parsedSchema = parseNumberDef(z.number().max(5)._def, getRefs());
     const jsonSchema: JSONSchema7Type = {
       type: "number",
       maximum: 5,
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
   });
-  it("should be possible to describe both minimum and maximum number", () => {
+  test("should be possible to describe both minimum and maximum number", (assert) => {
     const parsedSchema = parseNumberDef(
       z.number().min(5).max(5)._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
       minimum: 5,
       maximum: 5,
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
   });
-  it("should be possible to describe an integer", () => {
+  test("should be possible to describe an integer", (assert) => {
     const parsedSchema = parseNumberDef(z.number().int()._def, getRefs());
     const jsonSchema: JSONSchema7Type = {
       type: "integer",
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
   });
-  it("should be possible to describe multiples of n", () => {
+  test("should be possible to describe multiples of n", (assert) => {
     const parsedSchema = parseNumberDef(
       z.number().multipleOf(2)._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
       multipleOf: 2,
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
   });
-  it("should be possible to describe positive, negative, nonpositive and nonnegative numbers", () => {
+  test("should be possible to describe positive, negative, nonpositive and nonnegative numbers", (assert) => {
     const parsedSchema = parseNumberDef(
       z.number().positive().negative().nonpositive().nonnegative()._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
@@ -62,9 +63,9 @@ describe("Number validations", () => {
       exclusiveMaximum: 0,
       exclusiveMinimum: 0,
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
   });
-  it("should include custom error messages for inclusive checks if they're passed", () => {
+  test("should include custom error messages for inclusive checks if they're passed", (assert) => {
     const minErrorMessage = "Number must be at least 5";
     const maxErrorMessage = "Number must be at most 10";
     const zodNumberSchema = z
@@ -82,11 +83,11 @@ describe("Number validations", () => {
     };
     const jsonParsedSchema = parseNumberDef(
       zodNumberSchema._def,
-      errorReferences()
+      errorReferences(),
     );
-    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+    assert(jsonParsedSchema, jsonSchema);
   });
-  it("should include custom error messages for exclusive checks if they're passed", () => {
+  test("should include custom error messages for exclusive checks if they're passed", (assert) => {
     const minErrorMessage = "Number must be greater than 5";
     const maxErrorMessage = "Number must less than 10";
     const zodNumberSchema = z
@@ -104,11 +105,11 @@ describe("Number validations", () => {
     };
     const jsonParsedSchema = parseNumberDef(
       zodNumberSchema._def,
-      errorReferences()
+      errorReferences(),
     );
-    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+    assert(jsonParsedSchema, jsonSchema);
   });
-  it("should include custom error messages for multipleOf and int if they're passed", () => {
+  test("should include custom error messages for multipleOf and int if they're passed", (assert) => {
     const intErrorMessage = "Must be an integer";
     const multipleOfErrorMessage = "Must be a multiple of 5";
     const jsonSchema: JSONSchema7Type = {
@@ -125,11 +126,11 @@ describe("Number validations", () => {
       .int(intErrorMessage);
     const jsonParsedSchema = parseNumberDef(
       zodNumberSchema._def,
-      errorReferences()
+      errorReferences(),
     );
-    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+    assert(jsonParsedSchema, jsonSchema);
   });
-  it("should not include errorMessage property if they're not passed", () => {
+  test("should not include errorMessage property if they're not passed", (assert) => {
     const zodNumberSchemas = [
       z.number().lt(5),
       z.number().gt(5),
@@ -140,13 +141,13 @@ describe("Number validations", () => {
       z.number().int().multipleOf(5).lt(5).gt(3).lte(4).gte(3),
     ];
     const jsonParsedSchemas = zodNumberSchemas.map((schema) =>
-      parseNumberDef(schema._def, errorReferences())
+      parseNumberDef(schema._def, errorReferences()),
     );
     for (const jsonParsedSchema of jsonParsedSchemas) {
-      expect(jsonParsedSchema.errorMessage).toBe(undefined);
+      assert(jsonParsedSchema.errorMessage, undefined);
     }
   });
-  it("should not include error messages if error message isn't explicitly set to true in References constructor", () => {
+  test("should not include error messages if error message isn't explicitly set to true in References constructor", (assert) => {
     const zodNumberSchemas = [
       z.number().lt(5),
       z.number().gt(5),
@@ -157,7 +158,7 @@ describe("Number validations", () => {
     ];
     for (const schema of zodNumberSchemas) {
       const jsonParsedSchema = parseNumberDef(schema._def, getRefs());
-      expect(jsonParsedSchema.errorMessage).toBeUndefined();
+      assert(jsonParsedSchema.errorMessage, undefined);
     }
   });
 });

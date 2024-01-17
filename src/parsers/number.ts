@@ -3,8 +3,8 @@ import {
   addErrorMessage,
   ErrorMessages,
   setResponseValueAndErrors,
-} from "../errorMessages";
-import { Refs } from "../Refs";
+} from "../errorMessages.js";
+import { Refs } from "../Refs.js";
 
 export type JsonSchema7NumberType = {
   type: "number" | "integer";
@@ -18,7 +18,7 @@ export type JsonSchema7NumberType = {
 
 export function parseNumberDef(
   def: ZodNumberDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7NumberType {
   const res: JsonSchema7NumberType = {
     type: "number",
@@ -40,7 +40,7 @@ export function parseNumberDef(
               "minimum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           } else {
             setResponseValueAndErrors(
@@ -48,7 +48,7 @@ export function parseNumberDef(
               "exclusiveMinimum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           }
         } else {
@@ -60,7 +60,7 @@ export function parseNumberDef(
             "minimum",
             check.value,
             check.message,
-            refs
+            refs,
           );
         }
         break;
@@ -72,7 +72,7 @@ export function parseNumberDef(
               "maximum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           } else {
             setResponseValueAndErrors(
@@ -80,7 +80,7 @@ export function parseNumberDef(
               "exclusiveMaximum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           }
         } else {
@@ -92,7 +92,7 @@ export function parseNumberDef(
             "maximum",
             check.value,
             check.message,
-            refs
+            refs,
           );
         }
         break;
@@ -102,7 +102,7 @@ export function parseNumberDef(
           "multipleOf",
           check.value,
           check.message,
-          refs
+          refs,
         );
         break;
     }

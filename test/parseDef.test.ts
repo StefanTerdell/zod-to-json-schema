@@ -1,11 +1,14 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
-import { parseDef } from "../src/parseDef";
+import { parseDef } from "../src/parseDef.js";
 import Ajv from "ajv";
-import { getRefs } from "../src/Refs";
+import { getRefs } from "../src/Refs.js";
 const ajv = new Ajv();
-describe("Basic parsing", () => {
-  it("should return a proper json schema with some common types without validation", () => {
+
+import { suite } from "./suite.js";
+
+suite("Basic parsing", (test) => {
+  test("should return a proper json schema with some common types without validation", (assert) => {
     const zodSchema = z.object({
       requiredString: z.string(),
       optionalString: z.string().optional(),
@@ -152,17 +155,17 @@ describe("Basic parsing", () => {
       additionalProperties: false,
     };
     const parsedSchema = parseDef(zodSchema._def, getRefs());
-    expect(parsedSchema).toStrictEqual(expectedJsonSchema);
-    expect(ajv.validateSchema(parsedSchema!)).toEqual(true);
+    assert(parsedSchema, expectedJsonSchema);
+    assert(ajv.validateSchema(parsedSchema!), true);
   });
 
-  it("should handle a nullable string properly", () => {
+  test("should handle a nullable string properly", (assert) => {
     const shorthand = z.string().nullable();
     const union = z.union([z.string(), z.null()]);
 
     const expected = { type: ["string", "null"] };
 
-    expect(parseDef(shorthand._def, getRefs())).toStrictEqual(expected);
-    expect(parseDef(union._def, getRefs())).toStrictEqual(expected);
+    assert(parseDef(shorthand._def, getRefs()), expected);
+    assert(parseDef(union._def, getRefs()), expected);
   });
 });

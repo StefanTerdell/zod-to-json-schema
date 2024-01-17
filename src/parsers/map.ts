@@ -1,6 +1,7 @@
 import { ZodMapDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../Refs";
+import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { Refs } from "../Refs.js";
+import { JsonSchema7RecordType, parseRecordDef } from "./record.js";
 
 export type JsonSchema7MapType = {
   type: "array";
@@ -13,7 +14,14 @@ export type JsonSchema7MapType = {
   };
 };
 
-export function parseMapDef(def: ZodMapDef, refs: Refs): JsonSchema7MapType {
+export function parseMapDef(
+  def: ZodMapDef,
+  refs: Refs,
+): JsonSchema7MapType | JsonSchema7RecordType {
+  if (refs.mapStrategy === "record") {
+    return parseRecordDef(def, refs);
+  }
+
   const keys =
     parseDef(def.keyType._def, {
       ...refs,

@@ -1,7 +1,7 @@
 import { ZodDateDef } from "zod";
-import { Refs } from "../Refs";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
-import { JsonSchema7NumberType } from "./number";
+import { Refs } from "../Refs.js";
+import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
+import { JsonSchema7NumberType } from "./number.js";
 
 export type JsonSchema7DateType = {
   type: "integer" | "string";
@@ -37,7 +37,7 @@ const integerDateParser = (def: ZodDateDef, refs: Refs) => {
             "minimum",
             check.value, // This is in milliseconds
             check.message,
-            refs
+            refs,
           );
         }
         break;
@@ -48,7 +48,7 @@ const integerDateParser = (def: ZodDateDef, refs: Refs) => {
             "maximum",
             check.value, // This is in milliseconds
             check.message,
-            refs
+            refs,
           );
         }
         break;

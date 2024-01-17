@@ -1,6 +1,6 @@
 import { ZodObjectDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../Refs";
+import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { Refs } from "../Refs.js";
 
 export type JsonSchema7ObjectType = {
   type: "object";
@@ -50,7 +50,7 @@ export function parseObjectDefX(def: ZodObjectDef, refs: Refs) {
               ...refs,
               currentPath: [...refs.currentPath, "additionalProperties"],
             }) ?? true,
-    }
+    },
   );
 
   const result: JsonSchema7ObjectType = {
@@ -61,7 +61,7 @@ export function parseObjectDefX(def: ZodObjectDef, refs: Refs) {
           properties: Record<string, JsonSchema7Type>;
           required: string[];
         },
-        [propName, propDef]
+        [propName, propDef],
       ) => {
         if (propDef === undefined || propDef._def === undefined) return acc;
         const parsedDef = parseDef(propDef._def, {
@@ -77,7 +77,7 @@ export function parseObjectDefX(def: ZodObjectDef, refs: Refs) {
             : [...acc.required, propName],
         };
       },
-      { properties: {}, required: [] }
+      { properties: {}, required: [] },
     ),
     additionalProperties:
       def.catchall._def.typeName === "ZodNever"
@@ -100,7 +100,7 @@ export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
           properties: Record<string, JsonSchema7Type>;
           required: string[];
         },
-        [propName, propDef]
+        [propName, propDef],
       ) => {
         if (propDef === undefined || propDef._def === undefined) return acc;
         const parsedDef = parseDef(propDef._def, {
@@ -116,7 +116,7 @@ export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
             : [...acc.required, propName],
         };
       },
-      { properties: {}, required: [] }
+      { properties: {}, required: [] },
     ),
     additionalProperties:
       def.catchall._def.typeName === "ZodNever"

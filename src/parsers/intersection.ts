@@ -1,7 +1,7 @@
 import { ZodIntersectionDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../Refs";
-import { JsonSchema7StringType } from "./string";
+import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { Refs } from "../Refs.js";
+import { JsonSchema7StringType } from "./string.js";
 
 export type JsonSchema7AllOfType = {
   allOf: JsonSchema7Type[];
@@ -9,7 +9,7 @@ export type JsonSchema7AllOfType = {
 };
 
 const isJsonSchema7AllOfType = (
-  type: JsonSchema7Type | JsonSchema7StringType
+  type: JsonSchema7Type | JsonSchema7StringType,
 ): type is JsonSchema7AllOfType => {
   if ("type" in type && type.type === "string") return false;
   return "allOf" in type;
@@ -17,7 +17,7 @@ const isJsonSchema7AllOfType = (
 
 export function parseIntersectionDef(
   def: ZodIntersectionDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7AllOfType | JsonSchema7Type | undefined {
   const allOf = [
     parseDef(def.left._def, {

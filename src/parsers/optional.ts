@@ -1,10 +1,10 @@
 import { ZodOptionalDef } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef";
-import { Refs } from "../Refs";
+import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { Refs } from "../Refs.js";
 
 export const parseOptionalDef = (
   def: ZodOptionalDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7Type | undefined => {
   if (refs.currentPath.toString() === refs.propertyPath?.toString()) {
     return parseDef(def.innerType._def, refs);

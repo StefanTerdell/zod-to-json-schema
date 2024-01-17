@@ -7,14 +7,16 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   $refStrategy: "root" | "relative" | "none" | "seen";
   basePath: string[];
   effectStrategy: "input" | "any";
-  pipeStrategy: "input" | "all";
+  pipeStrategy: "input" | "output" | "all";
   dateStrategy: "string" | "integer";
+  mapStrategy: "entries" | "record";
   target: Target;
   strictUnions: boolean;
   definitionPath: string;
   definitions: Record<string, ZodSchema>;
   errorMessages: boolean;
   markdownDescription: boolean;
+  patternStrategy: "escape" | "preserve";
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
   discriminator: boolean;
   unionStrategy: "anyOf" | "oneOf";
@@ -27,12 +29,14 @@ export const defaultOptions: Options = {
   effectStrategy: "input",
   pipeStrategy: "all",
   dateStrategy: "string",
+  mapStrategy: "entries",
   definitionPath: "definitions",
   target: "jsonSchema7",
   strictUnions: false,
   definitions: {},
   errorMessages: false,
   markdownDescription: false,
+  patternStrategy: "escape",
   emailStrategy: "format:email",
   discriminator: false,
   unionStrategy: "anyOf",

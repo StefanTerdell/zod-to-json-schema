@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist/types",
     "strict": true,
-    "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true
   },

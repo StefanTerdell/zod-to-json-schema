@@ -1,11 +1,12 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
-import { parseSetDef } from "../../src/parsers/set";
-import { getRefs } from "../../src/Refs";
-import { errorReferences } from "./errorReferences";
+import { parseSetDef } from "../../src/parsers/set.js";
+import { getRefs } from "../../src/Refs.js";
+import { errorReferences } from "./errorReferences.js";
+import { suite } from "../suite.js";
 
-describe("set", () => {
-  it("should include min and max size error messages if they're passed.", () => {
+suite("set", (test) => {
+  test("should include min and max size error messages if they're passed.", (assert) => {
     const minSizeError = "Set must have at least 5 elements";
     const maxSizeError = "Set can't have more than 10 elements";
     const errs = {
@@ -22,9 +23,9 @@ describe("set", () => {
     };
     const zodSchema = z.set(z.any()).min(5, minSizeError).max(10, maxSizeError);
     const jsonParsedSchema = parseSetDef(zodSchema._def, errorReferences());
-    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+    assert(jsonParsedSchema, jsonSchema);
   });
-  it("should not include error messages if none are passed", () => {
+  test("should not include error messages if none are passed", (assert) => {
     const jsonSchema: JSONSchema7Type = {
       type: "array",
       minItems: 5,
@@ -34,11 +35,11 @@ describe("set", () => {
     };
     const zodSchema = z.set(z.any()).min(5).max(10);
     const jsonParsedSchema = parseSetDef(zodSchema._def, errorReferences());
-    expect(jsonParsedSchema).toStrictEqual(jsonSchema);
+    assert(jsonParsedSchema, jsonSchema);
   });
-  it("should not include error messages if it's not explicitly set to true in the References constructor", () => {
+  test("should not include error messages if it's not explicitly set to true in the References constructor", (assert) => {
     const zodSchema = z.set(z.any()).min(1, "bad").max(5, "vbad");
     const jsonParsedSchema = parseSetDef(zodSchema._def, getRefs());
-    expect(jsonParsedSchema.errorMessage).toBeUndefined();
+    assert(jsonParsedSchema.errorMessage, undefined);
   });
 });

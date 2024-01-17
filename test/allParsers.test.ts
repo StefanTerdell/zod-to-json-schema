@@ -1,8 +1,9 @@
-import { zodToJsonSchema } from "../src/zodToJsonSchema";
-import { allParsersSchema } from "./allParsersSchema";
+import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
+import { allParsersSchema } from "./allParsersSchema.js";
+import { suite } from "./suite.js";
 
-describe("All Parsers tests", () => {
-  it("With JSON schema target, should produce valid json schema (7)", () => {
+suite("All Parsers tests", (test) => {
+  test("With JSON schema target, should produce valid json schema (7)", (assert) => {
     const jsonSchema = zodToJsonSchema(allParsersSchema, {
       target: "jsonSchema7",
     });
@@ -269,7 +270,7 @@ describe("All Parsers tests", () => {
         },
         stringCuid: {
           type: "string",
-          pattern: "^c[^\\s-]{8,}$",
+          pattern: "^[cC][^\\s-]{8,}$",
         },
         tuple: {
           type: "array",
@@ -325,10 +326,10 @@ describe("All Parsers tests", () => {
       },
       description: "watup",
     };
-    expect(jsonSchema).toStrictEqual(expectedOutput);
+    assert(jsonSchema, expectedOutput);
   });
 
-  it("With OpenAPI schema target, should produce valid Open API schema", () => {
+  test("With OpenAPI schema target, should produce valid Open API schema", (assert) => {
     const jsonSchema = zodToJsonSchema(allParsersSchema, {
       target: "openApi3",
     });
@@ -546,7 +547,7 @@ describe("All Parsers tests", () => {
           type: "object",
           additionalProperties: {
             type: "boolean",
-          }
+          },
         },
         recordBooleanBoolean: {
           type: "object",
@@ -590,7 +591,7 @@ describe("All Parsers tests", () => {
         },
         stringCuid: {
           type: "string",
-          pattern: "^c[^\\s-]{8,}$",
+          pattern: "^[cC][^\\s-]{8,}$",
         },
         tuple: {
           type: "array",
@@ -679,6 +680,6 @@ describe("All Parsers tests", () => {
       },
       description: "watup",
     };
-    expect(jsonSchema).toStrictEqual(expectedOutput);
+    assert(jsonSchema, expectedOutput);
   });
 });

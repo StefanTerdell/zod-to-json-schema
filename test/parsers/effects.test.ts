@@ -1,38 +1,28 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
-import { parseEffectsDef } from "../../src/parsers/effects";
-import { getRefs } from "../../src/Refs";
+import { parseEffectsDef } from "../../src/parsers/effects.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
-describe("effects", () => {
-  it("should be possible to use refine", () => {
+suite("effects", (test) => {
+  test("should be possible to use refine", (assert) => {
     const parsedSchema = parseEffectsDef(
       z.number().refine((x) => x + 1)._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema: JSONSchema7Type = {
       type: "number",
     };
-    expect(parsedSchema).toStrictEqual(jsonSchema);
+    assert(parsedSchema, jsonSchema);
   });
 
-  it("should default to the input type", () => {
+  test("should default to the input type", (assert) => {
     const schema = z.string().transform((arg) => parseInt(arg));
 
     const jsonSchema = parseEffectsDef(schema._def, getRefs());
 
-    expect(jsonSchema).toStrictEqual({
+    assert(jsonSchema, {
       type: "string",
     });
   });
-
-  // it("should default to any if given that effectStrategy", () => {
-  //   const schema = z.string().transform((arg) => parseInt(arg));
-
-  //   const jsonSchema = parseEffectsDef(
-  //     schema._def,
-  //     new References(undefined, undefined, undefined, "any")
-  //   );
-
-  //   expect(jsonSchema).toStrictEqual({});
-  // });
 });

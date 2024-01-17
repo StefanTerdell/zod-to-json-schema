@@ -1,6 +1,6 @@
 import { ZodBigIntDef } from "zod";
-import { Refs } from "../Refs";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages";
+import { Refs } from "../Refs.js";
+import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
 
 export type JsonSchema7BigintType = {
   type: "integer";
@@ -15,7 +15,7 @@ export type JsonSchema7BigintType = {
 
 export function parseBigintDef(
   def: ZodBigIntDef,
-  refs: Refs
+  refs: Refs,
 ): JsonSchema7BigintType {
   const res: JsonSchema7BigintType = {
     type: "integer",
@@ -34,7 +34,7 @@ export function parseBigintDef(
               "minimum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           } else {
             setResponseValueAndErrors(
@@ -42,7 +42,7 @@ export function parseBigintDef(
               "exclusiveMinimum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           }
         } else {
@@ -54,7 +54,7 @@ export function parseBigintDef(
             "minimum",
             check.value,
             check.message,
-            refs
+            refs,
           );
         }
         break;
@@ -66,7 +66,7 @@ export function parseBigintDef(
               "maximum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           } else {
             setResponseValueAndErrors(
@@ -74,7 +74,7 @@ export function parseBigintDef(
               "exclusiveMaximum",
               check.value,
               check.message,
-              refs
+              refs,
             );
           }
         } else {
@@ -86,7 +86,7 @@ export function parseBigintDef(
             "maximum",
             check.value,
             check.message,
-            refs
+            refs,
           );
         }
         break;
@@ -96,7 +96,7 @@ export function parseBigintDef(
           "multipleOf",
           check.value,
           check.message,
-          refs
+          refs,
         );
         break;
     }

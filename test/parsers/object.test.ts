@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { parseObjectDef } from "../../src/parsers/object";
-import { getRefs } from "../../src/Refs";
+import { parseObjectDef } from "../../src/parsers/object.js";
+import { getRefs } from "../../src/Refs.js";
+import { suite } from "../suite.js";
 
-describe("objects", () => {
-  it("should be possible to describe catchAll schema", () => {
+suite("objects", (test) => {
+  test("should be possible to describe catchAll schema", (assert) => {
     const schema = z
       .object({ normalProperty: z.string() })
       .catchall(z.boolean());
@@ -19,10 +20,10 @@ describe("objects", () => {
         type: "boolean",
       },
     };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
+    assert(parsedSchema, expectedSchema);
   });
 
-  it("should be possible to use selective partial", () => {
+  test("should be possible to use selective partial", (assert) => {
     const schema = z
       .object({ foo: z.boolean(), bar: z.number() })
       .partial({ foo: true });
@@ -37,6 +38,6 @@ describe("objects", () => {
       required: ["bar"],
       additionalProperties: false,
     };
-    expect(parsedSchema).toStrictEqual(expectedSchema);
+    assert(parsedSchema, expectedSchema);
   });
 });
