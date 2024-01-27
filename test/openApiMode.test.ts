@@ -50,7 +50,7 @@ suite("Open API target", (test) => {
     assert(swaggerSchema, expectedSchema);
   });
 
-  test("should properly reference nullable schemas", (assert) => {
+  test("should properly reference nullable schemas in an array", (assert) => {
     const legalReasonSchema = z
       .object({
         reason: z.enum(["FOO", "BAR"]),
@@ -101,6 +101,130 @@ suite("Open API target", (test) => {
       required: ["alias"],
       additionalProperties: false,
     };
+
+    assert(result, expected);
+  });
+
+  test("should properly reference nullable schemas", (assert) => {
+    const pictureSchema = z
+      .object({
+        id: z.number().int().positive(),
+        filename: z.string(),
+      })
+      .strict();
+
+    const userSchema = z
+      .object({
+        id: z.number().int().positive(),
+        name: z.string().min(2),
+        photo: pictureSchema,
+        cover: pictureSchema.nullable(),
+      })
+      .strict();
+
+    const result = zodToJsonSchema(userSchema, {
+      target: "openApi3",
+    });
+
+    const expected = {
+        type: "object",
+        properties: {
+            id: {
+                type: "integer",
+                exclusiveMinimum: true,
+                minimum: 0,
+            },
+            name: {
+                type: "string",
+                minLength: 2,
+            },
+            photo: {
+                type: "object",
+                properties: {
+                    id: {
+                        type: "integer",
+                        exclusiveMinimum: true,
+                        minimum: 0,
+                    },
+                    filename: {
+                        type: "string",
+                    },
+                },
+                required: [
+                    "id",
+                    "filename",
+                ],
+                additionalProperties: false,
+            },
+            cover: {
+                allOf: [
+                    {
+                        $ref: "#/properties/photo",
+                    },
+                ],
+                nullable: true,
+            },
+        },
+        required: [
+            "id",
+            "name",
+            "photo",
+            "cover",
+        ],
+        additionalProperties: false,
+    };
+
+    assert(result, expected);
+  });
+
+  test("should properly reference nullable schemas from definitions with description", (assert) => {
+    const pictureSchema = z
+      .object({
+        id: z.number().int().positive(),
+        filename: z.string(),
+      })
+      .describe('A picture')
+      .strict();
+
+    const userSchema = z
+      .object({
+        id: z.number().int().positive(),
+        name: z.string().min(2),
+        photo: pictureSchema,
+        cover: pictureSchema.nullable(),
+      })
+      .strict();
+
+    const result = zodToJsonSchema(userSchema, {
+      target: "openApi3",
+      definitions: {
+        Picture: pictureSchema,
+      },
+    });
+
+    const expected = {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', exclusiveMinimum: true, minimum: 0 },
+          name: { type: 'string', minLength: 2 },
+          photo: { '$ref': '#/definitions/Picture' },
+          cover: { allOf: [{ '$ref': '#/definitions/Picture' }], nullable: true, description: 'A picture' },
+        },
+        required: [ 'id', 'name', 'photo', 'cover' ],
+        additionalProperties: false,
+        definitions: {
+          Picture: {
+            type: 'object',
+            properties: {
+              id: { type: 'integer', exclusiveMinimum: true, minimum: 0 },
+              filename: { type: 'string' },
+            },
+            required: [ 'id', 'filename' ],
+            additionalProperties: false,
+            description: 'A picture',
+          },
+        },
+      };
 
     assert(result, expected);
   });
