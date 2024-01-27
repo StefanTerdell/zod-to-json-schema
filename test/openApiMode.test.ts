@@ -177,7 +177,7 @@ suite("Open API target", (test) => {
     assert(result, expected);
   });
 
-  test("should properly reference nullable schemas from definitions with description", (assert) => {
+  test("should properly reference nullable schemas from definitions with metadata", (assert) => {
     const pictureSchema = z
       .object({
         id: z.number().int().positive(),
@@ -222,6 +222,224 @@ suite("Open API target", (test) => {
             required: [ 'id', 'filename' ],
             additionalProperties: false,
             description: 'A picture',
+          },
+        },
+      };
+
+    assert(result, expected);
+  });
+
+  test("should properly reference nullable schemas from definitions and mantain valid nested references", (assert) => {
+    const pictureSchema = z
+      .object({
+        id: z.number().int().positive(),
+        filename: z.string(),
+      })
+      .strict();
+
+    const coverSchema = pictureSchema.nullable();
+
+    const userSchema = z
+      .object({
+        id: z.number().int().positive(),
+        name: z.string().min(2),
+        cover: coverSchema,
+        group: z.object({
+          id: z.number().int().positive(),
+          name: z.string().min(2),
+          cover: coverSchema,
+        }),
+      })
+      .strict();
+
+    const result = zodToJsonSchema(userSchema, {
+      target: "openApi3",
+      definitions: {
+        Picture: pictureSchema,
+      },
+    });
+
+    const expected = {
+        type: "object",
+        properties: {
+          id: {
+            type: "integer",
+            exclusiveMinimum: true,
+            minimum: 0,
+          },
+          name: {
+            type: "string",
+            minLength: 2,
+          },
+          cover: {
+            allOf: [
+              {
+                $ref: "#/definitions/Picture",
+              },
+            ],
+            nullable: true,
+          },
+          group: {
+            type: "object",
+            properties: {
+              id: {
+                type: "integer",
+                exclusiveMinimum: true,
+                minimum: 0,
+              },
+              name: {
+                type: "string",
+                minLength: 2,
+              },
+              cover: {
+                $ref: "#/properties/cover",
+              },
+            },
+            required: [
+              "id",
+              "name",
+              "cover",
+            ],
+            additionalProperties: false,
+          },
+        },
+        required: [
+          "id",
+          "name",
+          "cover",
+          "group",
+        ],
+        additionalProperties: false,
+        definitions: {
+          Picture: {
+            type: "object",
+            properties: {
+              id: {
+                type: "integer",
+                exclusiveMinimum: true,
+                minimum: 0,
+              },
+              filename: {
+                type: "string",
+              },
+            },
+            required: [
+              "id",
+              "filename",
+            ],
+            additionalProperties: false,
+          },
+        },
+      };
+
+    assert(result, expected);
+  });
+
+  test("should properly reference nullable schemas from definitions and mantain valid nested references with metadata", (assert) => {
+    const pictureSchema = z
+      .object({
+        id: z.number().int().positive(),
+        filename: z.string(),
+      })
+      .strict();
+
+    const coverSchema = pictureSchema.nullable();
+
+    const userSchema = z
+      .object({
+        id: z.number().int().positive(),
+        name: z.string().min(2),
+        cover: coverSchema.describe('A user cover'),
+        group: z.object({
+          id: z.number().int().positive(),
+          name: z.string().min(2),
+          cover: coverSchema,
+        }),
+      })
+      .strict();
+
+    const result = zodToJsonSchema(userSchema, {
+      target: "openApi3",
+      definitions: {
+        Picture: pictureSchema,
+      },
+    });
+
+    const expected = {
+        type: "object",
+        properties: {
+          id: {
+            type: "integer",
+            exclusiveMinimum: true,
+            minimum: 0,
+          },
+          name: {
+            type: "string",
+            minLength: 2,
+          },
+          cover: {
+            allOf: [
+              {
+                $ref: "#/definitions/Picture",
+              },
+            ],
+            nullable: true,
+            description: "A user cover",
+          },
+          group: {
+            type: "object",
+            properties: {
+              id: {
+                type: "integer",
+                exclusiveMinimum: true,
+                minimum: 0,
+              },
+              name: {
+                type: "string",
+                minLength: 2,
+              },
+              cover: {
+                allOf: [
+                  {
+                    $ref: "#/definitions/Picture",
+                  },
+                ],
+                nullable: true,
+              },
+            },
+            required: [
+              "id",
+              "name",
+              "cover",
+            ],
+            additionalProperties: false,
+          },
+        },
+        required: [
+          "id",
+          "name",
+          "cover",
+          "group",
+        ],
+        additionalProperties: false,
+        definitions: {
+          Picture: {
+            type: "object",
+            properties: {
+              id: {
+                type: "integer",
+                exclusiveMinimum: true,
+                minimum: 0,
+              },
+              filename: {
+                type: "string",
+              },
+            },
+            required: [
+              "id",
+              "filename",
+            ],
+            additionalProperties: false,
           },
         },
       };
