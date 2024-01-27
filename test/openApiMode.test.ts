@@ -229,7 +229,7 @@ suite("Open API target", (test) => {
     assert(result, expected);
   });
 
-  test("should properly reference nullable schemas from definitions and mantain valid nested references", (assert) => {
+  test("should properly reference nullable schemas from definitions and maintain valid nested references", (assert) => {
     const pictureSchema = z
       .object({
         id: z.number().int().positive(),
@@ -335,7 +335,7 @@ suite("Open API target", (test) => {
     assert(result, expected);
   });
 
-  test("should properly reference nullable schemas from definitions and mantain valid nested references with metadata", (assert) => {
+  test("should properly reference nullable schemas from definitions and maintain valid nested references with metadata", (assert) => {
     const pictureSchema = z
       .object({
         id: z.number().int().positive(),
