@@ -3,6 +3,7 @@ import { ZodNativeEnumDef } from "zod";
 export type JsonSchema7NativeEnumType = {
   type: "string" | "number" | ["string", "number"];
   enum: (string | number)[];
+  dict: Record<string, string>;
 };
 
 export function parseNativeEnumDef(
@@ -19,6 +20,11 @@ export function parseNativeEnumDef(
     new Set(actualValues.map((values: string | number) => typeof values)),
   );
 
+  const dictionary = {};
+  for (const key of actualKeys) {
+    dictionary[object[key]] = key;
+  }
+
   return {
     type:
       parsedTypes.length === 1
@@ -27,5 +33,6 @@ export function parseNativeEnumDef(
           : "number"
         : ["string", "number"],
     enum: actualValues,
+    dict: dictionary
   };
 }
