@@ -42,6 +42,7 @@ import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union.js";
 import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown.js";
 import { Refs, Seen } from "./Refs.js";
 import { parseReadonlyDef } from "./parsers/readonly.js";
+import { ignoreOverride } from "./Options.js";
 
 type JsonSchema7RefType = { $ref: string };
 type JsonSchema7Meta = {
@@ -84,6 +85,14 @@ export function parseDef(
   forceResolution = false, // Forces a new schema to be instantiated even though its def has been seen. Used for improving refs in definitions. See https://github.com/StefanTerdell/zod-to-json-schema/pull/61.
 ): JsonSchema7Type | undefined {
   const seenItem = refs.seen.get(def);
+
+  if (refs.override) {
+    const overrideResult = refs.override?.(def, refs, seenItem, forceResolution);
+
+    if (overrideResult !== ignoreOverride) {
+      return overrideResult;
+    }
+  }
 
   if (seenItem && !forceResolution) {
     const seenSchema = get$ref(seenItem, refs);

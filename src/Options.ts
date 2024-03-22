@@ -1,4 +1,6 @@
-import { ZodSchema } from "zod";
+import { ZodSchema, ZodTypeDef } from "zod";
+import { Refs, Seen } from "./Refs";
+import { JsonSchema7Type } from "./parseDef";
 
 export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3";
 
@@ -7,6 +9,10 @@ export type DateStrategy =
   | "format:date"
   | "string"
   | "integer";
+
+export const ignoreOverride = Symbol(
+  "Let zodToJsonSchema decide on which parser to use",
+);
 
 export type Options<Target extends Targets = "jsonSchema7"> = {
   name: string | undefined;
@@ -25,6 +31,12 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   markdownDescription: boolean;
   patternStrategy: "escape" | "preserve";
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
+  override?: (
+    def: ZodTypeDef,
+    refs: Refs,
+    seen: Seen | undefined,
+    forceResolution?: boolean,
+  ) => JsonSchema7Type | undefined | typeof ignoreOverride;
 };
 
 export const defaultOptions: Options = {
