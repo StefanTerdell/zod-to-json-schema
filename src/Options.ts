@@ -2,13 +2,19 @@ import { ZodSchema } from "zod";
 
 export type Targets = "jsonSchema7" | "jsonSchema2019-09" | "openApi3";
 
+export type DateStrategy =
+  | "format:date-time"
+  | "format:date"
+  | "string"
+  | "integer";
+
 export type Options<Target extends Targets = "jsonSchema7"> = {
   name: string | undefined;
   $refStrategy: "root" | "relative" | "none" | "seen";
   basePath: string[];
   effectStrategy: "input" | "any";
   pipeStrategy: "input" | "output" | "all";
-  dateStrategy: "string" | "integer";
+  dateStrategy: DateStrategy | DateStrategy[];
   mapStrategy: "entries" | "record";
   removeAdditionalStrategy: "passthrough" | "strict";
   target: Target;
@@ -27,7 +33,7 @@ export const defaultOptions: Options = {
   basePath: ["#"],
   effectStrategy: "input",
   pipeStrategy: "all",
-  dateStrategy: "string",
+  dateStrategy: "format:date-time",
   mapStrategy: "entries",
   removeAdditionalStrategy: "passthrough",
   definitionPath: "definitions",
@@ -41,7 +47,7 @@ export const defaultOptions: Options = {
 };
 
 export const getDefaultOptions = <Target extends Targets>(
-  options: Partial<Options<Target>> | string | undefined
+  options: Partial<Options<Target>> | string | undefined,
 ) =>
   (typeof options === "string"
     ? {
