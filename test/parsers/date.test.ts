@@ -4,7 +4,8 @@ import { parseDateDef } from "../../src/parsers/date.js";
 import { getRefs } from "../../src/Refs.js";
 import { errorReferences } from "./errorReferences.js";
 import { suite } from "../suite.js";
-suite("Number validations", (test) => {
+
+suite("Date validations", (test) => {
   test("should be possible to date as a string type", (assert) => {
     const zodDateSchema = z.date();
     const parsedSchemaWithOption = parseDateDef(
@@ -98,6 +99,33 @@ suite("Number validations", (test) => {
         minimum: minimumErrorMessage,
         maximum: maximumErrorMessage,
       },
+    };
+
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("multiple choices of strategy should result in anyOf", (assert) => {
+    const zodDateSchema = z.date();
+    const parsedSchema = parseDateDef(
+      zodDateSchema._def,
+      getRefs({ dateStrategy: ["format:date-time", "format:date", "integer"] }),
+    );
+
+    const jsonSchema: JSONSchema7Type = {
+      anyOf: [
+        {
+          type: "string",
+          format: "date-time",
+        },
+        {
+          type: "string",
+          format: "date",
+        },
+        {
+          type: "integer",
+          format: "unix-time",
+        },
+      ],
     };
 
     assert(parsedSchema, jsonSchema);

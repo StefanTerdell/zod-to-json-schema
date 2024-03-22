@@ -2,23 +2,47 @@ import { ZodDateDef } from "zod";
 import { Refs } from "../Refs.js";
 import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
 import { JsonSchema7NumberType } from "./number.js";
+import { DateStrategy } from "../Options.js";
 
-export type JsonSchema7DateType = {
-  type: "integer" | "string";
-  format: "unix-time" | "date-time";
-  minimum?: number;
-  maximum?: number;
-  errorMessage?: ErrorMessages<JsonSchema7NumberType>;
-};
-
-export function parseDateDef(def: ZodDateDef, refs: Refs): JsonSchema7DateType {
-  if (refs.dateStrategy == "integer") {
-    return integerDateParser(def, refs);
-  } else {
-    return {
-      type: "string",
-      format: "date-time",
+export type JsonSchema7DateType =
+  | {
+      type: "integer" | "string";
+      format: "unix-time" | "date-time" | "date";
+      minimum?: number;
+      maximum?: number;
+      errorMessage?: ErrorMessages<JsonSchema7NumberType>;
+    }
+  | {
+      anyOf: JsonSchema7DateType[];
     };
+
+export function parseDateDef(
+  def: ZodDateDef,
+  refs: Refs,
+  overrideDateStrategy?: DateStrategy,
+): JsonSchema7DateType {
+  const strategy = overrideDateStrategy ?? refs.dateStrategy;
+
+  if (Array.isArray(strategy)) {
+    return {
+      anyOf: strategy.map((item, i) => parseDateDef(def, refs, item)),
+    };
+  }
+
+  switch (strategy) {
+    case "string":
+    case "format:date-time":
+      return {
+        type: "string",
+        format: "date-time",
+      };
+    case "format:date":
+      return {
+        type: "string",
+        format: "date",
+      };
+    case "integer":
+      return integerDateParser(def, refs);
   }
 }
 
@@ -28,29 +52,29 @@ const integerDateParser = (def: ZodDateDef, refs: Refs) => {
     format: "unix-time",
   };
 
+  if (refs.target === "openApi3") {
+    return res;
+  }
+
   for (const check of def.checks) {
     switch (check.kind) {
       case "min":
-        if (refs.target === "jsonSchema7") {
-          setResponseValueAndErrors(
-            res,
-            "minimum",
-            check.value, // This is in milliseconds
-            check.message,
-            refs,
-          );
-        }
+        setResponseValueAndErrors(
+          res,
+          "minimum",
+          check.value, // This is in milliseconds
+          check.message,
+          refs,
+        );
         break;
       case "max":
-        if (refs.target === "jsonSchema7") {
-          setResponseValueAndErrors(
-            res,
-            "maximum",
-            check.value, // This is in milliseconds
-            check.message,
-            refs,
-          );
-        }
+        setResponseValueAndErrors(
+          res,
+          "maximum",
+          check.value, // This is in milliseconds
+          check.message,
+          refs,
+        );
         break;
     }
   }
