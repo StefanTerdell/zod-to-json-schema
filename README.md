@@ -83,6 +83,7 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 | **patternStrategy**?: "escape" \| "preserve"                                    | Decide how patterns should be generated, for instance from `z.string().includes("@")`. By default "escape" is active and non-alphanumeric characters are escaped. This can sometimes cause issues with unicode flagged regex parsers.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **pipeStrategy**?: "all" \| "input" \| "output"                                 | Decide which types should be included when using `z.pipe`, for example `z.string().pipe(z.number())` would return both `string` and `number` by default, only `string` for "input" and only `number` for "output".                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | **removeAdditionalStrategy**?: "passthrough" \| "strict"                        | Decide when `additionalProperties ` should be false - whether according to strict or to passthrough. Since most parsers would retain properties given that `additionalProperties  = false` while zod strips them, the default is to strip them unless `passthrough` is explicitly in the schema. On the other hand, it is useful to retain all fields unless `strict` is explicit in the schema which is the second option for the removeAdditional                                                                                                                                                                                                                                     |
+| **override**?: callback                                                         | See section                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ### Definitions
 
@@ -161,6 +162,60 @@ This allows for field specific, validation step specific error messages which ca
   - min, max
 - ZodArray
   - min, max
+
+## `override` option
+
+This options takes a Zod schema definition, the current reference object (containing the current ref path and other options), an argument containing inforation about wether or not the schema has been encountered before, and a forceResolution argument.
+
+Since `undefined` is a valid option to return, if you don't want to override the current item you have to return the `ignoreOverride` symbol exported from the index.
+
+```typescript
+import zodToJsonSchema, { ignoreOverride } from "zod-to-json-schema";
+
+zodToJsonSchema(
+  z.object({
+    ignoreThis: z.string(),
+    overrideThis: z.string(),
+    removeThis: z.string(),
+  }),
+  {
+    override: (def, refs) => {
+      const path = refs.currentPath.join("/");
+
+      if (path === "#/properties/overrideThis") {
+        return {
+          type: "integer",
+        };
+      }
+
+      if (path === "#/properties/removeThis") {
+        return undefined;
+      }
+
+      // Important! Do not return `undefined` or void unless you want to remove the property from the resulting schema completely.
+      return ignoreOverride;
+    },
+  },
+);
+```
+
+Expected output:
+
+```json
+{
+  "type": "object",
+  "required": ["ignoreThis", "overrideThis"],
+  "properties": {
+    "ignoreThis": {
+      "type": "string"
+    },
+    "overrideThis": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false
+}
+```
 
 ## Known issues
 
