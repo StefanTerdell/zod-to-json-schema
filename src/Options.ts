@@ -10,6 +10,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   pipeStrategy: "input" | "output" | "all";
   dateStrategy: "string" | "integer";
   mapStrategy: "entries" | "record";
+  removeAdditionalStrategy: "passthrough" | "strict";
   target: Target;
   strictUnions: boolean;
   definitionPath: string;
@@ -28,6 +29,7 @@ export const defaultOptions: Options = {
   pipeStrategy: "all",
   dateStrategy: "string",
   mapStrategy: "entries",
+  removeAdditionalStrategy: "passthrough",
   definitionPath: "definitions",
   target: "jsonSchema7",
   strictUnions: false,
