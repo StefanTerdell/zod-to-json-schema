@@ -33,6 +33,9 @@ export const zodPatterns = {
    * Unused
    */
   ipv6: "^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$",
+  base64: "^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$",
+  nanoid: "^[a-zA-Z0-9_-]{21}$"
+
 } as const;
 
 export type JsonSchema7StringType = {
@@ -46,7 +49,10 @@ export type JsonSchema7StringType = {
     | "uuid"
     | "date-time"
     | "ipv4"
-    | "ipv6";
+    | "ipv6"
+    | "date" 
+    | "time" 
+    | "duration";
   pattern?: string;
   allOf?: {
     pattern: string;
@@ -148,6 +154,15 @@ export function parseStringDef(
         case "datetime":
           addFormat(res, "date-time", check.message, refs);
           break;
+        case "date":
+          addFormat(res, "date", check.message, refs);
+          break;
+        case "time":
+          addFormat(res, "time", check.message, refs);
+          break;
+        case "duration":
+          addFormat(res, "duration", check.message, refs);
+          break;
         case "length":
           setResponseValueAndErrors(
             res,
@@ -187,6 +202,12 @@ export function parseStringDef(
         case "ulid": {
           addPattern(res, zodPatterns.ulid, check.message, refs);
           break;
+        }
+        case "base64": {
+          addPattern(res, zodPatterns.base64, check.message, refs);
+        }
+        case "nanoid": {
+          addPattern(res, zodPatterns.nanoid, check.message, refs);
         }
         case "toLowerCase":
         case "toUpperCase":
