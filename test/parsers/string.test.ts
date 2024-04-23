@@ -426,6 +426,36 @@ suite("String validations", (test) => {
     assert(jsonParsedSchema, jsonSchema);
   });
 
+  test("should default to contentEncoding for base64, but format and pattern should also work", (assert) => {
+    const def = z.string().base64()._def;
+
+    assert(parseStringDef(def, getRefs()), {
+      type: "string",
+      contentEncoding: "base64",
+    });
+
+    assert(
+      parseStringDef(
+        def,
+        getRefs({ base64Strategy: "contentEncoding:base64" }),
+      ),
+      {
+        type: "string",
+        contentEncoding: "base64",
+      },
+    );
+
+    assert(parseStringDef(def, getRefs({ base64Strategy: "format:binary" })), {
+      type: "string",
+      format: "binary",
+    });
+
+    assert(parseStringDef(def, getRefs({ base64Strategy: "pattern:zod" })), {
+      type: "string",
+      pattern: zodPatterns.base64,
+    });
+  });
+
   test("should be possible to pick format:email, format:idn-email or pattern:zod", (assert) => {
     assert(parseStringDef(z.string().email()._def, getRefs()), {
       type: "string",

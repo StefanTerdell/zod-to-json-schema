@@ -31,6 +31,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   markdownDescription: boolean;
   patternStrategy: "escape" | "preserve";
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
+  base64Strategy: "format:binary" | "contentEncoding:base64" | "pattern:zod";
   override?: (
     def: ZodTypeDef,
     refs: Refs,
@@ -56,6 +57,7 @@ export const defaultOptions: Options = {
   markdownDescription: false,
   patternStrategy: "escape",
   emailStrategy: "format:email",
+  base64Strategy: "contentEncoding:base64",
 };
 
 export const getDefaultOptions = <Target extends Targets>(

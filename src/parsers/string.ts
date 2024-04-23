@@ -34,8 +34,7 @@ export const zodPatterns = {
    */
   ipv6: "^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$",
   base64: "^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$",
-  nanoid: "^[a-zA-Z0-9_-]{21}$"
-
+  nanoid: "^[a-zA-Z0-9_-]{21}$",
 } as const;
 
 export type JsonSchema7StringType = {
@@ -50,8 +49,8 @@ export type JsonSchema7StringType = {
     | "date-time"
     | "ipv4"
     | "ipv6"
-    | "date" 
-    | "time" 
+    | "date"
+    | "time"
     | "duration";
   pattern?: string;
   allOf?: {
@@ -63,6 +62,7 @@ export type JsonSchema7StringType = {
     errorMessage?: ErrorMessages<{ format: string }>;
   }[];
   errorMessage?: ErrorMessages<JsonSchema7StringType>;
+  contentEncoding?: string;
 };
 
 export function parseStringDef(
@@ -204,7 +204,29 @@ export function parseStringDef(
           break;
         }
         case "base64": {
-          addPattern(res, zodPatterns.base64, check.message, refs);
+          switch (refs.base64Strategy) {
+            case "format:binary": {
+              addFormat(res, "binary" as any, check.message, refs);
+              break;
+            }
+
+            case "contentEncoding:base64": {
+              setResponseValueAndErrors(
+                res,
+                "contentEncoding",
+                "base64",
+                check.message,
+                refs,
+              );
+              break;
+            }
+
+            case "pattern:zod": {
+              addPattern(res, zodPatterns.base64, check.message, refs);
+              break;
+            }
+          }
+          break;
         }
         case "nanoid": {
           addPattern(res, zodPatterns.nanoid, check.message, refs);
@@ -212,7 +234,6 @@ export function parseStringDef(
         case "toLowerCase":
         case "toUpperCase":
         case "trim":
-          // I have no idea why these are checks in Zod 🤷
           break;
         default:
           ((_: never) => {})(check);
