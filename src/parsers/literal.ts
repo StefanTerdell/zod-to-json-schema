@@ -1,5 +1,6 @@
 import { ZodLiteralDef } from "zod";
 import { Refs } from "../Refs.js";
+import { JsonSchema7NullType, parseNullDef } from "./null.js";
 
 export type JsonSchema7LiteralType =
   | {
@@ -8,13 +9,19 @@ export type JsonSchema7LiteralType =
     }
   | {
       type: "object" | "array";
-    };
+    }
+  | JsonSchema7NullType;
 
 export function parseLiteralDef(
   def: ZodLiteralDef,
   refs: Refs,
 ): JsonSchema7LiteralType {
   const parsedType = typeof def.value;
+
+  if (def.value === null) {
+    return parseNullDef(refs);
+  }
+
   if (
     parsedType !== "bigint" &&
     parsedType !== "number" &&
