@@ -452,7 +452,7 @@ suite("String validations", (test) => {
 
     assert(parseStringDef(def, getRefs({ base64Strategy: "pattern:zod" })), {
       type: "string",
-      pattern: zodPatterns.base64,
+      pattern: zodPatterns.base64.source,
     });
   });
 
@@ -491,7 +491,7 @@ suite("String validations", (test) => {
       ),
       {
         type: "string",
-        pattern: zodPatterns.email,
+        pattern: zodPatterns.email.source,
       },
     );
   });
