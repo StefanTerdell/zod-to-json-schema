@@ -30,6 +30,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   errorMessages: boolean;
   markdownDescription: boolean;
   patternStrategy: "escape" | "preserve";
+  applyRegexFlags: boolean;
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
   base64Strategy: "format:binary" | "contentEncoding:base64" | "pattern:zod";
   override?: (
@@ -56,6 +57,7 @@ export const defaultOptions: Options = {
   errorMessages: false,
   markdownDescription: false,
   patternStrategy: "escape",
+  applyRegexFlags: false,
   emailStrategy: "format:email",
   base64Strategy: "contentEncoding:base64",
 };
