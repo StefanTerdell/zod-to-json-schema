@@ -495,4 +495,63 @@ suite("String validations", (test) => {
       },
     );
   });
+
+  test("should correctly handle reasonable non-contrived regexes with flags", (assert) => {
+    assert(
+      parseStringDef(
+        z.string().regex(/(^|\^foo)Ba[r-z]+./)._def,
+        getRefs({ applyRegexFlags: true })
+      ),
+      {
+        type: "string",
+        pattern: "(^|\\^foo)Ba[r-z]+.",
+      }
+    );
+
+    assert(
+      parseStringDef(
+        z.string().regex(/(^|\^foo)Ba[r-z]+./i)._def,
+        getRefs({ applyRegexFlags: true })
+      ),
+      {
+        type: "string",
+        pattern: "(^|\\^[fF][oO][oO])[bB][aA][r-zR-Z]+.",
+      }
+    );
+
+    assert(
+      parseStringDef(
+        z.string().regex(/(^|\^foo)Ba[r-z]+./ms)._def,
+        getRefs({ applyRegexFlags: true })
+      ),
+      {
+        type: "string",
+        pattern: "((^|(?<=[\r\n]))|\\^foo)Ba[r-z]+[.\r\n]",
+      }
+    );
+
+    assert(
+      parseStringDef(
+        z.string().regex(/(^|\^foo)Ba[r-z]+./ims)._def,
+        getRefs({ applyRegexFlags: true })
+      ),
+      {
+        type: "string",
+        pattern: "((^|(?<=[\r\n]))|\\^[fF][oO][oO])[bB][aA][r-zR-Z]+[.\r\n]",
+      }
+    );
+  });
+
+  test("should fall back to regex source if a conversion can't be made", (assert) => {
+    assert(
+      parseStringDef(
+        z.string().regex(/[Z-a]/i)._def,
+        getRefs({ applyRegexFlags: true })
+      ),
+      {
+        type: "string",
+        pattern: "[Z-a]",
+      }
+    );
+  });
 });
