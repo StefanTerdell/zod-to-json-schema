@@ -411,5 +411,16 @@ const processRegExp = (regex: RegExp, refs: Refs): string => {
     }
   }
 
+  try {
+    const regexTest = new RegExp(pattern);
+  } catch {
+    console.warn(
+      `Could not convert regex pattern at ${refs.currentPath.join(
+        "/",
+      )} to a flag-independent form! Falling back to the flag-ignorant source`,
+    );
+    return regex.source;
+  }
+
   return pattern;
 };
