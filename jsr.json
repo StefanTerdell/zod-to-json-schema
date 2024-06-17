@@ -1,0 +1,5 @@
+{
+  "name": "@stefan/zod-to-json-schema",
+  "version": "3.23.0",
+  "exports": "./src/index.ts"
+}
