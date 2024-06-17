@@ -3,38 +3,41 @@ import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
 import { Refs } from "../Refs.js";
 
 /**
- * Generated from the .source property of regular expressins found here:
+ * Generated from the regular expressions found here as of 2024-05-22:
  * https://github.com/colinhacks/zod/blob/master/src/types.ts.
  *
- * Escapes have been doubled, and expressions with /i flag have been changed accordingly
+ * Expressions with /i flag have been changed accordingly.
  */
 export const zodPatterns = {
   /**
    * `c` was changed to `[cC]` to replicate /i flag
    */
-  cuid: "^[cC][^\\s-]{8,}$",
-  cuid2: "^[a-z][a-z0-9]*$",
-  ulid: "^[0-9A-HJKMNP-TV-Z]{26}$",
+  cuid: /^[cC][^\s-]{8,}$/,
+  cuid2: /^[0-9a-z]+$/,
+  ulid: /^[0-9A-HJKMNP-TV-Z]{26}$/,
   /**
    * `a-z` was added to replicate /i flag
    */
   email:
-    "^(?!\\.)(?!.*\\.\\.)([a-zA-Z0-9_+-\\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\\-]*\\.)+[a-zA-Z]{2,}$",
-  emoji: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
+    /^(?!\.)(?!.*\.\.)([a-zA-Z0-9_'+\-\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\-]*\.)+[a-zA-Z]{2,}$/,
+  /**
+   * Constructed a valid Unicode RegExp
+   */
+  emoji: RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u"),
   /**
    * Unused
    */
-  uuid: "^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}$",
+  uuid: /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
   /**
    * Unused
    */
-  ipv4: "^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$",
+  ipv4: /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/,
   /**
    * Unused
    */
-  ipv6: "^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$",
-  base64: "^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$",
-  nanoid: "^[a-zA-Z0-9_-]{21}$",
+  ipv6: /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/,
+  base64: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
+  nanoid: /^[a-zA-Z0-9_-]{21}$/,
 } as const;
 
 export type JsonSchema7StringType = {
@@ -126,7 +129,7 @@ export function parseStringDef(
           addFormat(res, "uuid", check.message, refs);
           break;
         case "regex":
-          addPattern(res, check.regex.source, check.message, refs);
+          addPattern(res, check.regex, check.message, refs);
           break;
         case "cuid":
           addPattern(res, zodPatterns.cuid, check.message, refs);
@@ -137,7 +140,7 @@ export function parseStringDef(
         case "startsWith":
           addPattern(
             res,
-            "^" + processPattern(check.value),
+            RegExp(`^${processPattern(check.value)}`),
             check.message,
             refs,
           );
@@ -145,7 +148,7 @@ export function parseStringDef(
         case "endsWith":
           addPattern(
             res,
-            processPattern(check.value) + "$",
+            RegExp(`${processPattern(check.value)}$`),
             check.message,
             refs,
           );
@@ -184,7 +187,12 @@ export function parseStringDef(
           );
           break;
         case "includes": {
-          addPattern(res, processPattern(check.value), check.message, refs);
+          addPattern(
+            res,
+            RegExp(processPattern(check.value)),
+            check.message,
+            refs,
+          );
           break;
         }
         case "ip": {
@@ -289,7 +297,7 @@ const addFormat = (
 
 const addPattern = (
   schema: JsonSchema7StringType,
-  value: string,
+  regex: RegExp,
   message: string | undefined,
   refs: Refs,
 ) => {
@@ -316,11 +324,103 @@ const addPattern = (
     }
 
     schema.allOf!.push({
-      pattern: value,
+      pattern: processRegExp(regex, refs),
       ...(message &&
         refs.errorMessages && { errorMessage: { pattern: message } }),
     });
   } else {
-    setResponseValueAndErrors(schema, "pattern", value, message, refs);
+    setResponseValueAndErrors(
+      schema,
+      "pattern",
+      processRegExp(regex, refs),
+      message,
+      refs,
+    );
   }
+};
+
+// Mutate z.string.regex() in a best attempt to accommodate for regex flags when applyRegexFlags is true
+const processRegExp = (regex: RegExp, refs: Refs): string => {
+  if (!refs.applyRegexFlags || !regex.flags) return regex.source;
+
+  // Currently handled flags
+  const flags = {
+    i: regex.flags.includes("i"), // Case-insensitive
+    m: regex.flags.includes("m"), // `^` and `$` matches adjacent to newline characters
+    s: regex.flags.includes("s"), // `.` matches newlines
+  };
+
+  // The general principle here is to step through each character, one at a time, applying mutations as flags require. We keep track when the current character is escaped, and when it's inside a group /like [this]/ or (also) a range like /[a-z]/. The following is fairly brittle imperative code; edit at your peril!
+
+  const source = flags.i ? regex.source.toLowerCase() : regex.source;
+  let pattern = "";
+  let isEscaped = false;
+  let inCharGroup = false;
+  let inCharRange = false;
+
+  for (let i = 0; i < source.length; i++) {
+    if (isEscaped) {
+      pattern += source[i];
+      isEscaped = false;
+      continue;
+    }
+
+    if (flags.i) {
+      if (inCharGroup) {
+        if (source[i].match(/[a-z]/)) {
+          if (inCharRange) {
+            pattern += source[i];
+            pattern += `${source[i - 2]}-${source[i]}`.toUpperCase();
+            inCharRange = false;
+          } else if (source[i + 1] === "-" && source[i + 2]?.match(/[a-z]/)) {
+            pattern += source[i];
+            inCharRange = true;
+          } else {
+            pattern += `${source[i]}${source[i].toUpperCase()}`;
+          }
+          continue;
+        }
+      } else if (source[i].match(/[a-z]/)) {
+        pattern += `[${source[i]}${source[i].toUpperCase()}]`;
+        continue;
+      }
+    }
+
+    if (flags.m) {
+      if (source[i] === "^") {
+        pattern += `(^|(?<=[\r\n]))`;
+        continue;
+      } else if (source[i] === "$") {
+        pattern += `($|(?=[\r\n]))`;
+        continue;
+      }
+    }
+
+    if (flags.s && source[i] === ".") {
+      pattern += inCharGroup ? `${source[i]}\r\n` : `[${source[i]}\r\n]`;
+      continue;
+    }
+
+    pattern += source[i];
+    if (source[i] === "\\") {
+      isEscaped = true;
+    } else if (inCharGroup && source[i] === "]") {
+      inCharGroup = false;
+    } else if (!inCharGroup && source[i] === "[") {
+      inCharGroup = true;
+    }
+  }
+
+  try {
+    const regexTest = new RegExp(pattern);
+  } catch {
+    console.warn(
+      `Could not convert regex pattern at ${refs.currentPath.join(
+        "/",
+      )} to a flag-independent form! Falling back to the flag-ignorant source`,
+    );
+    return regex.source;
+  }
+
+  return pattern;
 };
