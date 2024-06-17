@@ -12,8 +12,8 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
     [key: string]: Target extends "jsonSchema7"
       ? JsonSchema7Type
       : Target extends "jsonSchema2019-09"
-      ? JsonSchema7Type
-      : object;
+        ? JsonSchema7Type
+        : object;
   };
 } => {
   const refs = getRefs(options);
@@ -37,7 +37,12 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
         )
       : undefined;
 
-  const name = typeof options === "string" ? options : options?.name;
+  const name =
+    typeof options === "string"
+      ? options
+      : options?.nameStrategy === "title"
+        ? undefined
+        : options?.name;
 
   const main =
     parseDef(
@@ -50,6 +55,17 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
           },
       false,
     ) ?? {};
+
+  const title =
+    typeof options === "object" &&
+    options.name !== undefined &&
+    options.nameStrategy === "title"
+      ? options.name
+      : undefined;
+
+  if (title !== undefined) {
+    main.title = title;
+  }
 
   const combined: ReturnType<typeof zodToJsonSchema<Target>> =
     name === undefined

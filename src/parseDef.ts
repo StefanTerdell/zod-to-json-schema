@@ -46,6 +46,7 @@ import { ignoreOverride } from "./Options.js";
 
 type JsonSchema7RefType = { $ref: string };
 type JsonSchema7Meta = {
+  title?: string;
   default?: any;
   description?: string;
   markdownDescription?: string;
