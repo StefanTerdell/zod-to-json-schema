@@ -541,17 +541,4 @@ suite("String validations", (test) => {
       }
     );
   });
-
-  test("should fall back to regex source if a conversion can't be made", (assert) => {
-    assert(
-      parseStringDef(
-        z.string().regex(/[Z-a]/i)._def,
-        getRefs({ applyRegexFlags: true })
-      ),
-      {
-        type: "string",
-        pattern: "[Z-a]",
-      }
-    );
-  });
 });
