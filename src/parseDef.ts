@@ -50,6 +50,7 @@ type JsonSchema7Meta = {
   default?: any;
   description?: string;
   markdownDescription?: string;
+  example?: unknown;
 };
 
 export type JsonSchema7TypeUnion =
@@ -80,8 +81,10 @@ export type JsonSchema7TypeUnion =
 
 export type JsonSchema7Type = JsonSchema7TypeUnion & JsonSchema7Meta;
 
+type ZodTypeDefExtended = ZodTypeDef & { title?: string; example?: unknown };
+
 export function parseDef(
-  def: ZodTypeDef,
+  def: ZodTypeDefExtended,
   refs: Refs,
   forceResolution = false, // Forces a new schema to be instantiated even though its def has been seen. Used for improving refs in definitions. See https://github.com/StefanTerdell/zod-to-json-schema/pull/61.
 ): JsonSchema7Type | undefined {
@@ -240,7 +243,7 @@ const selectParser = (
 };
 
 const addMeta = (
-  def: ZodTypeDef,
+  def: ZodTypeDefExtended,
   refs: Refs,
   jsonSchema: JsonSchema7Type,
 ): JsonSchema7Type => {
@@ -251,5 +254,14 @@ const addMeta = (
       jsonSchema.markdownDescription = def.description;
     }
   }
+
+  if (def.title) {
+    jsonSchema.title = def.title;
+  }
+
+  if (def.example) {
+    jsonSchema.example = def.example;
+  }
+
   return jsonSchema;
 };
