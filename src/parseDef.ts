@@ -251,5 +251,14 @@ const addMeta = (
       jsonSchema.markdownDescription = def.description;
     }
   }
+  
+  if (def.title) {
+      jsonSchema.title = def.title;
+  }
+  
+  if (def.example) {
+      jsonSchema.example = def.example;
+  }
+  
   return jsonSchema;
 };
