@@ -2,6 +2,8 @@ import { ZodStringDef } from "zod";
 import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
 import { Refs } from "../Refs.js";
 
+let emojiRegex: RegExp | undefined;
+
 /**
  * Generated from the regular expressions found here as of 2024-05-22:
  * https://github.com/colinhacks/zod/blob/master/src/types.ts.
@@ -22,8 +24,21 @@ export const zodPatterns = {
     /^(?!\.)(?!.*\.\.)([a-zA-Z0-9_'+\-\.]*)[a-zA-Z0-9_+-]@([a-zA-Z0-9][a-zA-Z0-9\-]*\.)+[a-zA-Z]{2,}$/,
   /**
    * Constructed a valid Unicode RegExp
+   *
+   * Lazily instantiate since this type of regex isn't supported
+   * in all envs (e.g. React Native).
+   *
+   * See:
+   * https://github.com/colinhacks/zod/issues/2433
+   * Fix in Zod:
+   * https://github.com/colinhacks/zod/commit/9340fd51e48576a75adc919bff65dbc4a5d4c99b
    */
-  emoji: RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u"),
+  emoji: () => {
+    if (emojiRegex === undefined) {
+      emojiRegex = RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u");
+    }
+    return emojiRegex;
+  },
   /**
    * Unused
    */
@@ -297,7 +312,7 @@ const addFormat = (
 
 const addPattern = (
   schema: JsonSchema7StringType,
-  regex: RegExp,
+  regex: RegExp | (() => RegExp),
   message: string | undefined,
   refs: Refs,
 ) => {
@@ -340,7 +355,8 @@ const addPattern = (
 };
 
 // Mutate z.string.regex() in a best attempt to accommodate for regex flags when applyRegexFlags is true
-const processRegExp = (regex: RegExp, refs: Refs): string => {
+const processRegExp = (regexOrFunction: RegExp | (() => RegExp), refs: Refs): string => {
+  const regex = typeof regexOrFunction === "function" ? regexOrFunction() : regexOrFunction;
   if (!refs.applyRegexFlags || !regex.flags) return regex.source;
 
   // Currently handled flags

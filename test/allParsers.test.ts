@@ -256,6 +256,10 @@ suite("All Parsers tests", (test) => {
           type: "string",
           format: "email",
         },
+        stringEmoji: {
+          type: "string",
+          pattern: '^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$',
+        },
         stringUrl: {
           type: "string",
           format: "uri",
@@ -576,6 +580,10 @@ suite("All Parsers tests", (test) => {
         stringEmail: {
           type: "string",
           format: "email",
+        },
+        stringEmoji: {
+          type: "string",
+          pattern: '^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$',
         },
         stringUrl: {
           type: "string",
