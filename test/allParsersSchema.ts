@@ -65,6 +65,7 @@ export const allParsersSchema = z
     stringMin: z.string().min(1),
     stringMax: z.string().max(1),
     stringEmail: z.string().email(),
+    stringEmoji: z.string().emoji(),
     stringUrl: z.string().url(),
     stringUuid: z.string().uuid(),
     stringRegEx: z.string().regex(new RegExp("abc")),
