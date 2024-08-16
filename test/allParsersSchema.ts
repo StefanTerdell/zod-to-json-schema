@@ -93,6 +93,16 @@ export const allParsersSchema = z
         bar: z.number().optional(),
       }),
     ]),
+    discriminatedUnion: z.discriminatedUnion('type', [
+      z.object({
+        type: z.literal('A'),
+        foo: z.string(),
+      }),
+      z.object({
+        type: z.literal('B'),
+        bar: z.number(),
+      }),
+    ]),
     unknown: z.unknown(),
   })
   .partial()

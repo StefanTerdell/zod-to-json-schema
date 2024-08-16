@@ -10,6 +10,7 @@ export * from "./parsers/branded.js";
 export * from "./parsers/catch.js";
 export * from "./parsers/date.js";
 export * from "./parsers/default.js";
+export * from "./parsers/discriminatedUnion.js";
 export * from "./parsers/effects.js";
 export * from "./parsers/enum.js";
 export * from "./parsers/intersection.js";

@@ -322,6 +322,55 @@ suite("All Parsers tests", (test) => {
             },
           ],
         },
+        discriminatedUnion: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['A', 'B'],
+            },
+          },
+          required: ['type'],
+          allOf: [
+            {
+              if: {
+                properties: {
+                  type: {
+                    const: 'A',
+                  },
+                },
+              },
+              then: {
+                type: 'object',
+                properties: {
+                  foo: {
+                    type: 'string',
+                  },
+                },
+                required: ['foo'],
+              },
+            },
+            {
+              if: {
+                properties: {
+                  type: {
+                    const: 'B',
+                  },
+                },
+              },
+              then: {
+                type: 'object',
+                properties: {
+                  bar: {
+                    type: 'number',
+                  },
+                },
+                required: ['bar'],
+              },
+            },
+          ],
+          unevaluatedProperties: false,
+        },
         unknown: {},
       },
       additionalProperties: false,
@@ -676,6 +725,34 @@ suite("All Parsers tests", (test) => {
                 },
               },
               required: ["foo"],
+              additionalProperties: false,
+            },
+          ],
+        },
+        discriminatedUnion: {
+          anyOf: [
+            {
+              properties: {
+                type: {
+                  const: 'A',
+                },
+                foo: {
+                  type: 'string',
+                },
+              },
+              required: ['type', 'foo'],
+              additionalProperties: false,
+            },
+            {
+              properties: {
+                type: {
+                  const: 'B',
+                },
+                bar: {
+                  type: 'number',
+                },
+              },
+              required: ['type', 'bar'],
               additionalProperties: false,
             },
           ],

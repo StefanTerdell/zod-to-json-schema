@@ -43,6 +43,7 @@ import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown.js";
 import { Refs, Seen } from "./Refs.js";
 import { parseReadonlyDef } from "./parsers/readonly.js";
 import { ignoreOverride } from "./Options.js";
+import { parseDiscriminatedUnionDef } from "./parsers/discriminatedUnion";
 
 type JsonSchema7RefType = { $ref: string };
 type JsonSchema7Meta = {
@@ -185,8 +186,9 @@ const selectParser = (
     case ZodFirstPartyTypeKind.ZodArray:
       return parseArrayDef(def, refs);
     case ZodFirstPartyTypeKind.ZodUnion:
-    case ZodFirstPartyTypeKind.ZodDiscriminatedUnion:
       return parseUnionDef(def, refs);
+    case ZodFirstPartyTypeKind.ZodDiscriminatedUnion:
+      return parseDiscriminatedUnionDef(def, refs);
     case ZodFirstPartyTypeKind.ZodIntersection:
       return parseIntersectionDef(def, refs);
     case ZodFirstPartyTypeKind.ZodTuple:
