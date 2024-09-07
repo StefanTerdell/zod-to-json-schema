@@ -23,6 +23,21 @@ suite("Date validations", (test) => {
     assert(parsedSchemaFromDefault, jsonSchema);
   });
 
+  test("should be possible to describe date (openApi3)", (assert) => {
+    const zodDateSchema = z.date();
+    const parsedSchema = parseDateDef(
+      zodDateSchema._def,
+      getRefs({ dateStrategy: "integer", target: "openApi3" }),
+    );
+
+    const jsonSchema: JSONSchema7Type = {
+      type: "integer",
+      format: "unix-time",
+    };
+
+    assert(parsedSchema, jsonSchema);
+  });
+
   test("should be possible to describe minimum date", (assert) => {
     const zodDateSchema = z
       .date()
