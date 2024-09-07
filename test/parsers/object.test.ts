@@ -72,4 +72,23 @@ suite("objects", (test) => {
     };
     assert(parsedStrictSchema, expectedStrictSchema);
   });
+
+  test("should allow additional properties with catchall when removeAdditionalStrategy is strict", (assert) => {
+    const schema = z
+      .object({ foo: z.boolean(), bar: z.number() }).catchall(z.boolean())
+
+    const parsedSchema = parseObjectDef(schema._def, getRefs({ removeAdditionalStrategy: "strict" }));
+    const expectedSchema = {
+      type: "object",
+      properties: {
+        foo: { type: "boolean" },
+        bar: { type: "number" },
+      },
+      required: ["foo", "bar"],
+      additionalProperties: {
+        type: "boolean",
+      },
+    };
+    assert(parsedSchema, expectedSchema);
+  });
 });
