@@ -35,6 +35,32 @@ suite("Unions", (test) => {
     assert(parsedSchema, jsonSchema);
   });
 
+  test("Should be possible to get an anyOf array with enum values from a union of literals", (assert) => {
+    const parsedSchema = parseUnionDef(
+      z.union([
+        z.literal(undefined),
+        z.literal(Symbol('abc')),
+        // @ts-expect-error Ok
+        z.literal(function () {}),
+      ])._def,
+      getRefs(),
+    );
+    const jsonSchema = {
+      anyOf: [
+        {
+          type: "object"
+        },
+        {
+          type: "object"
+        },
+        {
+          type: "object"
+        }
+      ],
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
   test("Should be possible to create a union with objects, arrays and validated primitives as an anyOf", (assert) => {
     const parsedSchema = parseUnionDef(
       z.union([
