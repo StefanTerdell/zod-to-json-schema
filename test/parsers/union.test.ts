@@ -24,12 +24,13 @@ suite("Unions", (test) => {
         z.literal(123),
         z.literal(true),
         z.literal(null),
+        z.literal(BigInt(50)),
       ])._def,
       getRefs(),
     );
-    const jsonSchema: JSONSchema7Type = {
-      type: ["string", "number", "boolean", "null"],
-      enum: ["string", 123, true, null],
+    const jsonSchema = {
+      type: ["string", "number", "boolean", "null", "integer"],
+      enum: ["string", 123, true, null, BigInt(50)],
     };
     assert(parsedSchema, jsonSchema);
   });
