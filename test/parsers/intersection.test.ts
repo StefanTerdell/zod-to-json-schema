@@ -168,7 +168,7 @@ suite("intersections", (test) => {
     });
   });
 
-  test("should return `unevaluatedProperties` only if all of the multiple sub-schemas has additionalProperties set to false", (assert) => {
+  test("should return `unevaluatedProperties` only if all of the multiple sub-schemas have additionalProperties set to false", (assert) => {
     const schema1 = z.object({
       foo: z.string(),
     });
@@ -184,6 +184,58 @@ suite("intersections", (test) => {
     const jsonSchema = parseIntersectionDef(
       intersection._def,
       getRefs({ target: "jsonSchema2019-09" }),
+    );
+
+    assert(jsonSchema, {
+      allOf: [
+        {
+          properties: {
+            foo: {
+              type: "string",
+            },
+          },
+          required: ["foo"],
+          type: "object",
+        },
+        {
+          properties: {
+            bar: {
+              type: "string",
+            },
+          },
+          required: ["bar"],
+          type: "object",
+        },
+        {
+          additionalProperties: true,
+          properties: {
+            baz: {
+              type: "string",
+            },
+          },
+          required: ["baz"],
+          type: "object",
+        },
+      ],
+    });
+  });
+
+  test("should return `unevaluatedProperties` only if all of the multiple sub-schemas have additionalProperties set to false (not jsonSchema2019-09)", (assert) => {
+    const schema1 = z.object({
+      foo: z.string(),
+    });
+    const schema2 = z.object({
+      bar: z.string(),
+    });
+    const schema3 = z
+      .object({
+        baz: z.string(),
+      })
+      .passthrough();
+    const intersection = schema1.and(schema2).and(schema3);
+    const jsonSchema = parseIntersectionDef(
+      intersection._def,
+      getRefs(),
     );
 
     assert(jsonSchema, {
