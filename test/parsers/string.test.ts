@@ -519,6 +519,29 @@ suite("String validations", (test) => {
     assert(jsonParsedSchema, jsonSchema);
   });
 
+  test("should bundle multiple formats into anyOf", (assert) => {
+    const zodSchema = z.string().ip('v4');
+    const jsonSchema: JSONSchema7Type = {
+      type: "string",
+      anyOf: [
+        {
+          errorMessage: {
+            format: 'v4'
+          },
+          format: "ipv4",
+        },
+        {
+          errorMessage: {
+            format: 'v4'
+          },
+          format: "ipv6",
+        },
+      ],
+    };
+    const jsonParsedSchema = parseStringDef(zodSchema._def, errorReferences());
+    assert(jsonParsedSchema, jsonSchema);
+  });
+
   test("should default to contentEncoding for base64, but format and pattern should also work", (assert) => {
     const def = z.string().base64()._def;
 
