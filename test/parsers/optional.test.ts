@@ -22,6 +22,14 @@ suite("Standalone optionals", (test) => {
     assert(parsedSchema, jsonSchema);
   });
 
+  test("should work as unions with void", (assert) => {
+    const parsedSchema = parseDef(z.void().optional()._def, getRefs());
+
+    const jsonSchema: JSONSchema7Type = {};
+
+    assert(parsedSchema, jsonSchema);
+  });
+
   test("should not affect object properties", (assert) => {
     const parsedSchema = parseDef(
       z.object({ myProperty: z.string().optional() })._def,
