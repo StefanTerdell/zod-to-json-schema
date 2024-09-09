@@ -24,12 +24,39 @@ suite("Unions", (test) => {
         z.literal(123),
         z.literal(true),
         z.literal(null),
+        z.literal(BigInt(50)),
       ])._def,
       getRefs(),
     );
-    const jsonSchema: JSONSchema7Type = {
-      type: ["string", "number", "boolean", "null"],
-      enum: ["string", 123, true, null],
+    const jsonSchema = {
+      type: ["string", "number", "boolean", "null", "integer"],
+      enum: ["string", 123, true, null, BigInt(50)],
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("Should be possible to get an anyOf array with enum values from a union of literals", (assert) => {
+    const parsedSchema = parseUnionDef(
+      z.union([
+        z.literal(undefined),
+        z.literal(Symbol('abc')),
+        // @ts-expect-error Ok
+        z.literal(function () {}),
+      ])._def,
+      getRefs(),
+    );
+    const jsonSchema = {
+      anyOf: [
+        {
+          type: "object"
+        },
+        {
+          type: "object"
+        },
+        {
+          type: "object"
+        }
+      ],
     };
     assert(parsedSchema, jsonSchema);
   });

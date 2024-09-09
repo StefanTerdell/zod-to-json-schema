@@ -169,8 +169,85 @@ suite("String validations", (test) => {
     assert(ajv.validate(parsedSchema, "ckopqwooh000001la8mbi2im9"), true);
   });
 
+  test("should be possible to use Cuid2 constraint", (assert) => {
+    const parsedSchema = parseStringDef(z.string().cuid2()._def, getRefs());
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      pattern: "^[0-9a-z]+$",
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("should be possible to use datetime constraint", (assert) => {
+    const parsedSchema = parseStringDef(z.string().datetime()._def, getRefs());
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      format: "date-time",
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("should be possible to use date constraint", (assert) => {
+    const parsedSchema = parseStringDef(z.string().date()._def, getRefs());
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      format: "date",
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("should be possible to use time constraint", (assert) => {
+    const parsedSchema = parseStringDef(z.string().time()._def, getRefs());
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      format: "time",
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("should be possible to use duration constraint", (assert) => {
+    const parsedSchema = parseStringDef(z.string().duration()._def, getRefs());
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      format: "duration",
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("should be possible to use length constraint", (assert) => {
+    const parsedSchema = parseStringDef(z.string().length(15)._def, getRefs());
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      minLength: 15,
+      maxLength: 15,
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test("should be possible to use length with min and max constraints", (assert) => {
+    const parsedSchema = parseStringDef(z.string().min(20).max(25).length(15)._def, getRefs());
+    const jsonSchema: JsonSchema7Type = {
+      type: "string",
+      minLength: 20,
+      maxLength: 15,
+    };
+    assert(parsedSchema, jsonSchema);
+  });
+
   test('should gracefully ignore the .trim() "check"', (assert) => {
     const parsedSchema = parseStringDef(z.string().trim()._def, getRefs());
+    const jsonSchema = { type: "string" };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test('should gracefully ignore the .toLowerCase() "check"', (assert) => {
+    const parsedSchema = parseStringDef(z.string().toLowerCase()._def, getRefs());
+    const jsonSchema = { type: "string" };
+    assert(parsedSchema, jsonSchema);
+  });
+
+  test('should gracefully ignore the .toUpperCase() "check"', (assert) => {
+    const parsedSchema = parseStringDef(z.string().toUpperCase()._def, getRefs());
     const jsonSchema = { type: "string" };
     assert(parsedSchema, jsonSchema);
   });
@@ -189,6 +266,22 @@ suite("String validations", (test) => {
     assert(parseStringDef(z.string().endsWith("aBcD123{}[]")._def, getRefs()), {
       type: "string",
       pattern: "aBcD123\\{\\}\\[\\]$",
+    });
+  });
+
+  test("should work with the includes check", (assert) => {
+    assert(parseStringDef(z.string().includes("aBcD123{}[]")._def, getRefs()), {
+      type: "string",
+      pattern: "aBcD123\\{\\}\\[\\]",
+    });
+  });
+
+  test("should work with the preserve patternStrategy", (assert) => {
+    assert(parseStringDef(z.string().includes("aBcD123{}[]")._def, getRefs({
+      patternStrategy: "preserve"
+    })), {
+      type: "string",
+      pattern: "aBcD123{}[]",
     });
   });
 
@@ -426,6 +519,29 @@ suite("String validations", (test) => {
     assert(jsonParsedSchema, jsonSchema);
   });
 
+  test("should bundle multiple formats into anyOf", (assert) => {
+    const zodSchema = z.string().ip('v4');
+    const jsonSchema: JSONSchema7Type = {
+      type: "string",
+      anyOf: [
+        {
+          errorMessage: {
+            format: 'v4'
+          },
+          format: "ipv4",
+        },
+        {
+          errorMessage: {
+            format: 'v4'
+          },
+          format: "ipv6",
+        },
+      ],
+    };
+    const jsonParsedSchema = parseStringDef(zodSchema._def, errorReferences());
+    assert(jsonParsedSchema, jsonSchema);
+  });
+
   test("should default to contentEncoding for base64, but format and pattern should also work", (assert) => {
     const def = z.string().base64()._def;
 
@@ -453,6 +569,24 @@ suite("String validations", (test) => {
     assert(parseStringDef(def, getRefs({ base64Strategy: "pattern:zod" })), {
       type: "string",
       pattern: zodPatterns.base64.source,
+    });
+  });
+
+  test("should be possible to use nanoid constraint", (assert) => {
+    const def = z.string().nanoid()._def;
+
+    assert(parseStringDef(def, getRefs()), {
+      type: "string",
+      pattern: "^[a-zA-Z0-9_-]{21}$",
+    });
+  });
+
+  test("should be possible to use ulid constraint", (assert) => {
+    const def = z.string().ulid()._def;
+
+    assert(parseStringDef(def, getRefs()), {
+      type: "string",
+      pattern: "^[0-9A-HJKMNP-TV-Z]{26}$",
     });
   });
 
@@ -538,6 +672,28 @@ suite("String validations", (test) => {
       {
         type: "string",
         pattern: "((^|(?<=[\r\n]))|\\^[fF][oO][oO])[bB][aA][r-zR-Z]+[.\r\n]",
+      }
+    );
+
+    assert(
+      parseStringDef(
+        z.string().regex(/foo.+$/m)._def,
+        getRefs({ applyRegexFlags: true })
+      ),
+      {
+        type: "string",
+        pattern: "foo.+($|(?=[\r\n]))",
+      }
+    );
+
+    assert(
+      parseStringDef(
+        z.string().regex(/foo.+[amz]/i)._def,
+        getRefs({ applyRegexFlags: true })
+      ),
+      {
+        type: "string",
+        pattern: "[fF][oO][oO].+[aAmMzZ]",
       }
     );
   });
