@@ -11,7 +11,7 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 
 - Supports all relevant schema types, basic string, number and array length validations and string patterns.
 - Resolves recursive and recurring schemas with internal `$ref`s.
-- Also able to target Open API 3 (Swagger) specification for paths.
+- Also able to target legacy Open API 3.0 specification for path schemas (3.1 supports regular Json Schema).
 
 ### Usage
 
