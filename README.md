@@ -13,7 +13,34 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 - Resolves recursive and recurring schemas with internal `$ref`s.
 - Also able to target legacy Open API 3.0 specification for path schemas (3.1 supports regular Json Schema).
 
-### Usage
+## Sponsors
+
+If you enjoy this package and would like to show your appreciation, consider dropping a couple of bucks on my [GitHub sponsorship page](https://github.com/sponsors/StefanTerdell) <3
+
+<table align="center" style="justify-content: center;align-items: center;display: flex;">
+  <tr>
+    <td align="center">
+      <p></p>
+      <p>
+      <a href="https://retool.com/?utm_source=github&utm_medium=referral&utm_campaign=zod-to-json-schema">
+        <picture height="45px">
+          <source media="(prefers-color-scheme: dark)" srcset="https://github.com/colinhacks/zod/assets/3084745/ac65013f-aeb4-48dd-a2ee-41040b69cbe6">
+          <img alt="stainless" height="45px" src="https://github.com/colinhacks/zod/assets/3084745/5ef4c11b-efeb-4495-90a8-41b83f798600">
+        </picture>
+      </a>
+      <br  />   
+      Build AI apps and workflows with <a href="https://retool.com/products/ai?utm_source=github&utm_medium=referral&utm_campaign=zod-to-json-schema">Retool AI</a>
+      <br/>
+      <a href="https://retool.com/?utm_source=github&utm_medium=referral&utm_campaign=zod-to-json-schema" style="text-decoration:none;">retool.com</a>
+      </p>
+      <p></p>
+    </td>
+  </tr>
+</table>
+
+## Usage
+
+### Basic example
 
 ```typescript
 import { z } from "zod";
