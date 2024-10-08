@@ -15,7 +15,7 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 
 ## Sponsors
 
-If you enjoy this package and would like to show your appreciation, consider dropping a couple of bucks on my [GitHub sponsorship page](https://github.com/sponsors/StefanTerdell) <3
+If you enjoy this package, consider dropping a couple of bucks on my [GitHub Sponsors page](https://github.com/sponsors/StefanTerdell) <3
 
 <table align="center" style="justify-content: center;align-items: center;display: flex;">
   <tr>
