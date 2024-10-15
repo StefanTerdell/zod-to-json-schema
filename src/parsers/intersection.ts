@@ -2,6 +2,7 @@ import { ZodIntersectionDef } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef.js";
 import { Refs } from "../Refs.js";
 import { JsonSchema7StringType } from "./string.js";
+import { SchemaTargets } from "../Options.js";
 
 export type JsonSchema7AllOfType = {
   allOf: JsonSchema7Type[];
@@ -33,7 +34,7 @@ export function parseIntersectionDef(
   let unevaluatedProperties:
     | Pick<JsonSchema7AllOfType, "unevaluatedProperties">
     | undefined =
-    refs.target === "jsonSchema2019-09"
+    refs.target === SchemaTargets.JSON_SCHEMA_2019_09
       ? { unevaluatedProperties: false }
       : undefined;
 

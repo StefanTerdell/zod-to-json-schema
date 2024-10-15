@@ -3,15 +3,15 @@ import { Options, SchemaTargets, Targets } from './Options.js';
 import { JsonSchema7Type, parseDef } from './parseDef.js';
 import { getRefs } from './Refs.js';
 
-const zodToJsonSchema = <Target extends Targets = 'jsonSchema7'>(
+const zodToJsonSchema = <Target extends Targets = SchemaTargets.JSON_SCHEMA_7>(
   schema: ZodSchema<any>,
   options?: Partial<Options<Target>> | string
-): (Target extends 'jsonSchema7' ? JsonSchema7Type : object) & {
+): (Target extends SchemaTargets.JSON_SCHEMA_7 ? JsonSchema7Type : object) & {
   $schema?: string;
   definitions?: {
-    [key: string]: Target extends 'jsonSchema7'
+    [key: string]: Target extends SchemaTargets.JSON_SCHEMA_7
       ? JsonSchema7Type
-      : Target extends 'jsonSchema2019-09'
+      : Target extends SchemaTargets.JSON_SCHEMA_2019_09
       ? JsonSchema7Type
       : object;
   };
@@ -94,7 +94,6 @@ const zodToJsonSchema = <Target extends Targets = 'jsonSchema7'>(
     case SchemaTargets.JSON_SCHEMA_2019_09:
       combined.$schema = 'https://json-schema.org/draft/2019-09/schema#';
       break;
-
     case SchemaTargets.MONGODB:
       delete combined.$schema;
     default:

@@ -9,13 +9,13 @@ export enum SchemaTargets {
   MONGODB = 'mongodb',
 }
 
-export type Targets = 'jsonSchema7' | 'jsonSchema2019-09' | 'openApi3' | 'mongodb';
+export type Targets = `${SchemaTargets}`;
 
 export type DateStrategy = 'format:date-time' | 'format:date' | 'string' | 'integer';
 
 export const ignoreOverride = Symbol('Let zodToJsonSchema decide on which parser to use');
 
-export type Options<Target extends Targets = 'jsonSchema7'> = {
+export type Options<Target extends Targets = SchemaTargets.JSON_SCHEMA_7> = {
   name: string | undefined;
   $refStrategy: 'root' | 'relative' | 'none' | 'seen';
   basePath: string[];
@@ -53,7 +53,7 @@ export const defaultOptions: Options = {
   mapStrategy: 'entries',
   removeAdditionalStrategy: 'passthrough',
   definitionPath: 'definitions',
-  target: 'jsonSchema7',
+  target: SchemaTargets.JSON_SCHEMA_7,
   strictUnions: false,
   definitions: {},
   errorMessages: false,
@@ -67,13 +67,33 @@ export const defaultOptions: Options = {
 
 export const getDefaultOptions = <Target extends Targets>(
   options: Partial<Options<Target>> | string | undefined
-) =>
-  (typeof options === 'string'
-    ? {
-        ...defaultOptions,
-        name: options,
-      }
-    : {
-        ...defaultOptions,
-        ...options,
-      }) as Options<Target>;
+) => {
+  if (options === undefined) {
+    return defaultOptions;
+  }
+
+  if (typeof options === 'string') {
+    return {
+      ...defaultOptions,
+      name: options,
+    };
+  }
+
+  const targetedDefaultOptions = defaultOptions as Record<string, unknown>;
+
+  // different defaults for different targets
+  switch (options.target) {
+    case SchemaTargets.MONGODB:
+      // mongodb schema doesn't support $ref
+      targetedDefaultOptions.$refStrategy = 'none';        
+    break;
+
+    default:
+      break;
+  }
+
+  return {
+    ...targetedDefaultOptions,
+    ...options,
+  };
+};
