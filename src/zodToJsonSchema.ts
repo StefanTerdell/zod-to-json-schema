@@ -1,25 +1,25 @@
-import { ZodSchema } from "zod";
-import { Options, Targets } from "./Options.js";
-import { JsonSchema7Type, parseDef } from "./parseDef.js";
-import { getRefs } from "./Refs.js";
+import { ZodSchema } from 'zod';
+import { Options, SchemaTargets, Targets } from './Options.js';
+import { JsonSchema7Type, parseDef } from './parseDef.js';
+import { getRefs } from './Refs.js';
 
-const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
+const zodToJsonSchema = <Target extends Targets = 'jsonSchema7'>(
   schema: ZodSchema<any>,
-  options?: Partial<Options<Target>> | string,
-): (Target extends "jsonSchema7" ? JsonSchema7Type : object) & {
+  options?: Partial<Options<Target>> | string
+): (Target extends 'jsonSchema7' ? JsonSchema7Type : object) & {
   $schema?: string;
   definitions?: {
-    [key: string]: Target extends "jsonSchema7"
+    [key: string]: Target extends 'jsonSchema7'
       ? JsonSchema7Type
-      : Target extends "jsonSchema2019-09"
-        ? JsonSchema7Type
-        : object;
+      : Target extends 'jsonSchema2019-09'
+      ? JsonSchema7Type
+      : object;
   };
 } => {
   const refs = getRefs(options);
 
   const definitions =
-    typeof options === "object" && options.definitions
+    typeof options === 'object' && options.definitions
       ? Object.entries(options.definitions).reduce(
           (acc, [name, schema]) => ({
             ...acc,
@@ -30,19 +30,19 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
                   ...refs,
                   currentPath: [...refs.basePath, refs.definitionPath, name],
                 },
-                true,
+                true
               ) ?? {},
           }),
-          {},
+          {}
         )
       : undefined;
 
   const name =
-    typeof options === "string"
+    typeof options === 'string'
       ? options
-      : options?.nameStrategy === "title"
-        ? undefined
-        : options?.name;
+      : options?.nameStrategy === 'title'
+      ? undefined
+      : options?.name;
 
   const main =
     parseDef(
@@ -53,13 +53,13 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
             ...refs,
             currentPath: [...refs.basePath, refs.definitionPath, name],
           },
-      false,
+      false
     ) ?? {};
 
   const title =
-    typeof options === "object" &&
+    typeof options === 'object' &&
     options.name !== undefined &&
-    options.nameStrategy === "title"
+    options.nameStrategy === 'title'
       ? options.name
       : undefined;
 
@@ -77,20 +77,28 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
         : main
       : {
           $ref: [
-            ...(refs.$refStrategy === "relative" ? [] : refs.basePath),
+            ...(refs.$refStrategy === 'relative' ? [] : refs.basePath),
             refs.definitionPath,
             name,
-          ].join("/"),
+          ].join('/'),
           [refs.definitionPath]: {
             ...definitions,
             [name]: main,
           },
         };
 
-  if (refs.target === "jsonSchema7") {
-    combined.$schema = "http://json-schema.org/draft-07/schema#";
-  } else if (refs.target === "jsonSchema2019-09") {
-    combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
+  switch (refs.target) {
+    case SchemaTargets.JSON_SCHEMA_7:
+      combined.$schema = 'http://json-schema.org/draft-07/schema#';
+      break;
+    case SchemaTargets.JSON_SCHEMA_2019_09:
+      combined.$schema = 'https://json-schema.org/draft/2019-09/schema#';
+      break;
+
+    case SchemaTargets.MONGODB:
+      delete combined.$schema;
+    default:
+      break;
   }
 
   return combined;
