@@ -50,6 +50,7 @@ type JsonSchema7Meta = {
   default?: any;
   description?: string;
   markdownDescription?: string;
+  readOnly?: boolean;
 };
 
 export type JsonSchema7TypeUnion =
@@ -84,11 +85,18 @@ export function parseDef(
   def: ZodTypeDef,
   refs: Refs,
   forceResolution = false, // Forces a new schema to be instantiated even though its def has been seen. Used for improving refs in definitions. See https://github.com/StefanTerdell/zod-to-json-schema/pull/61.
+  readonly = false,
 ): JsonSchema7Type | undefined {
   const seenItem = refs.seen.get(def);
 
   if (refs.override) {
-    const overrideResult = refs.override?.(def, refs, seenItem, forceResolution);
+    const overrideResult = refs.override?.(
+      def,
+      refs,
+      seenItem,
+      forceResolution,
+      readonly,
+    );
 
     if (overrideResult !== ignoreOverride) {
       return overrideResult;
@@ -110,7 +118,7 @@ export function parseDef(
   const jsonSchema = selectParser(def, (def as any).typeName, refs);
 
   if (jsonSchema) {
-    addMeta(def, refs, jsonSchema);
+    addMeta(def, refs, jsonSchema, readonly);
   }
 
   newItem.jsonSchema = jsonSchema;
@@ -244,6 +252,7 @@ const addMeta = (
   def: ZodTypeDef,
   refs: Refs,
   jsonSchema: JsonSchema7Type,
+  readonly = false,
 ): JsonSchema7Type => {
   if (def.description) {
     jsonSchema.description = def.description;
@@ -251,6 +260,9 @@ const addMeta = (
     if (refs.markdownDescription) {
       jsonSchema.markdownDescription = def.description;
     }
+  }
+  if (readonly) {
+    jsonSchema.readOnly = true;
   }
   return jsonSchema;
 };

@@ -35,7 +35,10 @@ export const zodPatterns = {
    */
   emoji: () => {
     if (emojiRegex === undefined) {
-      emojiRegex = RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u");
+      emojiRegex = RegExp(
+        "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
+        "u"
+      );
     }
     return emojiRegex;
   },
@@ -85,7 +88,7 @@ export type JsonSchema7StringType = {
 
 export function parseStringDef(
   def: ZodStringDef,
-  refs: Refs,
+  refs: Refs
 ): JsonSchema7StringType {
   const res: JsonSchema7StringType = {
     type: "string",
@@ -108,7 +111,7 @@ export function parseStringDef(
               ? Math.max(res.minLength, check.value)
               : check.value,
             check.message,
-            refs,
+            refs
           );
           break;
         case "max":
@@ -119,7 +122,7 @@ export function parseStringDef(
               ? Math.min(res.maxLength, check.value)
               : check.value,
             check.message,
-            refs,
+            refs
           );
 
           break;
@@ -157,7 +160,7 @@ export function parseStringDef(
             res,
             RegExp(`^${processPattern(check.value)}`),
             check.message,
-            refs,
+            refs
           );
           break;
         case "endsWith":
@@ -165,7 +168,7 @@ export function parseStringDef(
             res,
             RegExp(`${processPattern(check.value)}$`),
             check.message,
-            refs,
+            refs
           );
           break;
 
@@ -189,7 +192,7 @@ export function parseStringDef(
               ? Math.max(res.minLength, check.value)
               : check.value,
             check.message,
-            refs,
+            refs
           );
           setResponseValueAndErrors(
             res,
@@ -198,7 +201,7 @@ export function parseStringDef(
               ? Math.min(res.maxLength, check.value)
               : check.value,
             check.message,
-            refs,
+            refs
           );
           break;
         case "includes": {
@@ -206,7 +209,7 @@ export function parseStringDef(
             res,
             RegExp(processPattern(check.value)),
             check.message,
-            refs,
+            refs
           );
           break;
         }
@@ -239,7 +242,7 @@ export function parseStringDef(
                 "contentEncoding",
                 "base64",
                 check.message,
-                refs,
+                refs
               );
               break;
             }
@@ -277,7 +280,7 @@ const addFormat = (
   schema: JsonSchema7StringType,
   value: Required<JsonSchema7StringType>["format"],
   message: string | undefined,
-  refs: Refs,
+  refs: Refs
 ) => {
   if (schema.format || schema.anyOf?.some((x) => x.format)) {
     if (!schema.anyOf) {
@@ -315,7 +318,7 @@ const addPattern = (
   schema: JsonSchema7StringType,
   regex: RegExp | (() => RegExp),
   message: string | undefined,
-  refs: Refs,
+  refs: Refs
 ) => {
   if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
     if (!schema.allOf) {
@@ -350,14 +353,18 @@ const addPattern = (
       "pattern",
       processRegExp(regex, refs),
       message,
-      refs,
+      refs
     );
   }
 };
 
 // Mutate z.string.regex() in a best attempt to accommodate for regex flags when applyRegexFlags is true
-const processRegExp = (regexOrFunction: RegExp | (() => RegExp), refs: Refs): string => {
-  const regex = typeof regexOrFunction === "function" ? regexOrFunction() : regexOrFunction;
+const processRegExp = (
+  regexOrFunction: RegExp | (() => RegExp),
+  refs: Refs
+): string => {
+  const regex =
+    typeof regexOrFunction === "function" ? regexOrFunction() : regexOrFunction;
   if (!refs.applyRegexFlags || !regex.flags) return regex.source;
 
   // Currently handled flags
@@ -433,8 +440,8 @@ const processRegExp = (regexOrFunction: RegExp | (() => RegExp), refs: Refs): st
   } catch {
     console.warn(
       `Could not convert regex pattern at ${refs.currentPath.join(
-        "/",
-      )} to a flag-independent form! Falling back to the flag-ignorant source`,
+        "/"
+      )} to a flag-independent form! Falling back to the flag-ignorant source`
     );
     return regex.source;
   }
