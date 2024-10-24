@@ -16,6 +16,18 @@ suite("records", (test) => {
     };
     assert(parsedSchema, expectedSchema);
   });
+  test("should be possible to describe a simple record with a branded key", (assert) => {
+    const schema = z.record(z.string().brand('MyBrand'), z.number());
+
+    const parsedSchema = parseRecordDef(schema._def, getRefs());
+    const expectedSchema = {
+      type: "object",
+      additionalProperties: {
+        type: "number",
+      },
+    };
+    assert(parsedSchema, expectedSchema);
+  });
 
   test("should be possible to describe a complex record with checks", (assert) => {
     const schema = z.record(
@@ -54,6 +66,25 @@ suite("records", (test) => {
       },
       propertyNames: {
         format: "uuid",
+      },
+    };
+    assert(parsedSchema, expectedSchema);
+  });
+
+  test("should be possible to describe a branded key schema", (assert) => {
+    const schema = z.record(
+      z.string().regex(/.+/).brand('MyBrandedThingo'),
+      z.number()
+    );
+
+    const parsedSchema = parseRecordDef(schema._def, getRefs());
+    const expectedSchema = {
+      type: "object",
+      additionalProperties: {
+        type: "number",
+      },
+      propertyNames: {
+        pattern: ".+",
       },
     };
     assert(parsedSchema, expectedSchema);
