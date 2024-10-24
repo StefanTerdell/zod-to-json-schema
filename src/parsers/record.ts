@@ -77,7 +77,8 @@ export function parseRecordDef(
         enum: def.keyType._def.values,
       },
     };
-  } else if (def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodBranded &&
+  } else if (
+    def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodBranded &&
     def.keyType._def.type._def.typeName === ZodFirstPartyTypeKind.ZodString &&
     def.keyType._def.type._def.checks?.length
   ) {
