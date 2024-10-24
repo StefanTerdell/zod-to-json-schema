@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.23.4",
+  "version": "3.23.5",
   "description": "Converts Zod schemas to Json Schemas",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/cjs/index.js",
@@ -62,7 +62,8 @@
     "Jacob Lee (https://github.com/jacoblee93)",
     "Brett Zamir (https://github.com/brettz9)",
     "Isaiah Marc Sanchez (https://github.com/imsanchez)",
-    "Mitchell Merry (https://github.com/mitchell-merry)"
+    "Mitchell Merry (https://github.com/mitchell-merry)",
+    "Enzo Monjardín (https://github.com/enzomonjardin)"
   ],
   "repository": {
     "type": "git",
