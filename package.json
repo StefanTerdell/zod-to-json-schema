@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.23.3",
+  "version": "3.23.4",
   "description": "Converts Zod schemas to Json Schemas",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/cjs/index.js",
@@ -60,7 +60,9 @@
     "Colin McDonnell (https://github.com/colinhacks)",
     "Spappz (https://github.com/Spappz)",
     "Jacob Lee (https://github.com/jacoblee93)",
-    "Brett Zamir (https://github.com/brettz9)"
+    "Brett Zamir (https://github.com/brettz9)",
+    "Isaiah Marc Sanchez (https://github.com/imsanchez)",
+    "Mitchell Merry (https://github.com/mitchell-merry)"
   ],
   "repository": {
     "type": "git",
