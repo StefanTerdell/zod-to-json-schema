@@ -185,6 +185,7 @@ suite("Basic parsing", (test) => {
       type: "object",
       properties: {},
       additionalProperties: false,
+      readOnly: true,
     };
     assert(parsedSchema, jsonSchema);
   });
