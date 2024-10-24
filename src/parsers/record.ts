@@ -9,7 +9,7 @@ import { Refs } from "../Refs.js";
 import { JsonSchema7EnumType } from "./enum.js";
 import { JsonSchema7ObjectType } from "./object.js";
 import { JsonSchema7StringType, parseStringDef } from "./string.js";
-import { parseBrandedDef } from "./branded";
+import { parseBrandedDef } from "./branded.js";
 
 type JsonSchema7RecordPropertyNamesType =
   | Omit<JsonSchema7StringType, "type">
