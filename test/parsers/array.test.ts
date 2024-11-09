@@ -3,7 +3,7 @@ import { z } from "zod";
 import { parseArrayDef } from "../../src/parsers/array.js";
 import { getRefs } from "../../src/Refs.js";
 import { errorReferences } from "./errorReferences.js";
-import deref from "local-ref-resolver"
+import deref from "local-ref-resolver";
 import { suite } from "../suite.js";
 
 suite("Arrays and array validations", (test) => {

@@ -29,9 +29,12 @@ suite("effects", (test) => {
   test("should return object based on 'any' strategy", (assert) => {
     const schema = z.string().transform((arg) => parseInt(arg));
 
-    const jsonSchema = parseEffectsDef(schema._def, getRefs({
-      effectStrategy: "any"
-    }));
+    const jsonSchema = parseEffectsDef(
+      schema._def,
+      getRefs({
+        effectStrategy: "any",
+      }),
+    );
 
     assert(jsonSchema, {});
   });

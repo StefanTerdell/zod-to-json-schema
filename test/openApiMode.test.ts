@@ -127,51 +127,43 @@ suite("Open API target", (test) => {
     });
 
     const expected = {
-        type: "object",
-        properties: {
-            id: {
-                type: "integer",
-                exclusiveMinimum: true,
-                minimum: 0,
-            },
-            name: {
-                type: "string",
-                minLength: 2,
-            },
-            photo: {
-                type: "object",
-                properties: {
-                    id: {
-                        type: "integer",
-                        exclusiveMinimum: true,
-                        minimum: 0,
-                    },
-                    filename: {
-                        type: "string",
-                    },
-                },
-                required: [
-                    "id",
-                    "filename",
-                ],
-                additionalProperties: false,
-            },
-            cover: {
-                allOf: [
-                    {
-                        $ref: "#/properties/photo",
-                    },
-                ],
-                nullable: true,
-            },
+      type: "object",
+      properties: {
+        id: {
+          type: "integer",
+          exclusiveMinimum: true,
+          minimum: 0,
         },
-        required: [
-            "id",
-            "name",
-            "photo",
-            "cover",
-        ],
-        additionalProperties: false,
+        name: {
+          type: "string",
+          minLength: 2,
+        },
+        photo: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              exclusiveMinimum: true,
+              minimum: 0,
+            },
+            filename: {
+              type: "string",
+            },
+          },
+          required: ["id", "filename"],
+          additionalProperties: false,
+        },
+        cover: {
+          allOf: [
+            {
+              $ref: "#/properties/photo",
+            },
+          ],
+          nullable: true,
+        },
+      },
+      required: ["id", "name", "photo", "cover"],
+      additionalProperties: false,
     };
 
     assert(result, expected);
@@ -183,7 +175,7 @@ suite("Open API target", (test) => {
         id: z.number().int().positive(),
         filename: z.string(),
       })
-      .describe('A picture')
+      .describe("A picture")
       .strict();
 
     const userSchema = z
@@ -203,28 +195,32 @@ suite("Open API target", (test) => {
     });
 
     const expected = {
-        type: 'object',
-        properties: {
-          id: { type: 'integer', exclusiveMinimum: true, minimum: 0 },
-          name: { type: 'string', minLength: 2 },
-          photo: { '$ref': '#/definitions/Picture' },
-          cover: { allOf: [{ '$ref': '#/definitions/Picture' }], nullable: true, description: 'A picture' },
+      type: "object",
+      properties: {
+        id: { type: "integer", exclusiveMinimum: true, minimum: 0 },
+        name: { type: "string", minLength: 2 },
+        photo: { $ref: "#/definitions/Picture" },
+        cover: {
+          allOf: [{ $ref: "#/definitions/Picture" }],
+          nullable: true,
+          description: "A picture",
         },
-        required: [ 'id', 'name', 'photo', 'cover' ],
-        additionalProperties: false,
-        definitions: {
-          Picture: {
-            type: 'object',
-            properties: {
-              id: { type: 'integer', exclusiveMinimum: true, minimum: 0 },
-              filename: { type: 'string' },
-            },
-            required: [ 'id', 'filename' ],
-            additionalProperties: false,
-            description: 'A picture',
+      },
+      required: ["id", "name", "photo", "cover"],
+      additionalProperties: false,
+      definitions: {
+        Picture: {
+          type: "object",
+          properties: {
+            id: { type: "integer", exclusiveMinimum: true, minimum: 0 },
+            filename: { type: "string" },
           },
+          required: ["id", "filename"],
+          additionalProperties: false,
+          description: "A picture",
         },
-      };
+      },
+    };
 
     assert(result, expected);
   });
@@ -260,77 +256,65 @@ suite("Open API target", (test) => {
     });
 
     const expected = {
-        type: "object",
-        properties: {
-          id: {
-            type: "integer",
-            exclusiveMinimum: true,
-            minimum: 0,
-          },
-          name: {
-            type: "string",
-            minLength: 2,
-          },
-          cover: {
-            allOf: [
-              {
-                $ref: "#/definitions/Picture",
-              },
-            ],
-            nullable: true,
-          },
-          group: {
-            type: "object",
-            properties: {
-              id: {
-                type: "integer",
-                exclusiveMinimum: true,
-                minimum: 0,
-              },
-              name: {
-                type: "string",
-                minLength: 2,
-              },
-              cover: {
-                $ref: "#/properties/cover",
-              },
-            },
-            required: [
-              "id",
-              "name",
-              "cover",
-            ],
-            additionalProperties: false,
-          },
+      type: "object",
+      properties: {
+        id: {
+          type: "integer",
+          exclusiveMinimum: true,
+          minimum: 0,
         },
-        required: [
-          "id",
-          "name",
-          "cover",
-          "group",
-        ],
-        additionalProperties: false,
-        definitions: {
-          Picture: {
-            type: "object",
-            properties: {
-              id: {
-                type: "integer",
-                exclusiveMinimum: true,
-                minimum: 0,
-              },
-              filename: {
-                type: "string",
-              },
-            },
-            required: [
-              "id",
-              "filename",
-            ],
-            additionalProperties: false,
-          },
+        name: {
+          type: "string",
+          minLength: 2,
         },
-      };
+        cover: {
+          allOf: [
+            {
+              $ref: "#/definitions/Picture",
+            },
+          ],
+          nullable: true,
+        },
+        group: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              exclusiveMinimum: true,
+              minimum: 0,
+            },
+            name: {
+              type: "string",
+              minLength: 2,
+            },
+            cover: {
+              $ref: "#/properties/cover",
+            },
+          },
+          required: ["id", "name", "cover"],
+          additionalProperties: false,
+        },
+      },
+      required: ["id", "name", "cover", "group"],
+      additionalProperties: false,
+      definitions: {
+        Picture: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              exclusiveMinimum: true,
+              minimum: 0,
+            },
+            filename: {
+              type: "string",
+            },
+          },
+          required: ["id", "filename"],
+          additionalProperties: false,
+        },
+      },
+    };
 
     assert(result, expected);
   });
@@ -349,7 +333,7 @@ suite("Open API target", (test) => {
       .object({
         id: z.number().int().positive(),
         name: z.string().min(2),
-        cover: coverSchema.describe('A user cover'),
+        cover: coverSchema.describe("A user cover"),
         group: z.object({
           id: z.number().int().positive(),
           name: z.string().min(2),
@@ -366,83 +350,71 @@ suite("Open API target", (test) => {
     });
 
     const expected = {
-        type: "object",
-        properties: {
-          id: {
-            type: "integer",
-            exclusiveMinimum: true,
-            minimum: 0,
-          },
-          name: {
-            type: "string",
-            minLength: 2,
-          },
-          cover: {
-            allOf: [
-              {
-                $ref: "#/definitions/Picture",
-              },
-            ],
-            nullable: true,
-            description: "A user cover",
-          },
-          group: {
-            type: "object",
-            properties: {
-              id: {
-                type: "integer",
-                exclusiveMinimum: true,
-                minimum: 0,
-              },
-              name: {
-                type: "string",
-                minLength: 2,
-              },
-              cover: {
-                allOf: [
-                  {
-                    $ref: "#/definitions/Picture",
-                  },
-                ],
-                nullable: true,
-              },
-            },
-            required: [
-              "id",
-              "name",
-              "cover",
-            ],
-            additionalProperties: false,
-          },
+      type: "object",
+      properties: {
+        id: {
+          type: "integer",
+          exclusiveMinimum: true,
+          minimum: 0,
         },
-        required: [
-          "id",
-          "name",
-          "cover",
-          "group",
-        ],
-        additionalProperties: false,
-        definitions: {
-          Picture: {
-            type: "object",
-            properties: {
-              id: {
-                type: "integer",
-                exclusiveMinimum: true,
-                minimum: 0,
-              },
-              filename: {
-                type: "string",
-              },
-            },
-            required: [
-              "id",
-              "filename",
-            ],
-            additionalProperties: false,
-          },
+        name: {
+          type: "string",
+          minLength: 2,
         },
-      };
+        cover: {
+          allOf: [
+            {
+              $ref: "#/definitions/Picture",
+            },
+          ],
+          nullable: true,
+          description: "A user cover",
+        },
+        group: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              exclusiveMinimum: true,
+              minimum: 0,
+            },
+            name: {
+              type: "string",
+              minLength: 2,
+            },
+            cover: {
+              allOf: [
+                {
+                  $ref: "#/definitions/Picture",
+                },
+              ],
+              nullable: true,
+            },
+          },
+          required: ["id", "name", "cover"],
+          additionalProperties: false,
+        },
+      },
+      required: ["id", "name", "cover", "group"],
+      additionalProperties: false,
+      definitions: {
+        Picture: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+              exclusiveMinimum: true,
+              minimum: 0,
+            },
+            filename: {
+              type: "string",
+            },
+          },
+          required: ["id", "filename"],
+          additionalProperties: false,
+        },
+      },
+    };
 
     assert(result, expected);
   });

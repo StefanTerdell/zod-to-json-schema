@@ -47,8 +47,7 @@ export function parseNullableDef(
       currentPath: [...refs.currentPath],
     });
 
-    if (base && '$ref' in base)
-        return { allOf: [base], nullable: true } as any;
+    if (base && "$ref" in base) return { allOf: [base], nullable: true } as any;
 
     return base && ({ ...base, nullable: true } as any);
   }

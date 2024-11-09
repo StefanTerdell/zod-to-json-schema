@@ -32,7 +32,7 @@ suite("bigint", (test) => {
     const parsedSchema = parseBigintDef(
       z.bigint().gte(BigInt(10)).lte(BigInt(20))._def,
       getRefs({
-        target: 'jsonSchema2019-09'
+        target: "jsonSchema2019-09",
       }),
     );
     const jsonSchema = {
@@ -62,7 +62,7 @@ suite("bigint", (test) => {
     const parsedSchema = parseBigintDef(
       z.bigint().gt(BigInt(10)).lt(BigInt(20))._def,
       getRefs({
-        target: "jsonSchema2019-09"
+        target: "jsonSchema2019-09",
       }),
     );
     const jsonSchema = {
@@ -71,7 +71,7 @@ suite("bigint", (test) => {
       exclusiveMinimum: true,
       exclusiveMaximum: true,
       minimum: BigInt(10),
-      maximum: BigInt(20)
+      maximum: BigInt(20),
     };
     assert(parsedSchema, jsonSchema);
   });
@@ -79,12 +79,12 @@ suite("bigint", (test) => {
   test("should be possible to define multipleOf", (assert) => {
     const parsedSchema = parseBigintDef(
       z.bigint().multipleOf(BigInt(5))._def,
-      getRefs()
+      getRefs(),
     );
     const jsonSchema = {
       type: "integer",
       format: "int64",
-      multipleOf: BigInt(5)
+      multipleOf: BigInt(5),
     };
     assert(parsedSchema, jsonSchema);
   });

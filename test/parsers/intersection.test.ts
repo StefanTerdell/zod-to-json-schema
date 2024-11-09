@@ -233,10 +233,7 @@ suite("intersections", (test) => {
       })
       .passthrough();
     const intersection = schema1.and(schema2).and(schema3);
-    const jsonSchema = parseIntersectionDef(
-      intersection._def,
-      getRefs(),
-    );
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
 
     assert(jsonSchema, {
       allOf: [

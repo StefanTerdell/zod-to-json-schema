@@ -3,7 +3,7 @@ import { z } from "zod";
 import { parseUnionDef } from "../../src/parsers/union.js";
 import { getRefs } from "../../src/Refs.js";
 import { suite } from "../suite.js";
-import deref from "local-ref-resolver"
+import deref from "local-ref-resolver";
 
 suite("Unions", (test) => {
   test("Should be possible to get a simple type array from a union of only unvalidated primitives", (assert) => {
@@ -39,7 +39,7 @@ suite("Unions", (test) => {
     const parsedSchema = parseUnionDef(
       z.union([
         z.literal(undefined),
-        z.literal(Symbol('abc')),
+        z.literal(Symbol("abc")),
         // @ts-expect-error Ok
         z.literal(function () {}),
       ])._def,
@@ -48,14 +48,14 @@ suite("Unions", (test) => {
     const jsonSchema = {
       anyOf: [
         {
-          type: "object"
+          type: "object",
         },
         {
-          type: "object"
+          type: "object",
         },
         {
-          type: "object"
-        }
+          type: "object",
+        },
       ],
     };
     assert(parsedSchema, jsonSchema);

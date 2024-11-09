@@ -33,7 +33,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   applyRegexFlags: boolean;
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
   base64Strategy: "format:binary" | "contentEncoding:base64" | "pattern:zod";
-  nameStrategy: "ref" | "title",
+  nameStrategy: "ref" | "title";
   override?: (
     def: ZodTypeDef,
     refs: Refs,
@@ -61,7 +61,7 @@ export const defaultOptions: Options = {
   applyRegexFlags: false,
   emailStrategy: "format:email",
   base64Strategy: "contentEncoding:base64",
-  nameStrategy: "ref"
+  nameStrategy: "ref",
 };
 
 export const getDefaultOptions = <Target extends Targets>(

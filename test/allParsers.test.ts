@@ -258,7 +258,7 @@ suite("All Parsers tests", (test) => {
         },
         stringEmoji: {
           type: "string",
-          pattern: '^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$',
+          pattern: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
         },
         stringUrl: {
           type: "string",
@@ -592,7 +592,7 @@ suite("All Parsers tests", (test) => {
         },
         stringEmoji: {
           type: "string",
-          pattern: '^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$',
+          pattern: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
         },
         stringUrl: {
           type: "string",
@@ -917,7 +917,7 @@ suite("All Parsers tests", (test) => {
         },
         stringEmoji: {
           type: "string",
-          pattern: '^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$',
+          pattern: "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
         },
         stringUrl: {
           type: "string",

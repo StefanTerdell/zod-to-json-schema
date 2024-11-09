@@ -29,12 +29,12 @@ export function suite(suiteName: string, suiteContext: SuiteContext): void {
           args.length === 2
             ? assert(args[0], args[1], [])
             : args[0]
-            ? undefined
-            : ({
-                missmatch: "value",
-                expected: "truthy",
-                got: args[0],
-              } satisfies Error);
+              ? undefined
+              : ({
+                  missmatch: "value",
+                  expected: "truthy",
+                  got: args[0],
+                } satisfies Error);
 
         if (!error) {
           passedAssertions++;

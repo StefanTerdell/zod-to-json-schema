@@ -108,10 +108,13 @@ suite("Root schema result after parsing", (it) => {
   });
 
   it("should be possible to add name as title instead of as ref", (assert) => {
-    assert(zodToJsonSchema(z.string(), { name: "hello", nameStrategy: "title"}), {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      type: "string",
-      title: "hello"
-    })
-  })
+    assert(
+      zodToJsonSchema(z.string(), { name: "hello", nameStrategy: "title" }),
+      {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        type: "string",
+        title: "hello",
+      },
+    );
+  });
 });
