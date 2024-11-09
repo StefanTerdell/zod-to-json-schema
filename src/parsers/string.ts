@@ -2,7 +2,7 @@ import { ZodStringDef } from "zod";
 import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
 import { Refs } from "../Refs.js";
 
-let emojiRegex: RegExp | undefined;
+let emojiRegex: RegExp | undefined = undefined;
 
 /**
  * Generated from the regular expressions found here as of 2024-05-22:
@@ -35,7 +35,10 @@ export const zodPatterns = {
    */
   emoji: () => {
     if (emojiRegex === undefined) {
-      emojiRegex = RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$", "u");
+      emojiRegex = RegExp(
+        "^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$",
+        "u",
+      );
     }
     return emojiRegex;
   },
@@ -90,12 +93,6 @@ export function parseStringDef(
   const res: JsonSchema7StringType = {
     type: "string",
   };
-
-  function processPattern(value: string): string {
-    return refs.patternStrategy === "escape"
-      ? escapeNonAlphaNumeric(value)
-      : value;
-  }
 
   if (def.checks) {
     for (const check of def.checks) {
@@ -155,7 +152,7 @@ export function parseStringDef(
         case "startsWith":
           addPattern(
             res,
-            RegExp(`^${processPattern(check.value)}`),
+            RegExp(`^${escapeLiteralCheckValue(check.value, refs)}`),
             check.message,
             refs,
           );
@@ -163,7 +160,7 @@ export function parseStringDef(
         case "endsWith":
           addPattern(
             res,
-            RegExp(`${processPattern(check.value)}$`),
+            RegExp(`${escapeLiteralCheckValue(check.value, refs)}$`),
             check.message,
             refs,
           );
@@ -204,7 +201,7 @@ export function parseStringDef(
         case "includes": {
           addPattern(
             res,
-            RegExp(processPattern(check.value)),
+            RegExp(escapeLiteralCheckValue(check.value, refs)),
             check.message,
             refs,
           );
@@ -220,7 +217,7 @@ export function parseStringDef(
           break;
         }
         case "emoji":
-          addPattern(res, zodPatterns.emoji, check.message, refs);
+          addPattern(res, zodPatterns.emoji(), check.message, refs);
           break;
         case "ulid": {
           addPattern(res, zodPatterns.ulid, check.message, refs);
@@ -268,17 +265,37 @@ export function parseStringDef(
   return res;
 }
 
-const escapeNonAlphaNumeric = (value: string) =>
-  Array.from(value)
-    .map((c) => (/[a-zA-Z0-9]/.test(c) ? c : `\\${c}`))
-    .join("");
+function escapeLiteralCheckValue(literal: string, refs: Refs): string {
+  return refs.patternStrategy === "escape"
+    ? escapeNonAlphaNumeric(literal)
+    : literal;
+}
 
-const addFormat = (
+const ALPHA_NUMERIC = new Set(
+  "ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz0123456789",
+);
+
+function escapeNonAlphaNumeric(source: string) {
+  let result = "";
+
+  for (let i = 0; i < source.length; i++) {
+    if (!ALPHA_NUMERIC.has(source[i])) {
+      result += "\\";
+    }
+
+    result += source[i];
+  }
+
+  return result;
+}
+
+// Adds a "format" keyword to the schema. If a format exists, both formats will be joined in an allOf-node, along with subsequent ones.
+function addFormat(
   schema: JsonSchema7StringType,
   value: Required<JsonSchema7StringType>["format"],
   message: string | undefined,
   refs: Refs,
-) => {
+) {
   if (schema.format || schema.anyOf?.some((x) => x.format)) {
     if (!schema.anyOf) {
       schema.anyOf = [];
@@ -309,14 +326,15 @@ const addFormat = (
   } else {
     setResponseValueAndErrors(schema, "format", value, message, refs);
   }
-};
+}
 
-const addPattern = (
+// Adds a "pattern" keyword to the schema. If a pattern exists, both patterns will be joined in an allOf-node, along with subsequent ones.
+function addPattern(
   schema: JsonSchema7StringType,
-  regex: RegExp | (() => RegExp),
+  regex: RegExp,
   message: string | undefined,
   refs: Refs,
-) => {
+) {
   if (schema.pattern || schema.allOf?.some((x) => x.pattern)) {
     if (!schema.allOf) {
       schema.allOf = [];
@@ -340,7 +358,7 @@ const addPattern = (
     }
 
     schema.allOf!.push({
-      pattern: processRegExp(regex, refs),
+      pattern: stringifyRegExpWithFlags(regex, refs),
       ...(message &&
         refs.errorMessages && { errorMessage: { pattern: message } }),
     });
@@ -348,17 +366,18 @@ const addPattern = (
     setResponseValueAndErrors(
       schema,
       "pattern",
-      processRegExp(regex, refs),
+      stringifyRegExpWithFlags(regex, refs),
       message,
       refs,
     );
   }
-};
+}
 
 // Mutate z.string.regex() in a best attempt to accommodate for regex flags when applyRegexFlags is true
-const processRegExp = (regexOrFunction: RegExp | (() => RegExp), refs: Refs): string => {
-  const regex = typeof regexOrFunction === "function" ? regexOrFunction() : regexOrFunction;
-  if (!refs.applyRegexFlags || !regex.flags) return regex.source;
+function stringifyRegExpWithFlags(regex: RegExp, refs: Refs): string {
+  if (!refs.applyRegexFlags || !regex.flags) {
+    return regex.source;
+  }
 
   // Currently handled flags
   const flags = {
@@ -368,7 +387,6 @@ const processRegExp = (regexOrFunction: RegExp | (() => RegExp), refs: Refs): st
   };
 
   // The general principle here is to step through each character, one at a time, applying mutations as flags require. We keep track when the current character is escaped, and when it's inside a group /like [this]/ or (also) a range like /[a-z]/. The following is fairly brittle imperative code; edit at your peril!
-
   const source = flags.i ? regex.source.toLowerCase() : regex.source;
   let pattern = "";
   let isEscaped = false;
@@ -429,7 +447,7 @@ const processRegExp = (regexOrFunction: RegExp | (() => RegExp), refs: Refs): st
   }
 
   try {
-    const regexTest = new RegExp(pattern);
+    new RegExp(pattern);
   } catch {
     console.warn(
       `Could not convert regex pattern at ${refs.currentPath.join(
@@ -440,4 +458,4 @@ const processRegExp = (regexOrFunction: RegExp | (() => RegExp), refs: Refs): st
   }
 
   return pattern;
-};
+}
