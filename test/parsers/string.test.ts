@@ -225,7 +225,10 @@ suite("String validations", (test) => {
   });
 
   test("should be possible to use length with min and max constraints", (assert) => {
-    const parsedSchema = parseStringDef(z.string().min(20).max(25).length(15)._def, getRefs());
+    const parsedSchema = parseStringDef(
+      z.string().min(20).max(25).length(15)._def,
+      getRefs(),
+    );
     const jsonSchema: JsonSchema7Type = {
       type: "string",
       minLength: 20,
@@ -241,13 +244,19 @@ suite("String validations", (test) => {
   });
 
   test('should gracefully ignore the .toLowerCase() "check"', (assert) => {
-    const parsedSchema = parseStringDef(z.string().toLowerCase()._def, getRefs());
+    const parsedSchema = parseStringDef(
+      z.string().toLowerCase()._def,
+      getRefs(),
+    );
     const jsonSchema = { type: "string" };
     assert(parsedSchema, jsonSchema);
   });
 
   test('should gracefully ignore the .toUpperCase() "check"', (assert) => {
-    const parsedSchema = parseStringDef(z.string().toUpperCase()._def, getRefs());
+    const parsedSchema = parseStringDef(
+      z.string().toUpperCase()._def,
+      getRefs(),
+    );
     const jsonSchema = { type: "string" };
     assert(parsedSchema, jsonSchema);
   });
@@ -277,12 +286,18 @@ suite("String validations", (test) => {
   });
 
   test("should work with the preserve patternStrategy", (assert) => {
-    assert(parseStringDef(z.string().includes("aBcD123{}[]")._def, getRefs({
-      patternStrategy: "preserve"
-    })), {
-      type: "string",
-      pattern: "aBcD123{}[]",
-    });
+    assert(
+      parseStringDef(
+        z.string().includes("aBcD123{}[]")._def,
+        getRefs({
+          patternStrategy: "preserve",
+        }),
+      ),
+      {
+        type: "string",
+        pattern: "aBcD123{}[]",
+      },
+    );
   });
 
   test("should bundle multiple pattern type checks in an allOf container", (assert) => {
@@ -520,19 +535,19 @@ suite("String validations", (test) => {
   });
 
   test("should bundle multiple formats into anyOf", (assert) => {
-    const zodSchema = z.string().ip('v4');
+    const zodSchema = z.string().ip("v4");
     const jsonSchema: JSONSchema7Type = {
       type: "string",
       anyOf: [
         {
           errorMessage: {
-            format: 'v4'
+            format: "v4",
           },
           format: "ipv4",
         },
         {
           errorMessage: {
-            format: 'v4'
+            format: "v4",
           },
           format: "ipv6",
         },
@@ -634,67 +649,87 @@ suite("String validations", (test) => {
     assert(
       parseStringDef(
         z.string().regex(/(^|\^foo)Ba[r-z]+./)._def,
-        getRefs({ applyRegexFlags: true })
+        getRefs({ applyRegexFlags: true }),
       ),
       {
         type: "string",
         pattern: "(^|\\^foo)Ba[r-z]+.",
-      }
+      },
     );
 
     assert(
       parseStringDef(
         z.string().regex(/(^|\^foo)Ba[r-z]+./i)._def,
-        getRefs({ applyRegexFlags: true })
+        getRefs({ applyRegexFlags: true }),
       ),
       {
         type: "string",
         pattern: "(^|\\^[fF][oO][oO])[bB][aA][r-zR-Z]+.",
-      }
+      },
     );
 
     assert(
       parseStringDef(
         z.string().regex(/(^|\^foo)Ba[r-z]+./ms)._def,
-        getRefs({ applyRegexFlags: true })
+        getRefs({ applyRegexFlags: true }),
       ),
       {
         type: "string",
         pattern: "((^|(?<=[\r\n]))|\\^foo)Ba[r-z]+[.\r\n]",
-      }
+      },
     );
 
     assert(
       parseStringDef(
         z.string().regex(/(^|\^foo)Ba[r-z]+./ims)._def,
-        getRefs({ applyRegexFlags: true })
+        getRefs({ applyRegexFlags: true }),
       ),
       {
         type: "string",
         pattern: "((^|(?<=[\r\n]))|\\^[fF][oO][oO])[bB][aA][r-zR-Z]+[.\r\n]",
-      }
+      },
     );
 
     assert(
       parseStringDef(
         z.string().regex(/foo.+$/m)._def,
-        getRefs({ applyRegexFlags: true })
+        getRefs({ applyRegexFlags: true }),
       ),
       {
         type: "string",
         pattern: "foo.+($|(?=[\r\n]))",
-      }
+      },
     );
 
     assert(
       parseStringDef(
         z.string().regex(/foo.+[amz]/i)._def,
-        getRefs({ applyRegexFlags: true })
+        getRefs({ applyRegexFlags: true }),
       ),
       {
         type: "string",
         pattern: "[fF][oO][oO].+[aAmMzZ]",
-      }
+      },
     );
+  });
+
+  test("Unescape forward slashes", (assert) => {
+    const zodSchema = z.string().regex(/^\/$/);
+
+    let jsonSchema = parseStringDef(zodSchema._def, getRefs());
+
+    const pattern = jsonSchema.pattern!;
+    const patternJson = JSON.stringify(pattern);
+    const patternJsonParsed = JSON.parse(patternJson);
+
+    let regexp = new RegExp(patternJsonParsed);
+    assert(regexp.test(""), false);
+    assert(regexp.test("/"), true);
+    assert(regexp.test("//"), false);
+
+    const ajvSchema = ajv.compile(jsonSchema);
+    assert(ajvSchema(""), false);
+    assert(ajvSchema("/"), true);
+    assert(ajvSchema("//"), false);
   });
 });

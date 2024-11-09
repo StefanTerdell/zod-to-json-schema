@@ -1,11 +1,14 @@
 import { z } from "zod";
 import { zodToJsonSchema } from "../src/zodToJsonSchema";
 import { suite } from "./suite";
+import Ajv from "ajv";
+import errorMessages from "ajv-errors";
 
 suite("Issue tests", (test) => {
+  const ajv = errorMessages(new Ajv({ allErrors: true }));
+
   test("@94", (assert) => {
     const topicSchema = z.object({
-
       topics: z
         .array(
           z.object({
@@ -30,15 +33,69 @@ suite("Issue tests", (test) => {
             properties: {
               topic: {
                 type: "string",
-                description: "The topic of the position"
-              }
+                description: "The topic of the position",
+              },
             },
-            additionalProperties: false
+            additionalProperties: false,
           },
-          description: "An array of topics"
+          description: "An array of topics",
         },
       },
-      additionalProperties: false
+      additionalProperties: false,
     });
+  });
+
+  test("@154", (assert) => {
+    const urlRegex =
+      /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%,/.\w\-_]*)?\??(?:[-+=&;%@.\w:()_]*)#?(?:[.!/\\\w]*))?)/;
+
+    const URLSchema = z
+      .string()
+      .min(1)
+      .max(1000)
+      .regex(urlRegex, { message: "Please enter a valid URL" })
+      .brand("url");
+
+    const jsonSchema = zodToJsonSchema(URLSchema, { errorMessages: true });
+
+    // Basic conversion checks
+    {
+      const expected = {
+        type: "string",
+        minLength: 1,
+        maxLength: 1000,
+        pattern:
+          "^((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=+$,\\w]+@)?[A-Za-z0-9.-]+|(?:www\\.|[-;:&=+$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[+~%,/.\\w\\-_]*)?\\??(?:[-+=&;%@.\\w:()_]*)#?(?:[.!/\\\\\\w]*))?)",
+        errorMessage: { pattern: "Please enter a valid URL" },
+        $schema: "http://json-schema.org/draft-07/schema#",
+      };
+
+      assert(jsonSchema, expected);
+    }
+
+    // Ajv checks
+    {
+      const ajvSchema = ajv.compile(jsonSchema);
+
+      function assertAjvErrors(input: unknown, errorKeywords: string[] | null) {
+        assert(ajvSchema(input), !errorKeywords);
+        assert(ajvSchema.errors?.map((e) => e.keyword) ?? null, errorKeywords);
+      }
+
+      assertAjvErrors(
+        "https://github.com/StefanTerdell/zod-to-json-schema/issues/154",
+        null,
+      );
+      assertAjvErrors("", ["minLength", "errorMessage"]);
+      assertAjvErrors("invalid url", ["errorMessage"]);
+      assertAjvErrors(
+        "http://www.ok-url-but-too-long.com/" + "x".repeat(1000),
+        ["maxLength"],
+      );
+      assertAjvErrors("invalid url and too long" + "x".repeat(1000), [
+        "maxLength",
+        "errorMessage",
+      ]);
+    }
   });
 });
