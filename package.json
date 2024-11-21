@@ -23,7 +23,7 @@
     "dry": "npm run build && npm pub --dry-run",
     "test:watch": "tsx watch test/index.ts",
     "test:gen": "tsx test/createIndex.ts",
-    "test": "c8 --all tsx test/index.ts",
+    "test": "tsx test/index.ts",
     "gen": "tsx createIndex.ts"
   },
   "c8": {
@@ -79,7 +79,6 @@
     "ajv": "^8.6.3",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.1.1",
-    "c8": "^10.1.2",
     "fast-diff": "^1.3.0",
     "local-ref-resolver": "^0.2.0",
     "rimraf": "^3.0.2",
