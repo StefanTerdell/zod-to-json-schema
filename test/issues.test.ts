@@ -56,7 +56,8 @@ suite("Issue tests", (test) => {
       .regex(urlRegex, { message: "Please enter a valid URL" })
       .brand("url");
 
-    const jsonSchema = zodToJsonSchema(URLSchema, { errorMessages: true });
+    const jsonSchemaJs = zodToJsonSchema(URLSchema, { errorMessages: true });
+    const jsonSchema = JSON.parse(JSON.stringify(jsonSchemaJs))
 
     // Basic conversion checks
     {
