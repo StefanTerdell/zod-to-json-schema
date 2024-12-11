@@ -25,6 +25,12 @@ export function parseRecordDef(
   def: ZodRecordDef<ZodTypeAny, ZodTypeAny> | ZodMapDef,
   refs: Refs,
 ): JsonSchema7RecordType {
+  if (refs.target === "openAi") {
+    console.warn(
+      "Warning: OpenAI may not support records in schemas! Try an array of key-value pairs instead.",
+    );
+  }
+
   if (
     refs.target === "openApi3" &&
     def.keyType?._def.typeName === ZodFirstPartyTypeKind.ZodEnum

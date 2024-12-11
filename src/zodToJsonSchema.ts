@@ -89,8 +89,20 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
 
   if (refs.target === "jsonSchema7") {
     combined.$schema = "http://json-schema.org/draft-07/schema#";
-  } else if (refs.target === "jsonSchema2019-09") {
+  } else if (refs.target === "jsonSchema2019-09" || refs.target === "openAi") {
     combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
+  }
+
+  if (
+    refs.target === "openAi" &&
+    ("anyOf" in combined ||
+      "oneOf" in combined ||
+      "allOf" in combined ||
+      ("type" in combined && Array.isArray(combined.type)))
+  ) {
+    console.warn(
+      "Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property.",
+    );
   }
 
   return combined;

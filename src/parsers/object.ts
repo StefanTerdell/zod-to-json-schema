@@ -1,4 +1,4 @@
-import { ZodObjectDef } from "zod";
+import { ZodObjectDef, ZodOptional } from "zod";
 import { JsonSchema7Type, parseDef } from "../parseDef.js";
 import { Refs } from "../Refs.js";
 
@@ -28,6 +28,8 @@ export type JsonSchema7ObjectType = {
 };
 
 export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
+  const forceOptionalIntoNullable = refs.target === "openAi";
+
   const result: JsonSchema7ObjectType = {
     type: "object",
     ...Object.entries(def.shape()).reduce(
@@ -39,6 +41,21 @@ export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
         [propName, propDef],
       ) => {
         if (propDef === undefined || propDef._def === undefined) return acc;
+
+        let propOptional = propDef.isOptional();
+
+        if (propOptional && forceOptionalIntoNullable) {
+          if (propDef instanceof ZodOptional) {
+            propDef = propDef._def.innerType;
+          }
+
+          if (!propDef.isNullable()) {
+            propDef = propDef.nullable();
+          }
+
+          propOptional = false;
+        }
+
         const parsedDef = parseDef(propDef._def, {
           ...refs,
           currentPath: [...refs.currentPath, "properties", propName],
@@ -47,9 +64,7 @@ export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
         if (parsedDef === undefined) return acc;
         return {
           properties: { ...acc.properties, [propName]: parsedDef },
-          required: propDef.isOptional()
-            ? acc.required
-            : [...acc.required, propName],
+          required: propOptional ? acc.required : [...acc.required, propName],
         };
       },
       { properties: {}, required: [] },
