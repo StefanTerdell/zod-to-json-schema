@@ -664,15 +664,15 @@ suite("All Parsers tests", (test) => {
       },
       description: "watup",
     };
+    assert(jsonSchema, expectedOutput);
   });
 
   test("2020-12 should produce correct schema name", (assert) => {
     const jsonSchema2020 = zodToJsonSchema(allParsersSchema, {
       target: "jsonSchema2020-12",
     });
-
     const expectedSchemaValue = "https://json-schema.org/draft/2020-12/schema#";
-    //
+
     assert(jsonSchema2020.$schema, expectedSchemaValue);
   });
 
