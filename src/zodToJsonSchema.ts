@@ -13,7 +13,9 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
       ? JsonSchema7Type
       : Target extends "jsonSchema2019-09"
         ? JsonSchema7Type
-        : object;
+        : Target extends "jsonSchema2020-12"
+          ? JsonSchema7Type
+          : object;
   };
 } => {
   const refs = getRefs(options);
@@ -91,6 +93,8 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
     combined.$schema = "http://json-schema.org/draft-07/schema#";
   } else if (refs.target === "jsonSchema2019-09" || refs.target === "openAi") {
     combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
+  } else if (refs.target === "jsonSchema2020-12") {
+    combined.$schema = "https://json-schema.org/draft/2020-12/schema#";
   }
 
   if (
@@ -101,7 +105,7 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
       ("type" in combined && Array.isArray(combined.type)))
   ) {
     console.warn(
-      "Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property.",
+      "Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property."
     );
   }
 

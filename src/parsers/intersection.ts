@@ -33,7 +33,7 @@ export function parseIntersectionDef(
   let unevaluatedProperties:
     | Pick<JsonSchema7AllOfType, "unevaluatedProperties">
     | undefined =
-    refs.target === "jsonSchema2019-09"
+    refs.target === "jsonSchema2019-09" || refs.target === "jsonSchema2020-12"
       ? { unevaluatedProperties: false }
       : undefined;
 
