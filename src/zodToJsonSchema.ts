@@ -105,7 +105,7 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
       ("type" in combined && Array.isArray(combined.type)))
   ) {
     console.warn(
-      "Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property."
+      "Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property.",
     );
   }
 
