@@ -57,7 +57,7 @@ suite("Issue tests", (test) => {
       .brand("url");
 
     const jsonSchemaJs = zodToJsonSchema(URLSchema, { errorMessages: true });
-    const jsonSchema = JSON.parse(JSON.stringify(jsonSchemaJs))
+    const jsonSchema = JSON.parse(JSON.stringify(jsonSchemaJs));
 
     // Basic conversion checks
     {
@@ -78,6 +78,7 @@ suite("Issue tests", (test) => {
     {
       const ajvSchema = ajv.compile(jsonSchema);
 
+      // @ts-expect-error
       function assertAjvErrors(input: unknown, errorKeywords: string[] | null) {
         assert(ajvSchema(input), !errorKeywords);
         assert(ajvSchema.errors?.map((e) => e.keyword) ?? null, errorKeywords);
@@ -98,5 +99,38 @@ suite("Issue tests", (test) => {
         "errorMessage",
       ]);
     }
+  });
+
+  test("should be possible to use lazy recursion @162", (assert) => {
+    const A: any = z.object({
+      ref1: z.lazy(() => B),
+    });
+
+    const B = z.object({
+      ref1: A,
+    });
+
+    const result = zodToJsonSchema(A);
+
+    const expected = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: {
+        ref1: {
+          type: "object",
+          properties: {
+            ref1: {
+              $ref: "#",
+            },
+          },
+          required: ["ref1"],
+          additionalProperties: false,
+        },
+      },
+      required: ["ref1"],
+      additionalProperties: false,
+    };
+
+    assert(result, expected);
   });
 });
