@@ -33,6 +33,7 @@ export * from "./parsers/tuple.js";
 export * from "./parsers/undefined.js";
 export * from "./parsers/union.js";
 export * from "./parsers/unknown.js";
+export * from "./selectParser.js";
 export * from "./zodToJsonSchema.js";
 import { zodToJsonSchema } from "./zodToJsonSchema.js";
 export default zodToJsonSchema;
