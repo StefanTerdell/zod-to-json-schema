@@ -1,4 +1,4 @@
-import { JsonSchema7TypeUnion } from "./parseDef.js";
+import { JsonSchema7TypeUnion } from "./parseTypes.js";
 import { Refs } from "./Refs.js";
 
 export type ErrorMessages<

@@ -2,6 +2,7 @@ export * from "./Options.js";
 export * from "./Refs.js";
 export * from "./errorMessages.js";
 export * from "./parseDef.js";
+export * from "./parseTypes.js";
 export * from "./parsers/any.js";
 export * from "./parsers/array.js";
 export * from "./parsers/bigint.js";

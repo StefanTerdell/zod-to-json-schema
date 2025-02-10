@@ -1,84 +1,37 @@
 import { ZodFirstPartyTypeKind, ZodTypeDef } from "zod";
-import { JsonSchema7AnyType, parseAnyDef } from "./parsers/any.js";
-import { JsonSchema7ArrayType, parseArrayDef } from "./parsers/array.js";
-import { JsonSchema7BigintType, parseBigintDef } from "./parsers/bigint.js";
-import { JsonSchema7BooleanType, parseBooleanDef } from "./parsers/boolean.js";
+import { parseAnyDef } from "./parsers/any.js";
+import { parseArrayDef } from "./parsers/array.js";
+import { parseBigintDef } from "./parsers/bigint.js";
+import { parseBooleanDef } from "./parsers/boolean.js";
 import { parseBrandedDef } from "./parsers/branded.js";
 import { parseCatchDef } from "./parsers/catch.js";
-import { JsonSchema7DateType, parseDateDef } from "./parsers/date.js";
+import { parseDateDef } from "./parsers/date.js";
 import { parseDefaultDef } from "./parsers/default.js";
 import { parseEffectsDef } from "./parsers/effects.js";
-import { JsonSchema7EnumType, parseEnumDef } from "./parsers/enum.js";
-import {
-  JsonSchema7AllOfType,
-  parseIntersectionDef,
-} from "./parsers/intersection.js";
-import { JsonSchema7LiteralType, parseLiteralDef } from "./parsers/literal.js";
-import { JsonSchema7MapType, parseMapDef } from "./parsers/map.js";
-import {
-  JsonSchema7NativeEnumType,
-  parseNativeEnumDef,
-} from "./parsers/nativeEnum.js";
-import { JsonSchema7NeverType, parseNeverDef } from "./parsers/never.js";
-import { JsonSchema7NullType, parseNullDef } from "./parsers/null.js";
-import {
-  JsonSchema7NullableType,
-  parseNullableDef,
-} from "./parsers/nullable.js";
-import { JsonSchema7NumberType, parseNumberDef } from "./parsers/number.js";
-import { JsonSchema7ObjectType, parseObjectDef } from "./parsers/object.js";
+import { parseEnumDef } from "./parsers/enum.js";
+import {parseIntersectionDef } from "./parsers/intersection.js";
+import { parseLiteralDef } from "./parsers/literal.js";
+import { parseMapDef } from "./parsers/map.js";
+import { parseNativeEnumDef } from "./parsers/nativeEnum.js";
+import { parseNeverDef } from "./parsers/never.js";
+import { parseNullDef } from "./parsers/null.js";
+import { parseNullableDef } from "./parsers/nullable.js";
+import { parseNumberDef } from "./parsers/number.js";
+import { parseObjectDef } from "./parsers/object.js";
 import { parseOptionalDef } from "./parsers/optional.js";
 import { parsePipelineDef } from "./parsers/pipeline.js";
 import { parsePromiseDef } from "./parsers/promise.js";
-import { JsonSchema7RecordType, parseRecordDef } from "./parsers/record.js";
-import { JsonSchema7SetType, parseSetDef } from "./parsers/set.js";
-import { JsonSchema7StringType, parseStringDef } from "./parsers/string.js";
-import { JsonSchema7TupleType, parseTupleDef } from "./parsers/tuple.js";
-import {
-  JsonSchema7UndefinedType,
-  parseUndefinedDef,
-} from "./parsers/undefined.js";
-import { JsonSchema7UnionType, parseUnionDef } from "./parsers/union.js";
-import { JsonSchema7UnknownType, parseUnknownDef } from "./parsers/unknown.js";
+import { parseRecordDef } from "./parsers/record.js";
+import { parseSetDef } from "./parsers/set.js";
+import { parseStringDef } from "./parsers/string.js";
+import { parseTupleDef } from "./parsers/tuple.js";
+import { parseUndefinedDef} from "./parsers/undefined.js";
+import { parseUnionDef } from "./parsers/union.js";
+import {  parseUnknownDef } from "./parsers/unknown.js";
 import { Refs, Seen } from "./Refs.js";
 import { parseReadonlyDef } from "./parsers/readonly.js";
 import { ignoreOverride } from "./Options.js";
-
-type JsonSchema7RefType = { $ref: string };
-type JsonSchema7Meta = {
-  title?: string;
-  default?: any;
-  description?: string;
-  markdownDescription?: string;
-};
-
-export type JsonSchema7TypeUnion =
-  | JsonSchema7StringType
-  | JsonSchema7ArrayType
-  | JsonSchema7NumberType
-  | JsonSchema7BigintType
-  | JsonSchema7BooleanType
-  | JsonSchema7DateType
-  | JsonSchema7EnumType
-  | JsonSchema7LiteralType
-  | JsonSchema7NativeEnumType
-  | JsonSchema7NullType
-  | JsonSchema7NumberType
-  | JsonSchema7ObjectType
-  | JsonSchema7RecordType
-  | JsonSchema7TupleType
-  | JsonSchema7UnionType
-  | JsonSchema7UndefinedType
-  | JsonSchema7RefType
-  | JsonSchema7NeverType
-  | JsonSchema7MapType
-  | JsonSchema7AnyType
-  | JsonSchema7NullableType
-  | JsonSchema7AllOfType
-  | JsonSchema7UnknownType
-  | JsonSchema7SetType;
-
-export type JsonSchema7Type = JsonSchema7TypeUnion & JsonSchema7Meta;
+import { JsonSchema7Type } from "./parseTypes.js";
 
 export function parseDef(
   def: ZodTypeDef,
@@ -128,8 +81,8 @@ const get$ref = (
   refs: Refs,
 ):
   | {
-      $ref: string;
-    }
+    $ref: string;
+  }
   | {}
   | undefined => {
   switch (refs.$refStrategy) {
