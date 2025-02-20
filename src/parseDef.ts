@@ -36,12 +36,13 @@ export function parseDef(
 
   refs.seen.set(def, newItem);
 
-  let jsonSchema = selectParser(def, (def as any).typeName, refs);
+  const jsonSchemaOrGetter = selectParser(def, (def as any).typeName, refs);
 
-  // If the return was strictly null, then it's a call to parseDef (recursive)
-  if (jsonSchema === null) {
-    jsonSchema = parseDef((def as any).getter()._def, refs)
-  }
+  // If the return was a function, then the inner definition needs to be extracted before a call to parseDef (recursive)
+  const jsonSchema =
+    typeof jsonSchemaOrGetter === "function"
+      ? parseDef(jsonSchemaOrGetter(), refs)
+      : jsonSchemaOrGetter;
 
   if (jsonSchema) {
     addMeta(def, refs, jsonSchema);
@@ -57,8 +58,8 @@ const get$ref = (
   refs: Refs,
 ):
   | {
-    $ref: string;
-  }
+      $ref: string;
+    }
   | {}
   | undefined => {
   switch (refs.$refStrategy) {

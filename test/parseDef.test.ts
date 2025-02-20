@@ -216,4 +216,13 @@ suite("Basic parsing", (test) => {
     const jsonSchema = undefined;
     assert(parsedSchema, jsonSchema);
   });
+
+  test("nested lazy", (assert) => {
+    const zodSchema = z.lazy(() => z.lazy(() => z.string()));
+    const expected = {
+      type: "string",
+    };
+    const parsed = parseDef(zodSchema._def, getRefs())
+    assert(parsed, expected)
+  });
 });
