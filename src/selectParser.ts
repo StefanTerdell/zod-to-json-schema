@@ -9,7 +9,7 @@ import { parseDateDef } from "./parsers/date.js";
 import { parseDefaultDef } from "./parsers/default.js";
 import { parseEffectsDef } from "./parsers/effects.js";
 import { parseEnumDef } from "./parsers/enum.js";
-import {parseIntersectionDef } from "./parsers/intersection.js";
+import { parseIntersectionDef } from "./parsers/intersection.js";
 import { parseLiteralDef } from "./parsers/literal.js";
 import { parseMapDef } from "./parsers/map.js";
 import { parseNativeEnumDef } from "./parsers/nativeEnum.js";
@@ -25,19 +25,20 @@ import { parseRecordDef } from "./parsers/record.js";
 import { parseSetDef } from "./parsers/set.js";
 import { parseStringDef } from "./parsers/string.js";
 import { parseTupleDef } from "./parsers/tuple.js";
-import { parseUndefinedDef} from "./parsers/undefined.js";
+import { parseUndefinedDef } from "./parsers/undefined.js";
 import { parseUnionDef } from "./parsers/union.js";
-import {  parseUnknownDef } from "./parsers/unknown.js";
+import { parseUnknownDef } from "./parsers/unknown.js";
 import { Refs } from "./Refs.js";
 import { parseReadonlyDef } from "./parsers/readonly.js";
 import { JsonSchema7Type } from "./parseTypes.js";
 
+export type InnerDefGetter = () => any;
 
 export const selectParser = (
   def: any,
   typeName: ZodFirstPartyTypeKind,
   refs: Refs,
-): JsonSchema7Type | undefined | null => {
+): JsonSchema7Type | undefined | InnerDefGetter => {
   switch (typeName) {
     case ZodFirstPartyTypeKind.ZodString:
       return parseStringDef(def, refs);
@@ -81,7 +82,7 @@ export const selectParser = (
     case ZodFirstPartyTypeKind.ZodSet:
       return parseSetDef(def, refs);
     case ZodFirstPartyTypeKind.ZodLazy:
-      return null;
+      return () => (def as any).getter()._def;
     case ZodFirstPartyTypeKind.ZodPromise:
       return parsePromiseDef(def, refs);
     case ZodFirstPartyTypeKind.ZodNaN:
