@@ -255,7 +255,7 @@ Expected output:
 - JSON Schemas does not support any other key type than strings for objects. When using `z.record` with any other key type, this will be ignored. An exception to this rule is `z.enum` as is supported since 3.11.3
 - Relative JSON pointers, while published alongside [JSON schema draft 2020-12](https://json-schema.org/specification.html), is not technically a part of it. Currently, most resolvers do not handle them at all.
 - Since v3, the Object parser uses `.isOptional()` to check if a property should be included in `required` or not. This has the potentially dangerous behavior of calling `.safeParse` with `undefined`. To work around this, make sure your `preprocess` and other effects callbacks are pure and not liable to throw errors. An issue has been logged in the Zod repo and can be [tracked here](https://github.com/colinhacks/zod/issues/1460).
-- JSON Schema version 2020-12 is not yet officially supported.  However, you should be able to use this library to obtain a compatible schema for the 2020-12 format just by changing the returned schema's `$schema` field to: "https://json-schema.org/draft/2020-12/schema#"
+- JSON Schema version 2020-12 is not yet officially supported. However, you should be able to use this library to obtain a compatible schema for the 2020-12 format just by changing the returned schema's `$schema` field to: "https://json-schema.org/draft/2020-12/schema#"
 
 ## Versioning
 

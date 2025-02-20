@@ -222,7 +222,7 @@ suite("Basic parsing", (test) => {
     const expected = {
       type: "string",
     };
-    const parsed = parseDef(zodSchema._def, getRefs())
-    assert(parsed, expected)
+    const parsed = parseDef(zodSchema._def, getRefs());
+    assert(parsed, expected);
   });
 });
