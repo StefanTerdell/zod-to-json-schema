@@ -1,5 +1,6 @@
 import { ZodObjectDef, ZodOptional } from "zod";
-import { JsonSchema7Type, parseDef } from "../parseDef.js";
+import { parseDef } from "../parseDef.js";
+import { JsonSchema7Type } from "../parseTypes.js";
 import { Refs } from "../Refs.js";
 
 function decideAdditionalProperties(def: ZodObjectDef, refs: Refs) {
