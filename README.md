@@ -16,8 +16,8 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 
 ## Sponsors
 
-If you enjoy this package, consider dropping a couple of bucks on my [GitHub Sponsors page](https://github.com/sponsors/StefanTerdell) <3
-
+A great big thank you to our amazing sponsors! Please consider joining them through my [GitHub Sponsors page](https://github.com/sponsors/StefanTerdell). Every cent helps, but these fellas have really gone above and beyond 💚:
+ 
 <table align="center" style="justify-content: center;align-items: center;display: flex;">
   <tr>
     <td align="center">
@@ -41,12 +41,14 @@ If you enjoy this package, consider dropping a couple of bucks on my [GitHub Spo
     <td align="center">
       <p></p>
       <p>
-      <a href="https://www.coderabbit.ai/">
-        <picture height="45px">
-          <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/StefanTerdell/zod-to-json-schema/refs/heads/master/.github/CR_logotype-full-color.png">
-          <img alt="stainless" height="45px" src="https://raw.githubusercontent.com/StefanTerdell/zod-to-json-schema/refs/heads/master/.github/CR_logotype-full-color.png">
-        </picture>
-      </a>
+      <div style="background-color: white; padding: 4px; padding-bottom: 8px;" alt="stainless">
+        <a href="https://www.coderabbit.ai/">
+          <picture height="45px">
+             <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/eea24edb-ff20-4532-b57c-e8719f455d6d">
+          <img alt="CodeRabbit logo" height="45px" src="https://github.com/user-attachments/assets/d791bc7d-dc60-4d55-9c31-97779839cb74">
+          </picture>
+        </a>
+      </div>
       <br  />   
       Cut code review time & bugs in half
       <br/>
@@ -56,6 +58,8 @@ If you enjoy this package, consider dropping a couple of bucks on my [GitHub Spo
     </td>
   </tr>
 </table>
+
+
 
 ## Usage
 
