@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.24.2",
+  "version": "3.24.3",
   "description": "Converts Zod schemas to Json Schemas",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/cjs/index.js",
@@ -28,21 +28,9 @@
     "gen": "tsx createIndex.ts"
   },
   "c8": {
-    "exclude": [
-      "createIndex.ts",
-      "postcjs.ts",
-      "postesm.ts",
-      "test"
-    ]
+    "exclude": ["createIndex.ts", "postcjs.ts", "postesm.ts", "test"]
   },
-  "keywords": [
-    "zod",
-    "json",
-    "schema",
-    "open",
-    "api",
-    "conversion"
-  ],
+  "keywords": ["zod", "json", "schema", "open", "api", "conversion"],
   "author": "Stefan Terdell",
   "contributors": [
     "Hammad Asif (https://github.com/mrhammadasif)",
