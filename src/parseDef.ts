@@ -48,6 +48,14 @@ export function parseDef(
     addMeta(def, refs, jsonSchema);
   }
 
+  if (refs.postProcess) {
+    const postProcessResult = refs.postProcess(jsonSchema, def, refs);
+
+    newItem.jsonSchema = jsonSchema;
+
+    return postProcessResult;
+  }
+
   newItem.jsonSchema = jsonSchema;
 
   return jsonSchema;

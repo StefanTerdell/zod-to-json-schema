@@ -18,6 +18,32 @@ export const ignoreOverride = Symbol(
   "Let zodToJsonSchema decide on which parser to use",
 );
 
+export type OverrideCallback = (
+  def: ZodTypeDef,
+  refs: Refs,
+  seen: Seen | undefined,
+  forceResolution?: boolean,
+) => JsonSchema7Type | undefined | typeof ignoreOverride;
+
+export type PostProcessCallback = (
+  jsonSchema: JsonSchema7Type | undefined,
+  def: ZodTypeDef,
+  refs: Refs,
+) => JsonSchema7Type | undefined;
+
+export const jsonDescription: PostProcessCallback = (jsonSchema, def) => {
+  if (def.description) {
+    try {
+      return {
+        ...jsonSchema,
+        ...JSON.parse(def.description),
+      };
+    } catch {}
+  }
+
+  return jsonSchema;
+};
+
 export type Options<Target extends Targets = "jsonSchema7"> = {
   name: string | undefined;
   $refStrategy: "root" | "relative" | "none" | "seen";
@@ -38,12 +64,8 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   emailStrategy: "format:email" | "format:idn-email" | "pattern:zod";
   base64Strategy: "format:binary" | "contentEncoding:base64" | "pattern:zod";
   nameStrategy: "ref" | "title";
-  override?: (
-    def: ZodTypeDef,
-    refs: Refs,
-    seen: Seen | undefined,
-    forceResolution?: boolean,
-  ) => JsonSchema7Type | undefined | typeof ignoreOverride;
+  override?: OverrideCallback;
+  postProcess?: PostProcessCallback;
 };
 
 export const defaultOptions: Options = {

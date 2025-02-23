@@ -115,6 +115,7 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 | **pipeStrategy**?: "all" \| "input" \| "output"                                    | Decide which types should be included when using `z.pipe`, for example `z.string().pipe(z.number())` would return both `string` and `number` by default, only `string` for "input" and only `number` for "output".                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | **removeAdditionalStrategy**?: "passthrough" \| "strict"                           | Decide when `additionalProperties ` should be false - whether according to strict or to passthrough. Since most parsers would retain properties given that `additionalProperties  = false` while zod strips them, the default is to strip them unless `passthrough` is explicitly in the schema. On the other hand, it is useful to retain all fields unless `strict` is explicit in the schema which is the second option for the removeAdditional                                                                                                                                                                                                                                     |
 | **override**?: callback                                                            | See section                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **postProcess**?: callback                                                         | See section                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ### Definitions
 
@@ -196,9 +197,9 @@ This allows for field specific, validation step specific error messages which ca
 
 ## `override` option
 
-This options takes a Zod schema definition, the current reference object (containing the current ref path and other options), an argument containing inforation about wether or not the schema has been encountered before, and a forceResolution argument.
+This options takes a callback receiving a Zod schema definition, the current reference object (containing the current ref path and other options), an argument containing inforation about wether or not the schema has been encountered before, and a forceResolution argument.
 
-Since `undefined` is a valid option to return, if you don't want to override the current item you have to return the `ignoreOverride` symbol exported from the index.
+Important: if you don't want to override the current item you have to return the `ignoreOverride` symbol exported from the index. This is because `undefined` is a valid option to return when you want the property to be excluded from the resulting JSON schema.
 
 ```typescript
 import zodToJsonSchema, { ignoreOverride } from "zod-to-json-schema";
@@ -245,6 +246,86 @@ Expected output:
     }
   },
   "additionalProperties": false
+}
+```
+
+## `postProcess` option
+
+Besided receiving all arguments of the `override` callback, the `postProcess` callback also receives the generated schema. It should always return a JSON Schema, or `undefined` if you wish to filter it out. Unlike the `override` callback you do not have to return `ignoreOverride` if you are happy with the produced schema; simply return it unchanged.
+
+```typescript
+import zodToJsonSchema, { PostProcessCallback } from "zod-to-json-schema";
+
+// Define the callback to be used to process the output using the PostProcessCallback type:
+const postProcess: PostProcessCallback = (
+  // The original output produced by the package itself:
+  jsonSchema,
+  // The ZodSchema def used to produce the original schema:
+  def,
+  // The refs object containing the current path, passed options, etc.
+  refs,
+) => {
+  if (!jsonSchema) {
+    return jsonSchema;
+  }
+
+  // Try to expand description as JSON meta:
+  if (jsonSchema.description) {
+    try {
+      jsonSchema = {
+        ...jsonSchema,
+        ...JSON.parse(jsonSchema.description),
+      };
+    } catch {}
+  }
+
+  // Make all numbers nullable:
+  if ("type" in jsonSchema! && jsonSchema.type === "number") {
+    jsonSchema.type = ["number", "null"];
+  }
+
+  // Add the refs path, just because
+  (jsonSchema as any).path = refs.currentPath;
+
+  return jsonSchema;
+};
+
+const jsonSchema = zodToJsonSchema(zodSchema, { postProcess });
+```
+
+### Using `postProcess` for including examples and other meta
+
+Adding support for examples and other JSON Schema meta keys are among the most commonly requested features for this project. Unfortunately the current Zod major (3) has pretty anemic support for this, so some userland hacking is required. Since this is such a common usecase I've included a helper function that simply tries to parse any description as JSON and expand it into the resulting schema.
+
+Simply stringify whatever you want added to the output schema as the description, then import and use `jsonDescription` as the postProcess option:
+
+```typescript
+import zodToJsonSchema, { jsonDescription } from "zod-to-json-schema";
+
+const zodSchema = z.string().describe(
+  JSON.stringify({
+    title: "My string",
+    description: "My description",
+    examples: ["Foo", "Bar"],
+    whatever: 123,
+  }),
+);
+
+const jsonSchema = zodToJsonSchema(zodSchema, {
+  postProcess: jsonDescription,
+});
+```
+
+Expected output:
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "string",
+  "title": "My string",
+  "description": "My description",
+  "examples": ["Foo", "Bar"],
+  "whatever": 123
 }
 ```
 
