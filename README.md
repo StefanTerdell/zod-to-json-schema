@@ -37,6 +37,24 @@ If you enjoy this package, consider dropping a couple of bucks on my [GitHub Spo
       <p></p>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <p></p>
+      <p>
+      <a href="https://www.coderabbit.ai/">
+        <picture height="45px">
+          <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/StefanTerdell/zod-to-json-schema/refs/heads/master/.github/CR_logotype-full-color.png">
+          <img alt="stainless" height="45px" src="https://raw.githubusercontent.com/StefanTerdell/zod-to-json-schema/refs/heads/master/.github/CR_logotype-full-color.png">
+        </picture>
+      </a>
+      <br  />   
+      Cut code review time & bugs in half
+      <br/>
+      <a href="https://www.coderabbit.ai/" style="text-decoration:none;">coderabbit.ai</a>
+      </p>
+      <p></p>
+    </td>
+  </tr>
 </table>
 
 ## Usage
