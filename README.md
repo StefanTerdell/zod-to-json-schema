@@ -17,7 +17,7 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 ## Sponsors
 
 A great big thank you to our amazing sponsors! Please consider joining them through my [GitHub Sponsors page](https://github.com/sponsors/StefanTerdell). Every cent helps, but these fellas have really gone above and beyond 💚:
- 
+
 <table align="center" style="justify-content: center;align-items: center;display: flex;">
   <tr>
     <td align="center">
@@ -58,8 +58,6 @@ A great big thank you to our amazing sponsors! Please consider joining them thro
     </td>
   </tr>
 </table>
-
-
 
 ## Usage
 
@@ -135,7 +133,9 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 | **patternStrategy**?: "escape" \| "preserve"                                       | The Zod string validations `.includes()`, `.startsWith()`, and `.endsWith()` must be converted to regex to be compatible with JSON Schema's `pattern`. For safety, all non-alphanumeric characters are `escape`d by default (consider `z.string().includes(".")`), but this can occasionally cause problems with Unicode-flagged regex parsers. Use `preserve` to prevent this escaping behaviour and preserve the exact string written, even if it results in an inaccurate regex.                                                                                                                                                                                                     |
 | **applyRegexFlags**?: boolean                                                      | JSON Schema's `pattern` doesn't support RegExp flags, but Zod's `z.string().regex()` does. When this option is true (default false), a best-effort is made to transform regexes into a flag-independent form (e.g. `/x/i => /[xX]/` ). Supported flags: `i` (basic Latin only), `m`, `s`.                                                                                                                                                                                                                                                                                                                                                                                               |
 | **pipeStrategy**?: "all" \| "input" \| "output"                                    | Decide which types should be included when using `z.pipe`, for example `z.string().pipe(z.number())` would return both `string` and `number` by default, only `string` for "input" and only `number` for "output".                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| **removeAdditionalStrategy**?: "passthrough" \| "strict"                           | Decide when `additionalProperties ` should be false - whether according to strict or to passthrough. Since most parsers would retain properties given that `additionalProperties  = false` while zod strips them, the default is to strip them unless `passthrough` is explicitly in the schema. On the other hand, it is useful to retain all fields unless `strict` is explicit in the schema which is the second option for the removeAdditional                                                                                                                                                                                                                                     |
+| **removeAdditionalStrategy**?: "passthrough" \| "strict"                           | Decide when `additionalProperties` should be allowed. See the section on additional properties for details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **allowedAdditionalProperties**?: `true` \| `undefined`                            | What value to give `additionalProperties` when allowed. See the section on additional properties for details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **rejectedAdditionalProperties**?: `false` \| `undefined`                          | What value to give `additionalProperties` when rejected. See the section on additional properties for details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **override**?: callback                                                            | See section                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **postProcess**?: callback                                                         | See section                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
@@ -217,7 +217,34 @@ This allows for field specific, validation step specific error messages which ca
 - ZodArray
   - min, max
 
-## `override` option
+### Additional properties
+
+By default, Zod removes undeclared properties when parsing object schemas. In order to replicate the expected output of this behaviour, the default for behaviour of zodToJsonSchema is to set `"additionalProperties"` to `false` (although the correctness of this can be debated). If you wish to allow undeclared properties you can either:
+
+- Set `removeAdditionalStrategy` to `"strict"`. This will allow additional properties for any object schema that is not declared with `.strict()`.
+- Leave `removeAdditionalStrategy` set to its default value of `"passthrough"`, and add `.passtrough()` to your object schema.
+
+#### Removing the `additionalProperties` keyword using the `allowedAdditionalProperties` and/or `rejectedAdditionalProperties` options.
+
+Some schema definitions (like Googles Gen AI API for instance) does not allow the `additionalProperties` keyword at all. Luckily the JSON Schema spec allows for this: leaving the keyword undefined _should_ have the same effect as setting it to true (as per usual YMMV). To enable this behaviour, set the option `allowedAdditionalProperties` to `undefined`.
+
+To exclude the keyword even when additional properties are _not_ allowed, set the `rejectedAdditionalProperties` to `undefined` as well.
+
+_Heads up ⚠️: Both of these options will be ignored if your schema is declared with `.catchall(...)` as the provided schema will be used instead (if valid)._
+
+#### Expected outputs
+
+| `z.object({})` + option   | `"additionalProperties"` value                              |
+| ------------------------- | ----------------------------------------------------------- |
+| `.strip()` (default)      | `false` if strategy is `"passtrough"`, `true` if `"strict"` |
+| `.passtrough()`           | `true`                                                      |
+| `.strict()`               | `false`                                                     |
+| `.catchall(z.string())`   | `{ "type": "string" }`                                      |
+| `.catchall(z.function())` | `undefined` (function schemas are not currently parseable)  |
+
+Substitute `true` and `false` for `undefined` according to `allowedAdditionalProperties` and/or `rejectedAdditionalProperties` respectively.
+
+### `override`
 
 This options takes a callback receiving a Zod schema definition, the current reference object (containing the current ref path and other options), an argument containing inforation about wether or not the schema has been encountered before, and a forceResolution argument.
 
@@ -271,7 +298,7 @@ Expected output:
 }
 ```
 
-## `postProcess` option
+### `postProcess`
 
 Besided receiving all arguments of the `override` callback, the `postProcess` callback also receives the generated schema. It should always return a JSON Schema, or `undefined` if you wish to filter it out. Unlike the `override` callback you do not have to return `ignoreOverride` if you are happy with the produced schema; simply return it unchanged.
 
@@ -315,7 +342,7 @@ const postProcess: PostProcessCallback = (
 const jsonSchema = zodToJsonSchema(zodSchema, { postProcess });
 ```
 
-### Using `postProcess` for including examples and other meta
+#### Using `postProcess` for including examples and other meta
 
 Adding support for examples and other JSON Schema meta keys are among the most commonly requested features for this project. Unfortunately the current Zod major (3) has pretty anemic support for this, so some userland hacking is required. Since this is such a common usecase I've included a helper function that simply tries to parse any description as JSON and expand it into the resulting schema.
 

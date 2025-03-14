@@ -133,4 +133,87 @@ suite("Issue tests", (test) => {
 
     assert(result, expected);
   });
+
+  test("No additionalProperties @168", (assert) => {
+    const extractedDataSchema = z
+      .object({
+        document_type: z.string().nullable().optional(),
+        vendor: z
+          .object({
+            name: z.string().nullable().optional(),
+            address: z.string().nullable().optional(),
+            country: z.string().nullable().optional(),
+            phone_number: z.string().nullable().optional(),
+            website: z.string().nullable().optional(),
+          })
+          .passthrough()
+          .optional(),
+      })
+      .passthrough();
+
+    const expected = {
+      type: "object",
+      properties: {
+        document_type: {
+          type: "string",
+          nullable: true,
+        },
+        vendor: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              nullable: true,
+            },
+            address: {
+              type: "string",
+              nullable: true,
+            },
+            country: {
+              type: "string",
+              nullable: true,
+            },
+            phone_number: {
+              type: "string",
+              nullable: true,
+            },
+            website: {
+              type: "string",
+              nullable: true,
+            },
+          },
+        },
+      },
+    };
+
+    // With passthrough:undefined
+    {
+      const aiResponseJsonSchema = zodToJsonSchema(extractedDataSchema, {
+        target: "openApi3",
+        removeAdditionalStrategy: "strict",
+        allowedAdditionalProperties: undefined,
+        strictUnions: true,
+      });
+
+      assert(aiResponseJsonSchema, expected);
+    }
+
+    // Using postProcess
+    {
+      const aiResponseJsonSchema = zodToJsonSchema(extractedDataSchema, {
+        target: "openApi3",
+        removeAdditionalStrategy: "passthrough",
+        strictUnions: true,
+        postProcess: (jsonSchema) =>
+          jsonSchema &&
+          Object.fromEntries(
+            Object.entries(jsonSchema).filter(
+              ([key]) => key !== "additionalProperties",
+            ),
+          ),
+      });
+
+      assert(aiResponseJsonSchema, expected);
+    }
+  });
 });

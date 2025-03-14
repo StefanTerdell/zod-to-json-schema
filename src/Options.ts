@@ -53,6 +53,8 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   dateStrategy: DateStrategy | DateStrategy[];
   mapStrategy: "entries" | "record";
   removeAdditionalStrategy: "passthrough" | "strict";
+  allowedAdditionalProperties: true | undefined;
+  rejectedAdditionalProperties: false | undefined;
   target: Target;
   strictUnions: boolean;
   definitionPath: string;
@@ -77,6 +79,8 @@ export const defaultOptions: Options = {
   dateStrategy: "format:date-time",
   mapStrategy: "entries",
   removeAdditionalStrategy: "passthrough",
+  allowedAdditionalProperties: true,
+  rejectedAdditionalProperties: false,
   definitionPath: "definitions",
   target: "jsonSchema7",
   strictUnions: false,
