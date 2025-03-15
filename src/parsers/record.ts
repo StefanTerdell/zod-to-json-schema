@@ -18,7 +18,7 @@ type JsonSchema7RecordPropertyNamesType =
 
 export type JsonSchema7RecordType = {
   type: "object";
-  additionalProperties: JsonSchema7Type;
+  additionalProperties?: JsonSchema7Type | true;
   propertyNames?: JsonSchema7RecordPropertyNamesType;
 };
 
@@ -50,7 +50,7 @@ export function parseRecordDef(
         }),
         {},
       ),
-      additionalProperties: false,
+      additionalProperties: refs.rejectedAdditionalProperties,
     } satisfies JsonSchema7ObjectType as any;
   }
 
@@ -60,7 +60,7 @@ export function parseRecordDef(
       parseDef(def.valueType._def, {
         ...refs,
         currentPath: [...refs.currentPath, "additionalProperties"],
-      }) ?? {},
+      }) ?? refs.allowedAdditionalProperties,
   };
 
   if (refs.target === "openApi3") {
