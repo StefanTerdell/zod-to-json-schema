@@ -1,3 +1,7 @@
+# Deprecated
+
+just use `z.toJSONSchema()` introduced in zod 4.
+
 # Zod to Json Schema
 
 [![NPM Version](https://img.shields.io/npm/v/zod-to-json-schema.svg)](https://npmjs.org/package/zod-to-json-schema)
