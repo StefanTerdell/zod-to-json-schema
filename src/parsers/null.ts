@@ -1,16 +1,8 @@
-import { Refs } from "../Refs.js";
+import { ZodNullDef } from "zod";
+import { DefParser } from "../parseTypes.js";
 
-export type JsonSchema7NullType = {
-  type: "null";
+export const parseNullDef: DefParser<ZodNullDef> = () => {
+  return {
+    type: "null",
+  };
 };
-
-export function parseNullDef(refs: Refs): JsonSchema7NullType {
-  return refs.target === "openApi3"
-    ? ({
-        enum: ["null"],
-        nullable: true,
-      } as any)
-    : {
-        type: "null",
-      };
-}

@@ -1,14 +1,14 @@
 import { ZodTypeDef } from "zod";
 import { Refs, Seen } from "./Refs.js";
 import { ignoreOverride } from "./Options.js";
-import { JsonSchema7Type } from "./parseTypes.js";
+import { ZodJsonSchema } from "./parseTypes.js";
 import { selectParser } from "./selectParser.js";
 
-export function parseDef(
+export const parseDef = (
   def: ZodTypeDef,
   refs: Refs,
   forceResolution = false, // Forces a new schema to be instantiated even though its def has been seen. Used for improving refs in definitions. See https://github.com/StefanTerdell/zod-to-json-schema/pull/61.
-): JsonSchema7Type | undefined {
+): ZodJsonSchema<true> | boolean | null => {
   const seenItem = refs.seen.get(def);
 
   if (refs.override) {
@@ -20,7 +20,7 @@ export function parseDef(
     );
 
     if (overrideResult !== ignoreOverride) {
-      return overrideResult;
+      return (overrideResult ?? null) as ZodJsonSchema<true> | boolean;
     }
   }
 
@@ -32,7 +32,11 @@ export function parseDef(
     }
   }
 
-  const newItem: Seen = { def, path: refs.currentPath, jsonSchema: undefined };
+  const newItem: Seen = seenItem ?? {
+    def,
+    path: refs.currentPath,
+    jsonSchema: null,
+  };
 
   refs.seen.set(def, newItem);
 
@@ -49,17 +53,21 @@ export function parseDef(
   }
 
   if (refs.postProcess) {
-    const postProcessResult = refs.postProcess(jsonSchema, def, refs);
+    const postProcessResult = refs.postProcess(
+      jsonSchema ?? undefined,
+      def,
+      refs,
+    );
 
     newItem.jsonSchema = jsonSchema;
 
-    return postProcessResult;
+    return (postProcessResult ?? null) as ZodJsonSchema<true> | boolean;
   }
 
   newItem.jsonSchema = jsonSchema;
 
   return jsonSchema;
-}
+};
 
 const get$ref = (
   item: Seen,
@@ -106,14 +114,27 @@ const getRelativePath = (pathA: string[], pathB: string[]) => {
 const addMeta = (
   def: ZodTypeDef,
   refs: Refs,
-  jsonSchema: JsonSchema7Type,
-): JsonSchema7Type => {
+  jsonSchema: ZodJsonSchema<true> | boolean,
+): ZodJsonSchema<true> | boolean => {
   if (def.description) {
-    jsonSchema.description = def.description;
+    if (typeof jsonSchema === "boolean") {
+      jsonSchema = {
+        description: def.description,
+      };
+    } else {
+      jsonSchema.description = def.description;
+    }
+  }
 
-    if (refs.markdownDescription) {
+  if (refs.markdownDescription) {
+    if (typeof jsonSchema === "boolean") {
+      jsonSchema = {
+        markdownDescription: def.description,
+      };
+    } else {
       jsonSchema.markdownDescription = def.description;
     }
   }
+
   return jsonSchema;
 };

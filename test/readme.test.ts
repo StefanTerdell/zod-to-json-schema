@@ -1,5 +1,5 @@
 import { z } from "zod";
-import zodToJsonSchema from "../src";
+import zodToJsonSchema, { ZodJsonSchema } from "../src";
 import { suite } from "./suite.js";
 
 suite("The readme example", (test) => {
@@ -13,10 +13,9 @@ suite("The readme example", (test) => {
 
     const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
 
-    assert(jsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "#/definitions/mySchema",
-      definitions: {
+    const expected: ZodJsonSchema = {
+      $ref: "#/$defs/mySchema",
+      $defs: {
         mySchema: {
           description: "My neat object schema",
           type: "object",
@@ -33,12 +32,13 @@ suite("The readme example", (test) => {
           required: ["myString", "myUnion"],
         },
       },
-    });
+    };
+
+    assert(jsonSchema, expected);
   });
   test("should have a valid error message example", (assert) => {
     const EmailSchema = z.string().email("Invalid email").min(5, "Too short");
-    const expected = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const expected: ZodJsonSchema = {
       type: "string",
       format: "email",
       minLength: 5,

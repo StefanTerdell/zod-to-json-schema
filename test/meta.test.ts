@@ -7,7 +7,6 @@ suite("Meta data", (it) => {
     const $z = z.string().describe("My neat string");
     const $j = zodToJsonSchema($z);
     const $e: JSONSchema7 = {
-      $schema: "http://json-schema.org/draft-07/schema#",
       type: "string",
       description: "My neat string",
     };
@@ -19,7 +18,6 @@ suite("Meta data", (it) => {
     const $z = z.string().describe("My neat string");
     const $j = zodToJsonSchema($z, { markdownDescription: true });
     const $e = {
-      $schema: "http://json-schema.org/draft-07/schema#",
       type: "string",
       description: "My neat string",
       markdownDescription: "My neat string",
@@ -39,7 +37,6 @@ suite("Meta data", (it) => {
       .describe("sssssssss");
 
     const jsonSchema = zodToJsonSchema(zodSchema, {
-      target: "openApi3",
       $refStrategy: "none",
     });
 
@@ -50,19 +47,16 @@ suite("Meta data", (it) => {
         p1: {
           additionalProperties: false,
           description: "aaaaaaaaa",
-          properties: {},
           type: "object",
         },
         p2: {
           additionalProperties: false,
           description: "bbbbbbbbb",
-          properties: {},
           type: "object",
         },
         p3: {
           additionalProperties: false,
           description: "ccccccccc",
-          properties: {},
           type: "object",
         },
       },

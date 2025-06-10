@@ -1,46 +1,37 @@
 import { ZodMapDef } from "zod";
 import { parseDef } from "../parseDef.js";
-import { JsonSchema7Type } from "../parseTypes.js";
-import { Refs } from "../Refs.js";
-import { JsonSchema7RecordType, parseRecordDef } from "./record.js";
+import { parseRecordDef } from "./record.js";
+import { DefParser, ensureObjectSchema } from "../parseTypes.js";
 
-export type JsonSchema7MapType = {
-  type: "array";
-  maxItems: 125;
-  items: {
-    type: "array";
-    items: [JsonSchema7Type, JsonSchema7Type];
-    minItems: 2;
-    maxItems: 2;
-  };
-};
-
-export function parseMapDef(
-  def: ZodMapDef,
-  refs: Refs,
-): JsonSchema7MapType | JsonSchema7RecordType {
+export const parseMapDef: DefParser<ZodMapDef> = (def, refs) => {
   if (refs.mapStrategy === "record") {
     return parseRecordDef(def, refs);
   }
 
   const keys =
-    parseDef(def.keyType._def, {
-      ...refs,
-      currentPath: [...refs.currentPath, "items", "items", "0"],
-    }) || {};
+    ensureObjectSchema(
+      parseDef(def.keyType._def, {
+        ...refs,
+        currentPath: [...refs.currentPath, "items", "items", "0"],
+      }),
+    ) ?? {};
+
   const values =
-    parseDef(def.valueType._def, {
-      ...refs,
-      currentPath: [...refs.currentPath, "items", "items", "1"],
-    }) || {};
+    ensureObjectSchema(
+      parseDef(def.valueType._def, {
+        ...refs,
+        currentPath: [...refs.currentPath, "items", "items", "1"],
+      }),
+    ) ?? {};
+
   return {
     type: "array",
     maxItems: 125,
     items: {
       type: "array",
-      items: [keys, values],
+      prefixItems: [keys, values],
       minItems: 2,
       maxItems: 2,
     },
   };
-}
+};

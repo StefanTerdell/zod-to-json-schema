@@ -13,7 +13,6 @@ suite("bigint", (test) => {
     assert(parsedSchema, jsonSchema);
   });
 
-  // Jest doesn't like bigints. 🤷
   test("should be possible to define gt/lt", (assert) => {
     const parsedSchema = parseBigintDef(
       z.bigint().gte(BigInt(10)).lte(BigInt(20))._def,
@@ -22,8 +21,8 @@ suite("bigint", (test) => {
     const jsonSchema = {
       type: "integer",
       format: "int64",
-      minimum: BigInt(10),
-      maximum: BigInt(20),
+      minimum: 10,
+      maximum: 20,
     };
     assert(parsedSchema, jsonSchema);
   });
@@ -31,15 +30,13 @@ suite("bigint", (test) => {
   test("should be possible to define gt/lt (jsonSchema2019-09)", (assert) => {
     const parsedSchema = parseBigintDef(
       z.bigint().gte(BigInt(10)).lte(BigInt(20))._def,
-      getRefs({
-        target: "jsonSchema2019-09",
-      }),
+      getRefs(),
     );
     const jsonSchema = {
       type: "integer",
       format: "int64",
-      minimum: BigInt(10),
-      maximum: BigInt(20),
+      minimum: 10,
+      maximum: 20,
     };
     assert(parsedSchema, jsonSchema);
   });
@@ -52,26 +49,8 @@ suite("bigint", (test) => {
     const jsonSchema = {
       type: "integer",
       format: "int64",
-      exclusiveMinimum: BigInt(10),
-      exclusiveMaximum: BigInt(20),
-    };
-    assert(parsedSchema, jsonSchema);
-  });
-
-  test("should be possible to define gt/lt (jsonSchema2019-09)", (assert) => {
-    const parsedSchema = parseBigintDef(
-      z.bigint().gt(BigInt(10)).lt(BigInt(20))._def,
-      getRefs({
-        target: "jsonSchema2019-09",
-      }),
-    );
-    const jsonSchema = {
-      type: "integer",
-      format: "int64",
-      exclusiveMinimum: true,
-      exclusiveMaximum: true,
-      minimum: BigInt(10),
-      maximum: BigInt(20),
+      exclusiveMinimum: 10,
+      exclusiveMaximum: 20,
     };
     assert(parsedSchema, jsonSchema);
   });
@@ -84,7 +63,7 @@ suite("bigint", (test) => {
     const jsonSchema = {
       type: "integer",
       format: "int64",
-      multipleOf: BigInt(5),
+      multipleOf: 5,
     };
     assert(parsedSchema, jsonSchema);
   });

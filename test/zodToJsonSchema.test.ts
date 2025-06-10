@@ -4,31 +4,16 @@ import { suite } from "./suite.js";
 
 suite("Root schema result after parsing", (it) => {
   it("should return the schema directly in the root if no name is passed", (assert) => {
-    assert(zodToJsonSchema(z.any()), {
-      $schema: "http://json-schema.org/draft-07/schema#",
-    });
+    assert(zodToJsonSchema(z.any()), {});
   });
-  it('should return the schema inside a named property in "definitions" if a name is passed', (assert) => {
+
+  it('should return the schema inside a named property in "$defs" if a name is passed', (assert) => {
     assert(zodToJsonSchema(z.any(), "MySchema"), {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: `#/definitions/MySchema`,
-      definitions: {
+      $ref: `#/$defs/MySchema`,
+      $defs: {
         MySchema: {},
       },
     });
-  });
-
-  it('should return the schema inside a named property in "$defs" if a name and definitionPath is passed in options', (assert) => {
-    assert(
-      zodToJsonSchema(z.any(), { name: "MySchema", definitionPath: "$defs" }),
-      {
-        $schema: "http://json-schema.org/draft-07/schema#",
-        $ref: `#/$defs/MySchema`,
-        $defs: {
-          MySchema: {},
-        },
-      },
-    );
   });
 
   it("should not scrub 'any'-schemas from unions when strictUnions=false", (assert) => {
@@ -38,7 +23,6 @@ suite("Root schema result after parsing", (it) => {
         { strictUnions: false },
       ),
       {
-        $schema: "http://json-schema.org/draft-07/schema#",
         anyOf: [{}, {}, { type: "string" }, { type: "number" }],
       },
     );
@@ -51,7 +35,6 @@ suite("Root schema result after parsing", (it) => {
         { strictUnions: true },
       ),
       {
-        $schema: "http://json-schema.org/draft-07/schema#",
         anyOf: [{ type: "string" }, { type: "number" }],
       },
     );
@@ -71,12 +54,11 @@ suite("Root schema result after parsing", (it) => {
         { strictUnions: true },
       ),
       {
-        $schema: "http://json-schema.org/draft-07/schema#",
-        additionalProperties: false,
+        type: "object",
         properties: {
           field: { anyOf: [{ type: "string" }, { type: "number" }] },
         },
-        type: "object",
+        additionalProperties: false,
       },
     );
   });
@@ -86,21 +68,20 @@ suite("Root schema result after parsing", (it) => {
     const MyArraySchema = z.array(MySpecialStringSchema);
 
     const result = zodToJsonSchema(MyArraySchema, {
-      definitions: {
+      $defs: {
         MySpecialStringSchema,
         MyArraySchema,
       },
     });
 
     assert(result, {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "#/definitions/MyArraySchema",
-      definitions: {
+      $ref: "#/$defs/MyArraySchema",
+      $defs: {
         MySpecialStringSchema: { type: "string" },
         MyArraySchema: {
           type: "array",
           items: {
-            $ref: "#/definitions/MySpecialStringSchema",
+            $ref: "#/$defs/MySpecialStringSchema",
           },
         },
       },
@@ -111,7 +92,6 @@ suite("Root schema result after parsing", (it) => {
     assert(
       zodToJsonSchema(z.string(), { name: "hello", nameStrategy: "title" }),
       {
-        $schema: "http://json-schema.org/draft-07/schema#",
         type: "string",
         title: "hello",
       },

@@ -1,34 +1,28 @@
-import { JsonSchema7TypeUnion } from "./parseTypes.js";
+import { ZodJsonSchema  } from "./parseTypes.js";
 import { Refs } from "./Refs.js";
 
-export type ErrorMessages<
-  T extends JsonSchema7TypeUnion,
-  OmitProperties extends string = "",
-> = Partial<
-  Omit<{ [key in keyof T]: string }, OmitProperties | "type" | "errorMessages">
->;
-
-export function addErrorMessage<
-  T extends { errorMessage?: ErrorMessages<any> },
->(res: T, key: keyof T, errorMessage: string | undefined, refs: Refs) {
+export function addErrorMessage(
+  schema: ZodJsonSchema<true>,
+  key: keyof ZodJsonSchema,
+  errorMessage: string | undefined,
+  refs: Refs,
+) {
   if (!refs?.errorMessages) return;
-  if (errorMessage) {
-    res.errorMessage = {
-      ...res.errorMessage,
+
+  if (errorMessage !== undefined) {
+    schema.errorMessage = {
+      ...schema.errorMessage,
       [key]: errorMessage,
     };
   }
 }
 
 export function setResponseValueAndErrors<
-  Json7Type extends JsonSchema7TypeUnion & {
-    errorMessage?: ErrorMessages<Json7Type>;
-  },
-  Key extends keyof Omit<Json7Type, "errorMessage">,
+  Key extends keyof ZodJsonSchema,
 >(
-  res: Json7Type,
+  res: ZodJsonSchema<true>,
   key: Key,
-  value: Json7Type[Key],
+  value: ZodJsonSchema<true>[Key],
   errorMessage: string | undefined,
   refs: Refs,
 ) {

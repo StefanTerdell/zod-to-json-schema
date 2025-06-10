@@ -1,7 +1,10 @@
-import { ZodCatchDef } from "zod";
+import { ZodCatchDef, ZodTypeAny } from "zod";
 import { parseDef } from "../parseDef.js";
-import { Refs } from "../Refs.js";
+import { DefParser } from "../parseTypes.js";
 
-export const parseCatchDef = (def: ZodCatchDef<any>, refs: Refs) => {
+export const parseCatchDef: DefParser<ZodCatchDef<ZodTypeAny>, true> = (
+  def,
+  refs,
+) => {
   return parseDef(def.innerType._def, refs);
 };

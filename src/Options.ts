@@ -1,6 +1,6 @@
 import { ZodSchema, ZodTypeDef } from "zod";
 import { Refs, Seen } from "./Refs";
-import { JsonSchema7Type } from "./parseTypes";
+import { ZodJsonSchema } from "./parseTypes";
 
 export type Targets =
   | "jsonSchema7"
@@ -23,28 +23,47 @@ export type OverrideCallback = (
   refs: Refs,
   seen: Seen | undefined,
   forceResolution?: boolean,
-) => JsonSchema7Type | undefined | typeof ignoreOverride;
+) => ZodJsonSchema | boolean | undefined | typeof ignoreOverride;
 
 export type PostProcessCallback = (
-  jsonSchema: JsonSchema7Type | undefined,
+  jsonSchema: ZodJsonSchema | boolean | undefined,
   def: ZodTypeDef,
   refs: Refs,
-) => JsonSchema7Type | undefined;
+) => ZodJsonSchema | boolean | undefined;
 
 export const jsonDescription: PostProcessCallback = (jsonSchema, def) => {
-  if (def.description) {
-    try {
-      return {
-        ...jsonSchema,
-        ...JSON.parse(def.description),
-      };
-    } catch {}
+  if (!def.description) {
+    return jsonSchema;
   }
 
-  return jsonSchema;
+  let parsed: unknown;
+
+  try {
+    parsed = JSON.parse(def.description);
+  } catch {
+    return jsonSchema;
+  }
+
+  if (typeof parsed !== "object" || Array.isArray(parsed) || !parsed) {
+    return jsonSchema;
+  }
+
+  if (typeof jsonSchema === "boolean") {
+    return jsonSchema
+      ? parsed
+      : {
+          not: true,
+          ...parsed,
+        };
+  } else {
+    return {
+      ...jsonSchema,
+      ...parsed,
+    };
+  }
 };
 
-export type Options<Target extends Targets = "jsonSchema7"> = {
+export type Options = {
   name: string | undefined;
   $refStrategy: "root" | "relative" | "none" | "seen";
   basePath: string[];
@@ -55,10 +74,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   removeAdditionalStrategy: "passthrough" | "strict";
   allowedAdditionalProperties: true | undefined;
   rejectedAdditionalProperties: false | undefined;
-  target: Target;
   strictUnions: boolean;
-  definitionPath: string;
-  definitions: Record<string, ZodSchema>;
   errorMessages: boolean;
   markdownDescription: boolean;
   patternStrategy: "escape" | "preserve";
@@ -68,7 +84,18 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   nameStrategy: "ref" | "title";
   override?: OverrideCallback;
   postProcess?: PostProcessCallback;
-};
+} & (
+  | {
+      $defs?: undefined;
+      /** @deprecated use `$defs` instead */
+      definitions: Record<string, ZodSchema>;
+    }
+  | {
+      $defs: Record<string, ZodSchema>;
+      /** @deprecated use `$defs` instead */
+      definitions?: undefined;
+    }
+);
 
 export const defaultOptions: Options = {
   name: undefined,
@@ -81,10 +108,8 @@ export const defaultOptions: Options = {
   removeAdditionalStrategy: "passthrough",
   allowedAdditionalProperties: true,
   rejectedAdditionalProperties: false,
-  definitionPath: "definitions",
-  target: "jsonSchema7",
   strictUnions: false,
-  definitions: {},
+  $defs: {},
   errorMessages: false,
   markdownDescription: false,
   patternStrategy: "escape",
@@ -94,8 +119,8 @@ export const defaultOptions: Options = {
   nameStrategy: "ref",
 };
 
-export const getDefaultOptions = <Target extends Targets>(
-  options: Partial<Options<Target>> | string | undefined,
+export const getDefaultOptions = (
+  options: Partial<Options> | string | undefined,
 ) =>
   (typeof options === "string"
     ? {
@@ -105,4 +130,4 @@ export const getDefaultOptions = <Target extends Targets>(
     : {
         ...defaultOptions,
         ...options,
-      }) as Options<Target>;
+      }) as Options;

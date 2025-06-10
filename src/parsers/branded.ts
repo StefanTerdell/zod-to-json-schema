@@ -1,7 +1,10 @@
-import { ZodBrandedDef } from "zod";
+import { ZodBrandedDef, ZodTypeAny } from "zod";
 import { parseDef } from "../parseDef.js";
-import { Refs } from "../Refs.js";
+import { DefParser } from "../parseTypes.js";
 
-export function parseBrandedDef(_def: ZodBrandedDef<any>, refs: Refs) {
-  return parseDef(_def.type._def, refs);
-}
+export const parseBrandedDef: DefParser<ZodBrandedDef<ZodTypeAny>, true> = (
+  def,
+  refs,
+) => {
+  return parseDef(def.type._def, refs);
+};

@@ -1,4 +1,3 @@
-import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseDef } from "../src/parseDef.js";
 import Ajv from "ajv";
@@ -6,6 +5,7 @@ import { getRefs } from "../src/Refs.js";
 const ajv = new Ajv();
 
 import { suite } from "./suite.js";
+import { ZodJsonSchema } from "../src/parseTypes.js";
 
 suite("Basic parsing", (test) => {
   test("should return a proper json schema with some common types without validation", (assert) => {
@@ -29,7 +29,7 @@ suite("Basic parsing", (test) => {
       objectOrNull: z.object({ myString: z.string() }).nullable(),
       passthrough: z.object({ myString: z.string() }).passthrough(),
     });
-    const expectedJsonSchema: JSONSchema7Type = {
+    const expectedJsonSchema: ZodJsonSchema = {
       type: "object",
       properties: {
         requiredString: {
@@ -55,7 +55,7 @@ suite("Basic parsing", (test) => {
         tuple: {
           type: "array",
           minItems: 3,
-          items: [
+          prefixItems: [
             {
               type: "string",
             },
@@ -181,9 +181,8 @@ suite("Basic parsing", (test) => {
 
   test("should be possible to use readonly", (assert) => {
     const parsedSchema = parseDef(z.object({}).readonly()._def, getRefs());
-    const jsonSchema: JSONSchema7Type = {
+    const jsonSchema: ZodJsonSchema = {
       type: "object",
-      properties: {},
       additionalProperties: false,
     };
     assert(parsedSchema, jsonSchema);
@@ -191,7 +190,7 @@ suite("Basic parsing", (test) => {
 
   test("should be possible to use catch", (assert) => {
     const parsedSchema = parseDef(z.number().catch(5)._def, getRefs());
-    const jsonSchema: JSONSchema7Type = {
+    const jsonSchema: ZodJsonSchema = {
       type: "number",
     };
     assert(parsedSchema, jsonSchema);
@@ -205,15 +204,15 @@ suite("Basic parsing", (test) => {
     });
   });
 
-  test("should get undefined for function", (assert) => {
+  test("should get null for function", (assert) => {
     const parsedSchema = parseDef(z.function()._def, getRefs());
-    const jsonSchema = undefined;
+    const jsonSchema = null;
     assert(parsedSchema, jsonSchema);
   });
 
-  test("should get undefined for void", (assert) => {
+  test("should get null for void", (assert) => {
     const parsedSchema = parseDef(z.void()._def, getRefs());
-    const jsonSchema = undefined;
+    const jsonSchema = null;
     assert(parsedSchema, jsonSchema);
   });
 

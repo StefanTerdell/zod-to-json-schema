@@ -1,5 +1,6 @@
-export type JsonSchema7AnyType = {};
+import { ZodAnyDef } from "zod";
+import { DefParser } from "../parseTypes";
 
-export function parseAnyDef(): JsonSchema7AnyType {
+export const parseAnyDef: DefParser<ZodAnyDef> = () => {
   return {};
-}
+};

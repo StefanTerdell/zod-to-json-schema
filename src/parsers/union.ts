@@ -5,43 +5,21 @@ import {
   ZodUnionDef,
 } from "zod";
 import { parseDef } from "../parseDef.js";
-import { JsonSchema7Type } from "../parseTypes.js";
-import { Refs } from "../Refs.js";
+import { DefParser, ZodJsonSchema } from "../parseTypes.js";
 
-export const primitiveMappings = {
+export const scalarMap = {
   ZodString: "string",
   ZodNumber: "number",
   ZodBigInt: "integer",
   ZodBoolean: "boolean",
   ZodNull: "null",
 } as const;
-type ZodPrimitive = keyof typeof primitiveMappings;
-type JsonSchema7Primitive =
-  (typeof primitiveMappings)[keyof typeof primitiveMappings];
+type ZodScalarType = keyof typeof scalarMap;
+type JsonSchemaScalarType = (typeof scalarMap)[keyof typeof scalarMap];
 
-export type JsonSchema7UnionType =
-  | JsonSchema7PrimitiveUnionType
-  | JsonSchema7AnyOfType;
-
-type JsonSchema7PrimitiveUnionType =
-  | {
-      type: JsonSchema7Primitive | JsonSchema7Primitive[];
-    }
-  | {
-      type: JsonSchema7Primitive | JsonSchema7Primitive[];
-      enum: (string | number | bigint | boolean | null)[];
-    };
-
-type JsonSchema7AnyOfType = {
-  anyOf: JsonSchema7Type[];
-};
-
-export function parseUnionDef(
-  def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
-  refs: Refs,
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined {
-  if (refs.target === "openApi3") return asAnyOf(def, refs);
-
+export const parseUnionDef: DefParser<
+  ZodUnionDef | ZodDiscriminatedUnionDef<any, any>
+> = (def, refs) => {
   const options: readonly ZodTypeAny[] =
     def.options instanceof Map ? Array.from(def.options.values()) : def.options;
 
@@ -49,14 +27,14 @@ export function parseUnionDef(
   if (
     options.every(
       (x) =>
-        x._def.typeName in primitiveMappings &&
+        x._def.typeName in scalarMap &&
         (!x._def.checks || !x._def.checks.length),
     )
   ) {
     // all types in union are primitive and lack checks, so might as well squash into {type: [...]}
 
-    const types = options.reduce((types: JsonSchema7Primitive[], x) => {
-      const type = primitiveMappings[x._def.typeName as ZodPrimitive]; //Can be safely casted due to row 43
+    const types = options.reduce((types: JsonSchemaScalarType[], x) => {
+      const type = scalarMap[x._def.typeName as ZodScalarType];
       return type && !types.includes(type) ? [...types, type] : types;
     }, []);
 
@@ -69,7 +47,7 @@ export function parseUnionDef(
     // all options literals
 
     const types = options.reduce(
-      (acc: JsonSchema7Primitive[], x: { _def: ZodLiteralDef }) => {
+      (acc: JsonSchemaScalarType[], x: { _def: ZodLiteralDef }) => {
         const type = typeof x._def.value;
         switch (type) {
           case "string":
@@ -118,12 +96,11 @@ export function parseUnionDef(
   }
 
   return asAnyOf(def, refs);
-}
+};
 
-const asAnyOf = (
-  def: ZodUnionDef | ZodDiscriminatedUnionDef<any, any>,
-  refs: Refs,
-): JsonSchema7PrimitiveUnionType | JsonSchema7AnyOfType | undefined => {
+const asAnyOf: DefParser<
+  ZodUnionDef | ZodDiscriminatedUnionDef<string, any[]>
+> = (def, refs) => {
   const anyOf = (
     (def.options instanceof Map
       ? Array.from(def.options.values())
@@ -136,11 +113,11 @@ const asAnyOf = (
       }),
     )
     .filter(
-      (x): x is JsonSchema7Type =>
+      (x): x is ZodJsonSchema<true> =>
         !!x &&
         (!refs.strictUnions ||
           (typeof x === "object" && Object.keys(x).length > 0)),
     );
 
-  return anyOf.length ? { anyOf } : undefined;
+  return anyOf.length ? { anyOf } : {};
 };

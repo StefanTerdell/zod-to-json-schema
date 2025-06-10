@@ -1,29 +1,25 @@
 import { ZodArrayDef, ZodFirstPartyTypeKind } from "zod";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
+import { setResponseValueAndErrors } from "../errorMessages.js";
 import { parseDef } from "../parseDef.js";
-import { JsonSchema7Type } from "../parseTypes.js";
-import { Refs } from "../Refs.js";
+import { DefParser, ensureObjectSchema } from "../parseTypes.js";
 
-export type JsonSchema7ArrayType = {
-  type: "array";
-  items?: JsonSchema7Type;
-  minItems?: number;
-  maxItems?: number;
-  errorMessages?: ErrorMessages<JsonSchema7ArrayType, "items">;
-};
-
-export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
-  const res: JsonSchema7ArrayType = {
+export const parseArrayDef: DefParser<ZodArrayDef> = (def, refs) => {
+  const res: ReturnType<typeof parseArrayDef> = {
     type: "array",
   };
+
   if (
     def.type?._def &&
     def.type?._def?.typeName !== ZodFirstPartyTypeKind.ZodAny
   ) {
-    res.items = parseDef(def.type._def, {
+    const items = parseDef(def.type._def, {
       ...refs,
       currentPath: [...refs.currentPath, "items"],
     });
+
+    if (items !== null) {
+      res.items = ensureObjectSchema(items)
+    }
   }
 
   if (def.minLength) {
@@ -61,4 +57,4 @@ export function parseArrayDef(def: ZodArrayDef, refs: Refs) {
     );
   }
   return res;
-}
+};

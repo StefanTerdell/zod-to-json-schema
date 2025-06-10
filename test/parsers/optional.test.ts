@@ -3,6 +3,7 @@ import { z } from "zod";
 import { parseDef } from "../../src/parseDef.js";
 import { getRefs } from "../../src/Refs.js";
 import { suite } from "../suite.js";
+import { ZodJsonSchema } from "../../src/parseTypes.js";
 
 suite("Standalone optionals", (test) => {
   test("should work as unions with undefined", (assert) => {
@@ -18,14 +19,6 @@ suite("Standalone optionals", (test) => {
         },
       ],
     };
-
-    assert(parsedSchema, jsonSchema);
-  });
-
-  test("should work as unions with void", (assert) => {
-    const parsedSchema = parseDef(z.void().optional()._def, getRefs());
-
-    const jsonSchema: JSONSchema7Type = {};
 
     assert(parsedSchema, jsonSchema);
   });
@@ -146,11 +139,11 @@ suite("Standalone optionals", (test) => {
 
     const parsedSchema = parseDef(schema._def, getRefs());
 
-    const jsonSchema: JSONSchema7Type = {
+    const jsonSchema: ZodJsonSchema = {
       type: "array",
       minItems: 2,
       maxItems: 2,
-      items: [
+      prefixItems: [
         { anyOf: [{ not: {} }, { type: "string" }] },
         { $ref: "#/items/0/anyOf/1" },
       ],

@@ -1,24 +1,12 @@
 import { ZodObjectDef, ZodOptional, ZodTypeAny } from "zod";
 import { parseDef } from "../parseDef.js";
-import { JsonSchema7Type } from "../parseTypes.js";
 import { Refs } from "../Refs.js";
+import { DefParser, ZodJsonSchema, ensureObjectSchema } from "../parseTypes.js";
 
-export type JsonSchema7ObjectType = {
-  type: "object";
-  properties: Record<string, JsonSchema7Type>;
-  additionalProperties?: boolean | JsonSchema7Type;
-  required?: string[];
-};
-
-export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
-  const forceOptionalIntoNullable = refs.target === "openAi";
-
-  const result: JsonSchema7ObjectType = {
+export const parseObjectDef: DefParser<ZodObjectDef> = (def, refs) => {
+  const result: ReturnType<typeof parseObjectDef> = {
     type: "object",
-    properties: {},
   };
-
-  const required: string[] = [];
 
   const shape = def.shape();
 
@@ -31,49 +19,54 @@ export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
 
     let propOptional = safeIsOptional(propDef);
 
-    if (propOptional && forceOptionalIntoNullable) {
+    if (propOptional) {
       if (propDef instanceof ZodOptional) {
         propDef = propDef._def.innerType;
       }
-
-      if (!propDef.isNullable()) {
-        propDef = propDef.nullable();
-      }
-
-      propOptional = false;
     }
 
-    const parsedDef = parseDef(propDef._def, {
-      ...refs,
-      currentPath: [...refs.currentPath, "properties", propName],
-      propertyPath: [...refs.currentPath, "properties", propName],
-    });
+    const parsedDef = ensureObjectSchema(
+      parseDef(propDef._def, {
+        ...refs,
+        currentPath: [...refs.currentPath, "properties", propName],
+        propertyPath: [...refs.currentPath, "properties", propName],
+      }),
+    );
 
-    if (parsedDef === undefined) {
+    if (parsedDef === null) {
       continue;
     }
 
-    result.properties[propName] = parsedDef;
+    if (result.properties) {
+      result.properties[propName] = parsedDef;
+    } else {
+      result.properties = {
+        [propName]: parsedDef,
+      };
+    }
 
     if (!propOptional) {
-      required.push(propName);
+      if (result.required) {
+        result.required.push(propName);
+      } else {
+        result.required = [propName];
+      }
     }
-  }
-
-  if (required.length) {
-    result.required = required;
   }
 
   const additionalProperties = decideAdditionalProperties(def, refs);
 
-  if (additionalProperties !== undefined) {
+  if (additionalProperties !== null) {
     result.additionalProperties = additionalProperties;
   }
 
   return result;
-}
+};
 
-function decideAdditionalProperties(def: ZodObjectDef, refs: Refs) {
+function decideAdditionalProperties(
+  def: ZodObjectDef,
+  refs: Refs,
+): ZodJsonSchema<true> | boolean | null {
   if (def.catchall._def.typeName !== "ZodNever") {
     return parseDef(def.catchall._def, {
       ...refs,
@@ -83,13 +76,13 @@ function decideAdditionalProperties(def: ZodObjectDef, refs: Refs) {
 
   switch (def.unknownKeys) {
     case "passthrough":
-      return refs.allowedAdditionalProperties;
+      return refs.allowedAdditionalProperties ?? null;
     case "strict":
-      return refs.rejectedAdditionalProperties;
+      return refs.rejectedAdditionalProperties ?? null;
     case "strip":
       return refs.removeAdditionalStrategy === "strict"
-        ? refs.allowedAdditionalProperties
-        : refs.rejectedAdditionalProperties;
+        ? (refs.allowedAdditionalProperties ?? null)
+        : (refs.rejectedAdditionalProperties ?? null);
   }
 }
 

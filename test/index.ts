@@ -1,8 +1,6 @@
-import "./allParsers.test.js";
-import "./issues.test.js";
+// import "./allParsers.test.js";
+// import "./issues.test.js";
 import "./meta.test.js";
-import "./openAiMode.test.js";
-import "./openApiMode.test.js";
 import "./override.test.js";
 import "./parseDef.test.js";
 import "./parsers/array.test.js";

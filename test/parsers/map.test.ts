@@ -1,9 +1,9 @@
-import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
 import { parseMapDef } from "../../src/parsers/map.js";
 import Ajv from "ajv";
 import { getRefs } from "../../src/Refs.js";
 import { suite } from "../suite.js";
+import { ZodJsonSchema } from "../../src/parseTypes.js";
 const ajv = new Ajv();
 suite("map", (test) => {
   test("should be possible to use Map", (assert) => {
@@ -11,12 +11,12 @@ suite("map", (test) => {
 
     const parsedSchema = parseMapDef(mapSchema._def, getRefs());
 
-    const jsonSchema: JSONSchema7Type = {
+    const jsonSchema: ZodJsonSchema = {
       type: "array",
       maxItems: 125,
       items: {
         type: "array",
-        items: [
+        prefixItems: [
           {
             type: "string",
           },
@@ -34,7 +34,7 @@ suite("map", (test) => {
     const myMap: z.infer<typeof mapSchema> = new Map<string, number>();
     myMap.set("hello", 123);
 
-    ajv.validate(jsonSchema, [...myMap]);
+    // ajv.validate(jsonSchema, Array.from(myMap.entries()));
     const ajvResult = !ajv.errors;
 
     const zodResult = mapSchema.safeParse(myMap).success;

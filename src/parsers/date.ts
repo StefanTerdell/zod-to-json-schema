@@ -1,35 +1,22 @@
 import { ZodDateDef } from "zod";
-import { Refs } from "../Refs.js";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
-import { JsonSchema7NumberType } from "./number.js";
-import { DateStrategy } from "../Options.js";
+import { setResponseValueAndErrors } from "../errorMessages.js";
+import {
+  DefParser,
+  isNonNullSchema,
+  ensureObjectSchema,
+} from "../parseTypes.js";
 
-export type JsonSchema7DateType =
-  | {
-      type: "integer" | "string";
-      format: "unix-time" | "date-time" | "date";
-      minimum?: number;
-      maximum?: number;
-      errorMessage?: ErrorMessages<JsonSchema7NumberType>;
-    }
-  | {
-      anyOf: JsonSchema7DateType[];
-    };
-
-export function parseDateDef(
-  def: ZodDateDef,
-  refs: Refs,
-  overrideDateStrategy?: DateStrategy,
-): JsonSchema7DateType {
-  const strategy = overrideDateStrategy ?? refs.dateStrategy;
-
-  if (Array.isArray(strategy)) {
+export const parseDateDef: DefParser<ZodDateDef> = (def, refs) => {
+  if (Array.isArray(refs.dateStrategy)) {
     return {
-      anyOf: strategy.map((item, i) => parseDateDef(def, refs, item)),
+      anyOf: refs.dateStrategy
+        .map((dateStrategy) => parseDateDef(def, { ...refs, dateStrategy }))
+        .filter(isNonNullSchema)
+        .map(ensureObjectSchema),
     };
   }
 
-  switch (strategy) {
+  switch (refs.dateStrategy) {
     case "string":
     case "format:date-time":
       return {
@@ -44,10 +31,10 @@ export function parseDateDef(
     case "integer":
       return integerDateParser(def, refs);
   }
-}
+};
 
-const integerDateParser = (def: ZodDateDef, refs: Refs) => {
-  const res: JsonSchema7DateType = {
+const integerDateParser: DefParser<ZodDateDef> = (def, refs) => {
+  const res: ReturnType<typeof integerDateParser> = {
     type: "integer",
     format: "unix-time",
   };

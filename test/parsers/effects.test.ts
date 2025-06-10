@@ -36,6 +36,6 @@ suite("effects", (test) => {
       }),
     );
 
-    assert(jsonSchema, {});
+    assert(jsonSchema, true);
   });
 });

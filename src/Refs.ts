@@ -1,39 +1,41 @@
 import { ZodTypeDef } from "zod";
-import { getDefaultOptions, Options, Targets } from "./Options.js";
-import { JsonSchema7Type } from "./parseTypes.js";
+import { getDefaultOptions, Options } from "./Options.js";
+import { ZodJsonSchema } from "./parseTypes.js";
 
 export type Refs = {
   seen: Map<ZodTypeDef, Seen>;
   currentPath: string[];
   propertyPath: string[] | undefined;
-} & Options<Targets>;
+} & Options;
 
 export type Seen = {
   def: ZodTypeDef;
   path: string[];
-  jsonSchema: JsonSchema7Type | undefined;
+  jsonSchema: ZodJsonSchema<true> | boolean | null;
 };
 
-export const getRefs = (options?: string | Partial<Options<Targets>>): Refs => {
+export const getRefs = (options?: string | Partial<Options>): Refs => {
   const _options = getDefaultOptions(options);
   const currentPath =
     _options.name !== undefined
-      ? [..._options.basePath, _options.definitionPath, _options.name]
+      ? [..._options.basePath, "$defs", _options.name]
       : _options.basePath;
   return {
     ..._options,
     currentPath: currentPath,
     propertyPath: undefined,
     seen: new Map(
-      Object.entries(_options.definitions).map(([name, def]) => [
-        def._def,
-        {
-          def: def._def,
-          path: [..._options.basePath, _options.definitionPath, name],
-          // Resolution of references will be forced even though seen, so it's ok that the schema is undefined here for now.
-          jsonSchema: undefined,
-        },
-      ]),
+      Object.entries(_options.$defs ?? _options.definitions).map(
+        ([key, schema]) => [
+          schema._def,
+          {
+            def: schema._def,
+            path: [..._options.basePath, "$defs", key],
+            // Resolution of references will be forced even though seen, so it's ok that the schema is undefined here for now.
+            jsonSchema: null,
+          },
+        ],
+      ),
     ),
   };
 };

@@ -1,61 +1,49 @@
 import { ZodTupleDef, ZodTupleItems, ZodTypeAny } from "zod";
 import { parseDef } from "../parseDef.js";
-import { JsonSchema7Type } from "../parseTypes.js";
-import { Refs } from "../Refs.js";
+import {
+  DefParser,
+  ensureObjectSchema,
+  isNonNullSchema,
+} from "../parseTypes.js";
 
-export type JsonSchema7TupleType = {
-  type: "array";
-  minItems: number;
-  items: JsonSchema7Type[];
-} & (
-  | {
-      maxItems: number;
-    }
-  | {
-      additionalItems?: JsonSchema7Type;
-    }
-);
-
-export function parseTupleDef(
-  def: ZodTupleDef<ZodTupleItems | [], ZodTypeAny | null>,
-  refs: Refs,
-): JsonSchema7TupleType {
+export const parseTupleDef: DefParser<
+  ZodTupleDef<ZodTupleItems | [], ZodTypeAny | null>
+> = (def, refs) => {
   if (def.rest) {
     return {
       type: "array",
       minItems: def.items.length,
-      items: def.items
+      prefixItems: def.items
         .map((x, i) =>
-          parseDef(x._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "items", `${i}`],
-          }),
+          ensureObjectSchema(
+            parseDef(x._def, {
+              ...refs,
+              currentPath: [...refs.currentPath, "items", `${i}`],
+            }),
+          ),
         )
-        .reduce(
-          (acc: JsonSchema7Type[], x) => (x === undefined ? acc : [...acc, x]),
-          [],
-        ),
-      additionalItems: parseDef(def.rest._def, {
-        ...refs,
-        currentPath: [...refs.currentPath, "additionalItems"],
-      }),
+        .filter(isNonNullSchema),
+      additionalItems:
+        parseDef(def.rest._def, {
+          ...refs,
+          currentPath: [...refs.currentPath, "additionalItems"],
+        }) ?? undefined,
     };
   } else {
     return {
       type: "array",
       minItems: def.items.length,
       maxItems: def.items.length,
-      items: def.items
+      prefixItems: def.items
         .map((x, i) =>
-          parseDef(x._def, {
-            ...refs,
-            currentPath: [...refs.currentPath, "items", `${i}`],
-          }),
+          ensureObjectSchema(
+            parseDef(x._def, {
+              ...refs,
+              currentPath: [...refs.currentPath, "items", `${i}`],
+            }),
+          ),
         )
-        .reduce(
-          (acc: JsonSchema7Type[], x) => (x === undefined ? acc : [...acc, x]),
-          [],
-        ),
+        .filter(isNonNullSchema),
     };
   }
-}
+};

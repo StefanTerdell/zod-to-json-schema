@@ -1,42 +1,45 @@
 import { ZodSchema } from "zod";
-import { Options, Targets } from "./Options.js";
+import { Options } from "./Options.js";
 import { parseDef } from "./parseDef.js";
-import { JsonSchema7Type } from "./parseTypes.js";
 import { getRefs } from "./Refs.js";
+import {
+  ZodJsonSchema,
+  ensureObjectSchema,
+  isNonNullSchema,
+} from "./parseTypes.js";
 
-const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
+const zodToJsonSchema = (
   schema: ZodSchema<any>,
-  options?: Partial<Options<Target>> | string,
-): (Target extends "jsonSchema7" ? JsonSchema7Type : object) & {
-  $schema?: string;
-  definitions?: {
-    [key: string]: Target extends "jsonSchema7"
-      ? JsonSchema7Type
-      : Target extends "jsonSchema2019-09"
-        ? JsonSchema7Type
-        : object;
-  };
-} => {
+  options?: Partial<Options> | string,
+): ZodJsonSchema => {
   const refs = getRefs(options);
 
-  const definitions =
-    typeof options === "object" && options.definitions
-      ? Object.entries(options.definitions).reduce(
-          (acc, [name, schema]) => ({
-            ...acc,
-            [name]:
-              parseDef(
-                schema._def,
-                {
-                  ...refs,
-                  currentPath: [...refs.basePath, refs.definitionPath, name],
-                },
-                true,
-              ) ?? {},
-          }),
-          {},
-        )
-      : undefined;
+  const $defsOption =
+    typeof options === "object" && (options.$defs ?? options.definitions);
+
+  const $defs =
+    $defsOption &&
+    Object.keys($defsOption).reduce(
+      (acc: Record<string, ZodJsonSchema<true>>, key) => {
+        const schema = ensureObjectSchema(
+          parseDef(
+            $defsOption[key]._def,
+            {
+              ...refs,
+              currentPath: [...refs.basePath, "$defs", key],
+            },
+            true,
+          ),
+        );
+
+        if (isNonNullSchema(schema)) {
+          acc[key] = schema;
+        }
+
+        return acc;
+      },
+      {},
+    );
 
   const name =
     typeof options === "string"
@@ -46,15 +49,17 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
         : options?.name;
 
   const main =
-    parseDef(
-      schema._def,
-      name === undefined
-        ? refs
-        : {
-            ...refs,
-            currentPath: [...refs.basePath, refs.definitionPath, name],
-          },
-      false,
+    ensureObjectSchema(
+      parseDef(
+        schema._def,
+        name === undefined
+          ? refs
+          : {
+              ...refs,
+              currentPath: [...refs.basePath, "$defs", name],
+            },
+        false,
+      ),
     ) ?? {};
 
   const title =
@@ -68,43 +73,25 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
     main.title = title;
   }
 
-  const combined: ReturnType<typeof zodToJsonSchema<Target>> =
+  const combined: ZodJsonSchema<true> =
     name === undefined
-      ? definitions
+      ? $defs
         ? {
             ...main,
-            [refs.definitionPath]: definitions,
+            $defs,
           }
         : main
       : {
           $ref: [
             ...(refs.$refStrategy === "relative" ? [] : refs.basePath),
-            refs.definitionPath,
+            "$defs",
             name,
           ].join("/"),
-          [refs.definitionPath]: {
-            ...definitions,
+          $defs: {
+            ...$defs,
             [name]: main,
           },
         };
-
-  if (refs.target === "jsonSchema7") {
-    combined.$schema = "http://json-schema.org/draft-07/schema#";
-  } else if (refs.target === "jsonSchema2019-09" || refs.target === "openAi") {
-    combined.$schema = "https://json-schema.org/draft/2019-09/schema#";
-  }
-
-  if (
-    refs.target === "openAi" &&
-    ("anyOf" in combined ||
-      "oneOf" in combined ||
-      "allOf" in combined ||
-      ("type" in combined && Array.isArray(combined.type)))
-  ) {
-    console.warn(
-      "Warning: OpenAI may not support schemas with unions as roots! Try wrapping it in an object property.",
-    );
-  }
 
   return combined;
 };

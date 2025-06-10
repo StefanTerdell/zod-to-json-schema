@@ -48,10 +48,7 @@ suite("intersections", (test) => {
       bar: z.string(),
     });
     const intersection = z.intersection(schema1, schema2);
-    const jsonSchema = parseIntersectionDef(
-      intersection._def,
-      getRefs({ target: "jsonSchema2019-09" }),
-    );
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
 
     assert(jsonSchema, {
       allOf: [
@@ -79,19 +76,17 @@ suite("intersections", (test) => {
   });
 
   test("should return `unevaluatedProperties` only if all sub-schemas has additionalProperties set to false", (assert) => {
-    const schema1 = z.object({
+    const strip = z.object({
       foo: z.string(),
     });
-    const schema2 = z
+    const pass = z
       .object({
         bar: z.string(),
       })
       .passthrough();
-    const intersection = z.intersection(schema1, schema2);
-    const jsonSchema = parseIntersectionDef(
-      intersection._def,
-      getRefs({ target: "jsonSchema2019-09" }),
-    );
+
+    const intersection = z.intersection(strip, pass);
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
 
     assert(jsonSchema, {
       allOf: [
@@ -129,10 +124,7 @@ suite("intersections", (test) => {
       baz: z.string(),
     });
     const intersection = schema1.and(schema2).and(schema3);
-    const jsonSchema = parseIntersectionDef(
-      intersection._def,
-      getRefs({ target: "jsonSchema2019-09" }),
-    );
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
 
     assert(jsonSchema, {
       allOf: [
@@ -164,7 +156,6 @@ suite("intersections", (test) => {
           type: "object",
         },
       ],
-      unevaluatedProperties: false,
     });
   });
 
@@ -181,10 +172,7 @@ suite("intersections", (test) => {
       })
       .passthrough();
     const intersection = schema1.and(schema2).and(schema3);
-    const jsonSchema = parseIntersectionDef(
-      intersection._def,
-      getRefs({ target: "jsonSchema2019-09" }),
-    );
+    const jsonSchema = parseIntersectionDef(intersection._def, getRefs());
 
     assert(jsonSchema, {
       allOf: [

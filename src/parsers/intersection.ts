@@ -1,72 +1,93 @@
 import { ZodIntersectionDef } from "zod";
 import { parseDef } from "../parseDef.js";
-import { JsonSchema7Type } from "../parseTypes.js";
-import { Refs } from "../Refs.js";
-import { JsonSchema7StringType } from "./string.js";
+import { DefParser, ZodJsonSchema, ensureObjectSchema } from "../parseTypes.js";
 
-export type JsonSchema7AllOfType = {
-  allOf: JsonSchema7Type[];
-  unevaluatedProperties?: boolean;
-};
-
-const isJsonSchema7AllOfType = (
-  type: JsonSchema7Type | JsonSchema7StringType,
-): type is JsonSchema7AllOfType => {
-  if ("type" in type && type.type === "string") return false;
-  return "allOf" in type;
-};
-
-export function parseIntersectionDef(
-  def: ZodIntersectionDef,
-  refs: Refs,
-): JsonSchema7AllOfType | JsonSchema7Type | undefined {
-  const allOf = [
+export const parseIntersectionDef: DefParser<ZodIntersectionDef, true> = (
+  def,
+  refs,
+) => {
+  const left = ensureObjectSchema(
     parseDef(def.left._def, {
       ...refs,
+      // rejectedAdditionalProperties: undefined,
       currentPath: [...refs.currentPath, "allOf", "0"],
     }),
+  );
+
+  const right = ensureObjectSchema(
     parseDef(def.right._def, {
       ...refs,
+      // rejectedAdditionalProperties: undefined,
       currentPath: [...refs.currentPath, "allOf", "1"],
     }),
-  ].filter((x): x is JsonSchema7Type => !!x);
+  );
 
-  let unevaluatedProperties:
-    | Pick<JsonSchema7AllOfType, "unevaluatedProperties">
-    | undefined =
-    refs.target === "jsonSchema2019-09"
-      ? { unevaluatedProperties: false }
-      : undefined;
+  if (!left) {
+    return right;
+  }
 
-  const mergedAllOf: JsonSchema7Type[] = [];
-  // If either of the schemas is an allOf, merge them into a single allOf
-  allOf.forEach((schema) => {
-    if (isJsonSchema7AllOfType(schema)) {
-      mergedAllOf.push(...schema.allOf);
-      if (schema.unevaluatedProperties === undefined) {
-        // If one of the schemas has no unevaluatedProperties set,
-        // the merged schema should also have no unevaluatedProperties set
-        unevaluatedProperties = undefined;
+  if (!right) {
+    return left;
+  }
+
+  const allOf: ZodJsonSchema<true>[] = [];
+
+  let unevaluatedProperties: boolean | undefined = undefined;
+
+  if (left.allOf && Object.keys(left).length === 1) {
+    allOf.push(...left.allOf);
+  } else if (
+    left.allOf &&
+    Object.keys(left).length === 2 &&
+    left.unevaluatedProperties !== undefined
+  ) {
+    if (left.unevaluatedProperties === false) {
+      unevaluatedProperties = false;
+    }
+    allOf.push(...left.allOf);
+  } else {
+    allOf.push(left);
+  }
+
+  if (right.allOf && Object.keys(right).length === 1) {
+    allOf.push(...right.allOf);
+  } else if (
+    right.allOf &&
+    Object.keys(right).length === 2 &&
+    right.unevaluatedProperties !== undefined
+  ) {
+    if (right.unevaluatedProperties === false) {
+      unevaluatedProperties = false;
+    }
+    allOf.push(...right.allOf);
+  } else {
+    allOf.push(right);
+  }
+
+  for (const x of allOf) {
+    if (x.additionalProperties === false) {
+      delete x.additionalProperties;
+      if (!unevaluatedProperties) {
+        unevaluatedProperties = false;
+      }
+    } else if (x.unevaluatedProperties === false) {
+      delete x.unevaluatedProperties;
+      if (!unevaluatedProperties) {
+        unevaluatedProperties = false;
       }
     } else {
-      let nestedSchema: JsonSchema7Type = schema;
-      if (
-        "additionalProperties" in schema &&
-        schema.additionalProperties === false
-      ) {
-        const { additionalProperties, ...rest } = schema;
-        nestedSchema = rest;
-      } else {
-        // As soon as one of the schemas has additionalProperties set not to false, we allow unevaluatedProperties
-        unevaluatedProperties = undefined;
-      }
-      mergedAllOf.push(nestedSchema);
+      unevaluatedProperties = true;
     }
-  });
-  return mergedAllOf.length
-    ? {
-        allOf: mergedAllOf,
-        ...unevaluatedProperties,
-      }
-    : undefined;
-}
+  }
+
+  if (unevaluatedProperties === false) {
+    return {
+      allOf,
+      unevaluatedProperties,
+    };
+  }
+
+  return {
+    allOf,
+  };
+};

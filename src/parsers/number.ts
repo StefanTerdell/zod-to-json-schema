@@ -1,26 +1,12 @@
 import { ZodNumberDef } from "zod";
 import {
   addErrorMessage,
-  ErrorMessages,
   setResponseValueAndErrors,
 } from "../errorMessages.js";
-import { Refs } from "../Refs.js";
+import { DefParser } from "../parseTypes.js";
 
-export type JsonSchema7NumberType = {
-  type: "number" | "integer";
-  minimum?: number;
-  exclusiveMinimum?: number;
-  maximum?: number;
-  exclusiveMaximum?: number;
-  multipleOf?: number;
-  errorMessage?: ErrorMessages<JsonSchema7NumberType>;
-};
-
-export function parseNumberDef(
-  def: ZodNumberDef,
-  refs: Refs,
-): JsonSchema7NumberType {
-  const res: JsonSchema7NumberType = {
+export const parseNumberDef: DefParser<ZodNumberDef> = (def, refs) => {
+  const res: ReturnType<typeof parseNumberDef> = {
     type: "number",
   };
 
@@ -33,28 +19,7 @@ export function parseNumberDef(
         addErrorMessage(res, "type", check.message, refs);
         break;
       case "min":
-        if (refs.target === "jsonSchema7") {
-          if (check.inclusive) {
-            setResponseValueAndErrors(
-              res,
-              "minimum",
-              check.value,
-              check.message,
-              refs,
-            );
-          } else {
-            setResponseValueAndErrors(
-              res,
-              "exclusiveMinimum",
-              check.value,
-              check.message,
-              refs,
-            );
-          }
-        } else {
-          if (!check.inclusive) {
-            res.exclusiveMinimum = true as any;
-          }
+        if (check.inclusive) {
           setResponseValueAndErrors(
             res,
             "minimum",
@@ -62,31 +27,19 @@ export function parseNumberDef(
             check.message,
             refs,
           );
+        } else {
+          setResponseValueAndErrors(
+            res,
+            "exclusiveMinimum",
+            check.value,
+            check.message,
+            refs,
+          );
         }
+
         break;
       case "max":
-        if (refs.target === "jsonSchema7") {
-          if (check.inclusive) {
-            setResponseValueAndErrors(
-              res,
-              "maximum",
-              check.value,
-              check.message,
-              refs,
-            );
-          } else {
-            setResponseValueAndErrors(
-              res,
-              "exclusiveMaximum",
-              check.value,
-              check.message,
-              refs,
-            );
-          }
-        } else {
-          if (!check.inclusive) {
-            res.exclusiveMaximum = true as any;
-          }
+        if (check.inclusive) {
           setResponseValueAndErrors(
             res,
             "maximum",
@@ -94,7 +47,16 @@ export function parseNumberDef(
             check.message,
             refs,
           );
+        } else {
+          setResponseValueAndErrors(
+            res,
+            "exclusiveMaximum",
+            check.value,
+            check.message,
+            refs,
+          );
         }
+
         break;
       case "multipleOf":
         setResponseValueAndErrors(
@@ -108,4 +70,4 @@ export function parseNumberDef(
     }
   }
   return res;
-}
+};

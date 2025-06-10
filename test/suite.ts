@@ -6,7 +6,8 @@ const RESET = "\x1b[39m";
 
 type TestContext = (assert: (result: any, expected?: any) => void) => void;
 type TestFunction = (name: string, context: TestContext) => void;
-type SuiteContext = (test: TestFunction) => void;
+type Test = TestFunction & { skip: TestFunction };
+type SuiteContext = (test: Test) => void;
 type ErrorMap = { [key: string]: Error };
 type Error =
   | { missmatch: "value" | "type" | "length" | "keys"; expected: any; got: any }
@@ -15,8 +16,9 @@ type Error =
 export function suite(suiteName: string, suiteContext: SuiteContext): void {
   let tests = 0;
   let passedTests = 0;
+  let skipped = 0;
 
-  const test: TestFunction = (testName, testContext) => {
+  const testFn: TestFunction = (testName, testContext) => {
     tests++;
 
     let assertions = 0;
@@ -63,25 +65,34 @@ export function suite(suiteName: string, suiteContext: SuiteContext): void {
     }
   };
 
+  const test = testFn as Test;
+
+  test.skip = () => {
+    tests++;
+    skipped++;
+  };
+
   suiteContext(test);
 
   if (tests === 0) {
     console.log(`⚠ ${suiteName}: No tests found`);
-  } else if (tests === passedTests) {
+  } else if (tests === passedTests + skipped) {
     console.log(
-      `✔ ${suiteName}: ${tests} ${tests === 1 ? "test" : "tests"} passed`,
+      `✔ ${suiteName}: ${passedTests} ${passedTests === 1 ? "test" : "tests"} passed${
+        skipped ? ` (${skipped} skipped)` : ""
+      }`,
     );
   } else {
     console.error(
       `❌ ${suiteName}: ${passedTests}/${tests} ${
         passedTests === 1 ? "test" : "tests"
-      } passed`,
+      } passed${skipped ? ` (${skipped} skipped)` : ""}`,
     );
     process.exitCode = 1;
   }
 }
 
-function formatError(error: Error, depth = 0) {
+function formatError(error: Error, depth = 0): string {
   const indent = "  ".repeat(depth);
 
   if (error.missmatch === "nested") {
@@ -133,8 +144,8 @@ function assert(
       return { missmatch: "type", expected: "array", got: "object" };
     }
 
-    const keysA = Object.keys(a).sort();
-    const keysB = Object.keys(b).sort();
+    const keysA = Object.keys(a).sort() as (keyof typeof a)[];
+    const keysB = Object.keys(b).sort() as (keyof typeof b)[];
 
     if (keysA.join() !== keysB.join()) {
       return { missmatch: "keys", got: keysA, expected: keysB };

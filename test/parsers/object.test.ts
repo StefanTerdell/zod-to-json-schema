@@ -2,6 +2,7 @@ import { z } from "zod";
 import { parseObjectDef } from "../../src/parsers/object.js";
 import { getRefs } from "../../src/Refs.js";
 import { suite } from "../suite.js";
+import { ZodJsonSchema } from "../../src/parseTypes.js";
 
 suite("objects", (test) => {
   test("should be possible to describe catchAll schema", (assert) => {
@@ -116,7 +117,7 @@ suite("objects", (test) => {
       }),
     );
 
-    const expectedSchema = {
+    const expectedSchema: ZodJsonSchema = {
       type: "object",
       properties: {
         foo: { type: "boolean" },

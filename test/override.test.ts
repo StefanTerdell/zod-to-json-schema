@@ -1,6 +1,7 @@
 import { suite } from "./suite.js";
 import zodToJsonSchema, {
   PostProcessCallback,
+  ZodJsonSchema,
   ignoreOverride,
   jsonDescription,
 } from "../src";
@@ -35,7 +36,6 @@ suite("override", (test) => {
         },
       ),
       {
-        $schema: "http://json-schema.org/draft-07/schema#",
         type: "object",
         required: ["ignoreThis", "overrideThis"],
         properties: {
@@ -74,9 +74,18 @@ suite("postProcess", (test) => {
       // The refs object containing the current path, passed options, etc.
       refs,
     ) => {
-      if (!jsonSchema) {
+      // Dont bother with unresolved or boolean schemas
+      if (typeof jsonSchema !== "object") {
         return jsonSchema;
       }
+
+      // Make all numbers nullable:
+      if (jsonSchema.type === "number") {
+        jsonSchema.type = ["number", "null"];
+      }
+
+      // Add the refs path, just because
+      jsonSchema.path = refs.currentPath;
 
       // Try to expand description as JSON meta:
       if (jsonSchema.description) {
@@ -88,14 +97,6 @@ suite("postProcess", (test) => {
         } catch {}
       }
 
-      // Make all numbers nullable:
-      if ("type" in jsonSchema! && jsonSchema.type === "number") {
-        jsonSchema.type = ["number", "null"];
-      }
-
-      // Add the refs path, just because
-      (jsonSchema as any).path = refs.currentPath;
-
       return jsonSchema;
     };
 
@@ -103,8 +104,7 @@ suite("postProcess", (test) => {
       postProcess,
     });
 
-    const expectedResult = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const expectedResult: ZodJsonSchema = {
       type: "object",
       required: ["myString", "myNumber"],
       properties: {
@@ -141,8 +141,7 @@ suite("postProcess", (test) => {
       postProcess: jsonDescription,
     });
 
-    const expectedJsonSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const expectedJsonSchema: ZodJsonSchema = {
       type: "string",
       title: "My string",
       description: "My description",

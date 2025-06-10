@@ -81,9 +81,8 @@ const jsonSchema = zodToJsonSchema(mySchema, "mySchema");
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$ref": "#/definitions/mySchema",
-  "definitions": {
+  "$ref": "#/$defs/mySchema",
+  "$defs": {
     "mySchema": {
       "description": "My neat object schema",
       "type": "object",
@@ -118,7 +117,7 @@ Instead of the schema name (or nothing), you can pass an options object as the s
 | **name**?: _string_                                                                | As described above.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **nameStrategy**?: "ref" \| "title"                                                | Adds name as "title" meta instead of as a ref as described above                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **basePath**?: string[]                                                            | The base path of the root reference builder. Defaults to ["#"].                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **$refStrategy**?: "root" \| "relative" \| "seen" \| "none"                        | The reference builder strategy; <ul><li>**"root"** resolves $refs from the root up, ie: "#/definitions/mySchema".</li><li>**"relative"** uses [relative JSON pointers](https://tools.ietf.org/id/draft-handrews-relative-json-pointer-00.html). _See known issues!_</li><li>**"seen"** reuses the output of any "seen" Zod schema. In theory it's a more performant version of "none", but in practice this behaviour can cause issues with nested schemas and has now gotten its own option.</li> <li>**"none"** ignores referencing all together, creating a new schema branch even on "seen" schemas. Recursive references defaults to "any", ie `{}`.</li></ul> Defaults to "root". |
+| **$refStrategy**?: "root" \| "relative" \| "seen" \| "none"                        | The reference builder strategy; <ul><li>**"root"** resolves $refs from the root up, ie: "#/$defs/mySchema".</li><li>**"relative"** uses [relative JSON pointers](https://tools.ietf.org/id/draft-handrews-relative-json-pointer-00.html). _See known issues!_</li><li>**"seen"** reuses the output of any "seen" Zod schema. In theory it's a more performant version of "none", but in practice this behaviour can cause issues with nested schemas and has now gotten its own option.</li> <li>**"none"** ignores referencing all together, creating a new schema branch even on "seen" schemas. Recursive references defaults to "any", ie `{}`.</li></ul> Defaults to "root". |
 | **effectStrategy**?: "input" \| "any"                                              | The effects output strategy. Defaults to "input". _See known issues!_                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **dateStrategy**?: "format:date" \| "format:date-time" \| "string" \| "integer"    | Date strategy, integer allow to specify in unix-time min and max values. "format:date" creates a string schema with format: "date". "format:date-time" creates a string schema with format: "date-time". "string" is intepreted as "format:date-time". "integer" creates an integer schema with format "unix-time" (unless target "openApi3" is used min max checks are also respected)                                                                                                                                                                                                                                                                                                 |
 |                                                                                    |
@@ -159,10 +158,10 @@ const myJsonSchema = zodToJsonSchema(myObjectSchema, {
   "type": "object",
   "properties": {
     "a": {
-      "$ref": "#/definitions/myRecurringSchema"
+      "$ref": "#/$defs/myRecurringSchema"
     },
     "b": {
-      "$ref": "#/definitions/myRecurringSchema"
+      "$ref": "#/$defs/myRecurringSchema"
     }
   },
   "definitions": {
@@ -188,7 +187,6 @@ const jsonSchema = zodToJsonSchema(EmailSchema, { errorMessages: true });
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "string",
   "format": "email",
   "minLength": 5,
@@ -314,9 +312,18 @@ const postProcess: PostProcessCallback = (
   // The refs object containing the current path, passed options, etc.
   refs,
 ) => {
-  if (!jsonSchema) {
+  // Dont bother with unresolved or boolean schemas
+  if (typeof jsonSchema !== "object") {
     return jsonSchema;
   }
+
+  // Make all numbers nullable:
+  if (jsonSchema.type === "number") {
+    jsonSchema.type = ["number", "null"];
+  }
+
+  // Add the refs path, just because
+  jsonSchema.path = refs.currentPath;
 
   // Try to expand description as JSON meta:
   if (jsonSchema.description) {
@@ -327,14 +334,6 @@ const postProcess: PostProcessCallback = (
       };
     } catch {}
   }
-
-  // Make all numbers nullable:
-  if ("type" in jsonSchema! && jsonSchema.type === "number") {
-    jsonSchema.type = ["number", "null"];
-  }
-
-  // Add the refs path, just because
-  (jsonSchema as any).path = refs.currentPath;
 
   return jsonSchema;
 };
@@ -369,7 +368,6 @@ Expected output:
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "string",
   "title": "My string",
   "description": "My description",

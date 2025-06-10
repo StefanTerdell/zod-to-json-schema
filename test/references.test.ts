@@ -5,6 +5,7 @@ import { zodToJsonSchema } from "../src/zodToJsonSchema.js";
 import { suite } from "./suite.js";
 const ajv = new Ajv();
 import deref from "local-ref-resolver";
+import { ZodJsonSchema } from "../src/parseTypes.js";
 
 suite("Pathing", (test) => {
   test("should handle recurring properties with paths", (assert) => {
@@ -13,13 +14,14 @@ suite("Pathing", (test) => {
       number: z.number(),
       city: z.string(),
     });
+
     const someAddresses = z.object({
       address1: addressSchema,
       address2: addressSchema,
       lotsOfAddresses: z.array(addressSchema),
     });
-    const jsonSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+
+    const jsonSchema: ZodJsonSchema = {
       type: "object",
       properties: {
         address1: {
@@ -43,6 +45,7 @@ suite("Pathing", (test) => {
     };
 
     const parsedSchema = zodToJsonSchema(someAddresses);
+
     assert(parsedSchema, jsonSchema);
     assert(ajv.validateSchema(parsedSchema!), true);
   });
@@ -55,8 +58,7 @@ suite("Pathing", (test) => {
       part: participant,
     });
 
-    const expectedJsonSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const expectedJsonSchema: ZodJsonSchema = {
       type: "object",
       properties: {
         union: {
@@ -112,8 +114,7 @@ suite("Pathing", (test) => {
 
     const parsedSchema = zodToJsonSchema(categorySchema);
 
-    const expectedJsonSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const expectedJsonSchema: ZodJsonSchema = {
       type: "object",
       properties: {
         name: {
@@ -162,8 +163,7 @@ suite("Pathing", (test) => {
 
     const parsedSchema = zodToJsonSchema(inObjectSchema);
 
-    const expectedJsonSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const expectedJsonSchema: ZodJsonSchema = {
       type: "object",
       additionalProperties: false,
       required: ["category"],
@@ -201,7 +201,7 @@ suite("Pathing", (test) => {
     };
 
     assert(parsedSchema, expectedJsonSchema);
-    assert(ajv.validateSchema(parsedSchema!), true);
+    assert(ajv.validateSchema(parsedSchema), true);
   });
 
   test("should work with relative references", (assert) => {
@@ -215,8 +215,7 @@ suite("Pathing", (test) => {
       $refStrategy: "relative",
     });
 
-    const exptectedResult: JSONSchema7 = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const exptectedResult: JSONSchema7 & ZodJsonSchema = {
       type: "object",
       properties: {
         foo: {
@@ -244,8 +243,7 @@ suite("Pathing", (test) => {
       basePath: ["#", "lol", "xD"],
     });
 
-    const exptectedResult: JSONSchema7 = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const exptectedResult: JSONSchema7 & ZodJsonSchema = {
       type: "object",
       properties: {
         foo: {
@@ -274,10 +272,9 @@ suite("Pathing", (test) => {
       name: "kex",
     });
 
-    const exptectedResult: JSONSchema7 = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "#/lol/xD/definitions/kex",
-      definitions: {
+    const exptectedResult: ZodJsonSchema = {
+      $ref: "#/lol/xD/$defs/kex",
+      $defs: {
         kex: {
           type: "object",
           properties: {
@@ -285,7 +282,7 @@ suite("Pathing", (test) => {
               type: "string",
             },
             bar: {
-              $ref: "#/lol/xD/definitions/kex/properties/foo",
+              $ref: "#/lol/xD/$defs/kex/properties/foo",
             },
           },
           required: ["foo", "bar"],
@@ -309,7 +306,6 @@ suite("Pathing", (test) => {
     });
 
     const exptectedResult: JSONSchema7 = {
-      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       properties: {
         foo: {
@@ -350,7 +346,6 @@ suite("Pathing", (test) => {
     });
 
     const expectedJsonSchema = {
-      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       properties: {
         name: {
@@ -374,7 +369,7 @@ suite("Pathing", (test) => {
     console.warn = was;
   });
 
-  test("should be possible to override get proper references even when picking optional definitions path $defs", (assert) => {
+  test("should be possible to override get proper references even when picking optional definitions path definitions", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
       foo: recurringSchema,
@@ -383,11 +378,9 @@ suite("Pathing", (test) => {
 
     const jsonSchema = zodToJsonSchema(objectSchema, {
       name: "hello",
-      definitionPath: "$defs",
     });
 
-    const exptectedResult = {
-      $schema: "http://json-schema.org/draft-07/schema#",
+    const exptectedResult: ZodJsonSchema = {
       $ref: "#/$defs/hello",
       $defs: {
         hello: {
@@ -409,41 +402,6 @@ suite("Pathing", (test) => {
     assert(jsonSchema, exptectedResult);
   });
 
-  test("should be possible to override get proper references even when picking optional definitions path definitions", (assert) => {
-    const recurringSchema = z.string();
-    const objectSchema = z.object({
-      foo: recurringSchema,
-      bar: recurringSchema,
-    });
-
-    const jsonSchema = zodToJsonSchema(objectSchema, {
-      name: "hello",
-      definitionPath: "definitions",
-    });
-
-    const exptectedResult = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "#/definitions/hello",
-      definitions: {
-        hello: {
-          type: "object",
-          properties: {
-            foo: {
-              type: "string",
-            },
-            bar: {
-              $ref: "#/definitions/hello/properties/foo",
-            },
-          },
-          required: ["foo", "bar"],
-          additionalProperties: false,
-        },
-      },
-    };
-
-    assert(jsonSchema, exptectedResult);
-  });
-
   test("should preserve correct $ref when overriding name with string", (assert) => {
     const recurringSchema = z.string();
     const objectSchema = z.object({
@@ -453,10 +411,9 @@ suite("Pathing", (test) => {
 
     const jsonSchema = zodToJsonSchema(objectSchema, "hello");
 
-    const exptectedResult = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "#/definitions/hello",
-      definitions: {
+    const exptectedResult: ZodJsonSchema = {
+      $ref: "#/$defs/hello",
+      $defs: {
         hello: {
           type: "object",
           properties: {
@@ -464,7 +421,7 @@ suite("Pathing", (test) => {
               type: "string",
             },
             bar: {
-              $ref: "#/definitions/hello/properties/foo",
+              $ref: "#/$defs/hello/properties/foo",
             },
           },
           required: ["foo", "bar"],
@@ -485,10 +442,9 @@ suite("Pathing", (test) => {
 
     const jsonSchema = zodToJsonSchema(objectSchema, { name: "hello" });
 
-    const exptectedResult = {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "#/definitions/hello",
-      definitions: {
+    const exptectedResult: ZodJsonSchema = {
+      $ref: "#/$defs/hello",
+      $defs: {
         hello: {
           type: "object",
           properties: {
@@ -496,7 +452,7 @@ suite("Pathing", (test) => {
               type: "string",
             },
             bar: {
-              $ref: "#/definitions/hello/properties/foo",
+              $ref: "#/$defs/hello/properties/foo",
             },
           },
           required: ["foo", "bar"],
@@ -520,19 +476,18 @@ suite("Pathing", (test) => {
     });
 
     assert(myJsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       required: ["a", "b"],
       properties: {
         a: {
-          $ref: "#/definitions/myRecurringSchema",
+          $ref: "#/$defs/myRecurringSchema",
         },
         b: {
-          $ref: "#/definitions/myRecurringSchema",
+          $ref: "#/$defs/myRecurringSchema",
         },
       },
       additionalProperties: false,
-      definitions: {
+      $defs: {
         myRecurringSchema: {
           type: "string",
         },
@@ -556,22 +511,21 @@ suite("Pathing", (test) => {
     });
 
     assert(myJsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       required: ["a", "b", "c"],
       properties: {
         a: {
-          $ref: "#/definitions/myRecurringSchema",
+          $ref: "#/$defs/myRecurringSchema",
         },
         b: {
-          $ref: "#/definitions/mySecondRecurringSchema",
+          $ref: "#/$defs/mySecondRecurringSchema",
         },
         c: {
-          $ref: "#/definitions/mySecondRecurringSchema",
+          $ref: "#/$defs/mySecondRecurringSchema",
         },
       },
       additionalProperties: false,
-      definitions: {
+      $defs: {
         myRecurringSchema: {
           type: "string",
         },
@@ -580,7 +534,7 @@ suite("Pathing", (test) => {
           required: ["x"],
           properties: {
             x: {
-              $ref: "#/definitions/myRecurringSchema",
+              $ref: "#/$defs/myRecurringSchema",
             },
           },
           additionalProperties: false,
@@ -601,26 +555,25 @@ suite("Pathing", (test) => {
     });
 
     const myJsonSchema = zodToJsonSchema(myObjectSchema, {
-      definitions: { myRecurringSchema, mySecondRecurringSchema },
+      $defs: { myRecurringSchema, mySecondRecurringSchema },
       name: "mySchemaName",
     });
 
     assert(myJsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "#/definitions/mySchemaName",
-      definitions: {
+      $ref: "#/$defs/mySchemaName",
+      $defs: {
         mySchemaName: {
           type: "object",
           required: ["a", "b", "c"],
           properties: {
             a: {
-              $ref: "#/definitions/myRecurringSchema",
+              $ref: "#/$defs/myRecurringSchema",
             },
             b: {
-              $ref: "#/definitions/mySecondRecurringSchema",
+              $ref: "#/$defs/mySecondRecurringSchema",
             },
             c: {
-              $ref: "#/definitions/mySecondRecurringSchema",
+              $ref: "#/$defs/mySecondRecurringSchema",
             },
           },
           additionalProperties: false,
@@ -633,7 +586,7 @@ suite("Pathing", (test) => {
           required: ["x"],
           properties: {
             x: {
-              $ref: "#/definitions/myRecurringSchema",
+              $ref: "#/$defs/myRecurringSchema",
             },
           },
           additionalProperties: false,
@@ -656,11 +609,9 @@ suite("Pathing", (test) => {
     const myJsonSchema = zodToJsonSchema(myObjectSchema, {
       definitions: { myRecurringSchema, mySecondRecurringSchema },
       name: "mySchemaName",
-      definitionPath: "$defs",
     });
 
     assert(myJsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
       $ref: "#/$defs/mySchemaName",
       $defs: {
         mySchemaName: {
@@ -709,24 +660,23 @@ suite("Pathing", (test) => {
     });
 
     assert(myJsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
       type: "object",
       required: ["a", "b"],
       properties: {
         a: {
-          $ref: "hello/definitions/myRecurringSchema",
+          $ref: "hello/$defs/myRecurringSchema",
         },
         b: {
-          $ref: "hello/definitions/myRecurringSchema",
+          $ref: "hello/$defs/myRecurringSchema",
         },
       },
       additionalProperties: false,
-      definitions: {
+      $defs: {
         myRecurringSchema: {
           type: "string",
         },
       },
-    });
+    } satisfies ZodJsonSchema);
   });
 
   test("should be possible to preload a single definition with custom basePath and name", (assert) => {
@@ -743,18 +693,17 @@ suite("Pathing", (test) => {
     });
 
     assert(myJsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "hello/definitions/kex",
-      definitions: {
+      $ref: "hello/$defs/kex",
+      $defs: {
         kex: {
           type: "object",
           required: ["a", "b"],
           properties: {
             a: {
-              $ref: "hello/definitions/myRecurringSchema",
+              $ref: "hello/$defs/myRecurringSchema",
             },
             b: {
-              $ref: "hello/definitions/myRecurringSchema",
+              $ref: "hello/$defs/myRecurringSchema",
             },
           },
           additionalProperties: false,
@@ -777,24 +726,23 @@ suite("Pathing", (test) => {
     });
 
     const myJsonSchema = zodToJsonSchema(myObjectSchema, {
-      definitions: { myRecurringSchema },
+      $defs: { myRecurringSchema },
       basePath: ["hello"],
       name: "kex",
     });
 
     assert(myJsonSchema, {
-      $schema: "http://json-schema.org/draft-07/schema#",
-      $ref: "hello/definitions/kex",
-      definitions: {
+      $ref: "hello/$defs/kex",
+      $defs: {
         kex: {
           type: "object",
           required: ["a", "b"],
           properties: {
             a: {
-              $ref: "hello/definitions/myRecurringSchema",
+              $ref: "hello/$defs/myRecurringSchema",
             },
             b: {
-              $ref: "hello/definitions/myRecurringSchema",
+              $ref: "hello/$defs/myRecurringSchema",
             },
           },
           additionalProperties: false,
@@ -804,7 +752,7 @@ suite("Pathing", (test) => {
           required: ["circular"],
           properties: {
             circular: {
-              $ref: "hello/definitions/myRecurringSchema",
+              $ref: "hello/$defs/myRecurringSchema",
             },
           },
           additionalProperties: false,
@@ -830,19 +778,18 @@ suite("Pathing", (test) => {
 
     assert(
       zodToJsonSchema(schema, {
-        definitions: { userSchema },
+        $defs: { userSchema },
       }),
       {
-        $schema: "http://json-schema.org/draft-07/schema#",
         type: "object",
         properties: {
           user: {
-            $ref: "#/definitions/userSchema",
+            $ref: "#/$defs/userSchema",
           },
         },
         required: ["user"],
         additionalProperties: false,
-        definitions: {
+        $defs: {
           userSchema: {
             type: "object",
             properties: {
@@ -850,7 +797,7 @@ suite("Pathing", (test) => {
                 type: "string",
               },
               headUser: {
-                $ref: "#/definitions/userSchema",
+                $ref: "#/$defs/userSchema",
               },
             },
             required: ["id"],
@@ -881,15 +828,15 @@ suite("Pathing", (test) => {
     assert(
       zodToJsonSchema(treeSchema, {
         name: "Tree",
-        definitions: {
+        $defs: {
           Leaf: leafSchema,
           NodeChild: nodeChildSchema,
           Node: nodeSchema,
         },
       }),
       {
-        $ref: "#/definitions/Tree",
-        definitions: {
+        $ref: "#/$defs/Tree",
+        $defs: {
           Leaf: {
             type: "object",
             properties: {
@@ -906,7 +853,7 @@ suite("Pathing", (test) => {
               children: {
                 type: "array",
                 items: {
-                  $ref: "#/definitions/NodeChild",
+                  $ref: "#/$defs/NodeChild",
                 },
               },
             },
@@ -916,10 +863,10 @@ suite("Pathing", (test) => {
           NodeChild: {
             anyOf: [
               {
-                $ref: "#/definitions/Leaf",
+                $ref: "#/$defs/Leaf",
               },
               {
-                $ref: "#/definitions/Node",
+                $ref: "#/$defs/Node",
               },
             ],
           },
@@ -927,14 +874,13 @@ suite("Pathing", (test) => {
             type: "object",
             properties: {
               nodes: {
-                $ref: "#/definitions/Node",
+                $ref: "#/$defs/Node",
               },
             },
             required: ["nodes"],
             additionalProperties: false,
           },
         },
-        $schema: "http://json-schema.org/draft-07/schema#",
       },
     );
   });
@@ -945,16 +891,15 @@ suite("Pathing", (test) => {
     const lazyObject = z.lazy(() => z.object({ lazyProp: lazyString }));
 
     const jsonSchema = zodToJsonSchema(lazyObject, {
-      definitions: { lazyString },
+      $defs: { lazyString },
     });
 
     const expected = {
       type: "object",
-      properties: { lazyProp: { $ref: "#/definitions/lazyString" } },
+      properties: { lazyProp: { $ref: "#/$defs/lazyString" } },
       required: ["lazyProp"],
       additionalProperties: false,
-      definitions: { lazyString: { type: "string" } },
-      $schema: "http://json-schema.org/draft-07/schema#",
+      $defs: { lazyString: { type: "string" } },
     };
 
     assert(jsonSchema, expected);

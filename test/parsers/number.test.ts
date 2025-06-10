@@ -4,6 +4,7 @@ import { parseNumberDef } from "../../src/parsers/number.js";
 import { getRefs } from "../../src/Refs.js";
 import { errorReferences } from "./errorReferences.js";
 import { suite } from "../suite.js";
+import { ZodJsonSchema } from "../../src/parseTypes.js";
 suite("Number validations", (test) => {
   test("should be possible to describe minimum number", (assert) => {
     const parsedSchema = parseNumberDef(z.number().min(5)._def, getRefs());
@@ -56,7 +57,7 @@ suite("Number validations", (test) => {
       z.number().positive().negative().nonpositive().nonnegative()._def,
       getRefs(),
     );
-    const jsonSchema: JSONSchema7Type = {
+    const jsonSchema: ZodJsonSchema = {
       type: "number",
       minimum: 0,
       maximum: 0,

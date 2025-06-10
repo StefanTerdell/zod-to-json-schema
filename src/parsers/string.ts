@@ -1,6 +1,7 @@
 import { ZodStringDef } from "zod";
-import { ErrorMessages, setResponseValueAndErrors } from "../errorMessages.js";
+import { setResponseValueAndErrors } from "../errorMessages.js";
 import { Refs } from "../Refs.js";
+import { DefParser, ZodJsonSchema } from "../parseTypes.js";
 
 let emojiRegex: RegExp | undefined = undefined;
 
@@ -65,39 +66,8 @@ export const zodPatterns = {
   jwt: /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/,
 } as const;
 
-export type JsonSchema7StringType = {
-  type: "string";
-  minLength?: number;
-  maxLength?: number;
-  format?:
-    | "email"
-    | "idn-email"
-    | "uri"
-    | "uuid"
-    | "date-time"
-    | "ipv4"
-    | "ipv6"
-    | "date"
-    | "time"
-    | "duration";
-  pattern?: string;
-  allOf?: {
-    pattern: string;
-    errorMessage?: ErrorMessages<{ pattern: string }>;
-  }[];
-  anyOf?: {
-    format: string;
-    errorMessage?: ErrorMessages<{ format: string }>;
-  }[];
-  errorMessage?: ErrorMessages<JsonSchema7StringType>;
-  contentEncoding?: string;
-};
-
-export function parseStringDef(
-  def: ZodStringDef,
-  refs: Refs,
-): JsonSchema7StringType {
-  const res: JsonSchema7StringType = {
+export const parseStringDef: DefParser<ZodStringDef> = (def, refs) => {
+  const res: ReturnType<typeof parseStringDef> = {
     type: "string",
   };
 
@@ -284,7 +254,7 @@ export function parseStringDef(
   }
 
   return res;
-}
+};
 
 function escapeLiteralCheckValue(literal: string, refs: Refs): string {
   return refs.patternStrategy === "escape"
@@ -312,8 +282,8 @@ function escapeNonAlphaNumeric(source: string) {
 
 // Adds a "format" keyword to the schema. If a format exists, both formats will be joined in an allOf-node, along with subsequent ones.
 function addFormat(
-  schema: JsonSchema7StringType,
-  value: Required<JsonSchema7StringType>["format"],
+  schema: ZodJsonSchema<true>,
+  value: Required<ZodJsonSchema<true>>["format"],
   message: string | undefined,
   refs: Refs,
 ) {
@@ -351,7 +321,7 @@ function addFormat(
 
 // Adds a "pattern" keyword to the schema. If a pattern exists, both patterns will be joined in an allOf-node, along with subsequent ones.
 function addPattern(
-  schema: JsonSchema7StringType,
+  schema: ZodJsonSchema<true>,
   regex: RegExp,
   message: string | undefined,
   refs: Refs,
