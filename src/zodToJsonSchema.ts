@@ -3,6 +3,7 @@ import { Options, Targets } from "./Options.js";
 import { parseDef } from "./parseDef.js";
 import { JsonSchema7Type } from "./parseTypes.js";
 import { getRefs } from "./Refs.js";
+import { parseAnyDef } from "./parsers/any.js";
 
 const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
   schema: ZodSchema<any>,
@@ -19,10 +20,10 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
 } => {
   const refs = getRefs(options);
 
-  const definitions =
+  let definitions =
     typeof options === "object" && options.definitions
       ? Object.entries(options.definitions).reduce(
-          (acc, [name, schema]) => ({
+          (acc: { [key: string]: JsonSchema7Type }, [name, schema]) => ({
             ...acc,
             [name]:
               parseDef(
@@ -32,7 +33,7 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
                   currentPath: [...refs.basePath, refs.definitionPath, name],
                 },
                 true,
-              ) ?? {},
+              ) ?? parseAnyDef(refs),
           }),
           {},
         )
@@ -55,7 +56,7 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
             currentPath: [...refs.basePath, refs.definitionPath, name],
           },
       false,
-    ) ?? {};
+    ) ?? (parseAnyDef(refs) as JsonSchema7Type);
 
   const title =
     typeof options === "object" &&
@@ -66,6 +67,37 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
 
   if (title !== undefined) {
     main.title = title;
+  }
+
+  if (refs.flags.hasReferencedOpenAiAnyType) {
+    if (!definitions) {
+      definitions = {};
+    }
+
+    if (!definitions[refs.openAiAnyTypeName]) {
+      definitions[refs.openAiAnyTypeName] = {
+        type: [
+          "string",
+          "number",
+          "integer",
+          "boolean",
+          "array",
+          "object",
+          "null",
+        ],
+        items: {
+          $ref:
+            refs.$refStrategy === "relative"
+              ? "1"
+              : [
+                  ...refs.basePath,
+                  refs.definitionPath,
+                  refs.openAiAnyTypeName,
+                ].join("/"),
+        },
+        additionalProperties: false,
+      } as JsonSchema7Type;
+    }
   }
 
   const combined: ReturnType<typeof zodToJsonSchema<Target>> =

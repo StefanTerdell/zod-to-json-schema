@@ -2,6 +2,7 @@ import { ZodOptionalDef } from "zod";
 import { parseDef } from "../parseDef.js";
 import { JsonSchema7Type } from "../parseTypes.js";
 import { Refs } from "../Refs.js";
+import { parseAnyDef } from "./any.js";
 
 export const parseOptionalDef = (
   def: ZodOptionalDef,
@@ -20,10 +21,10 @@ export const parseOptionalDef = (
     ? {
         anyOf: [
           {
-            not: {},
+            not: parseAnyDef(refs),
           },
           innerSchema,
         ],
       }
-    : {};
+    : parseAnyDef(refs);
 };

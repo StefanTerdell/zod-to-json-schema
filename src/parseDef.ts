@@ -3,6 +3,8 @@ import { Refs, Seen } from "./Refs.js";
 import { ignoreOverride } from "./Options.js";
 import { JsonSchema7Type } from "./parseTypes.js";
 import { selectParser } from "./selectParser.js";
+import { getRelativePath } from "./getRelativePath.js";
+import { parseAnyDef } from "./parsers/any.js";
 
 export function parseDef(
   def: ZodTypeDef,
@@ -87,20 +89,12 @@ const get$ref = (
           )}! Defaulting to any`,
         );
 
-        return {};
+        return parseAnyDef(refs);
       }
 
-      return refs.$refStrategy === "seen" ? {} : undefined;
+      return refs.$refStrategy === "seen" ? parseAnyDef(refs) : undefined;
     }
   }
-};
-
-const getRelativePath = (pathA: string[], pathB: string[]) => {
-  let i = 0;
-  for (; i < pathA.length && i < pathB.length; i++) {
-    if (pathA[i] !== pathB[i]) break;
-  }
-  return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
 };
 
 const addMeta = (

@@ -34,7 +34,7 @@ suite("map", (test) => {
     const myMap: z.infer<typeof mapSchema> = new Map<string, number>();
     myMap.set("hello", 123);
 
-    ajv.validate(jsonSchema, [...myMap]);
+    ajv.validate(jsonSchema, Array.from(myMap));
     const ajvResult = !ajv.errors;
 
     const zodResult = mapSchema.safeParse(myMap).success;

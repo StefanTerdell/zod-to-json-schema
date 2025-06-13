@@ -1,6 +1,6 @@
 import { JSONSchema7Type } from "json-schema";
 import { z } from "zod";
-import { JsonSchema7Type } from "../../src/parseDef.js";
+import { JsonSchema7Type } from "../../src/index.js";
 import {
   JsonSchema7StringType,
   zodPatterns,

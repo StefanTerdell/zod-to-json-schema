@@ -68,6 +68,7 @@ export type Options<Target extends Targets = "jsonSchema7"> = {
   nameStrategy: "ref" | "title";
   override?: OverrideCallback;
   postProcess?: PostProcessCallback;
+  openAiAnyTypeName: string
 };
 
 export const defaultOptions: Options = {
@@ -92,6 +93,7 @@ export const defaultOptions: Options = {
   emailStrategy: "format:email",
   base64Strategy: "contentEncoding:base64",
   nameStrategy: "ref",
+  openAiAnyTypeName: "OpenAiAnyType"
 };
 
 export const getDefaultOptions = <Target extends Targets>(

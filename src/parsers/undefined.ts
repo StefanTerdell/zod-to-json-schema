@@ -1,9 +1,12 @@
+import { Refs } from "../Refs";
+import { JsonSchema7AnyType, parseAnyDef } from "./any";
+
 export type JsonSchema7UndefinedType = {
-  not: {};
+  not: JsonSchema7AnyType;
 };
 
-export function parseUndefinedDef(): JsonSchema7UndefinedType {
+export function parseUndefinedDef(refs: Refs): JsonSchema7UndefinedType {
   return {
-    not: {},
+    not: parseAnyDef(refs),
   };
 }

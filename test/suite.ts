@@ -81,7 +81,7 @@ export function suite(suiteName: string, suiteContext: SuiteContext): void {
   }
 }
 
-function formatError(error: Error, depth = 0) {
+function formatError(error: Error, depth = 0): string {
   const indent = "  ".repeat(depth);
 
   if (error.missmatch === "nested") {
@@ -147,7 +147,7 @@ function assert(
         return errorMap;
       }
 
-      const error = assert(a[key], b[key], [...path, key]);
+      const error = assert(a[key as keyof typeof a], b[key as keyof typeof b], [...path, key]);
 
       if (error) {
         foundError = true;

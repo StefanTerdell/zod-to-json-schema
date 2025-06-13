@@ -1,9 +1,17 @@
+import { Refs } from "../Refs";
+import { JsonSchema7AnyType, parseAnyDef } from "./any";
+
 export type JsonSchema7NeverType = {
-  not: {};
+  not: JsonSchema7AnyType;
 };
 
-export function parseNeverDef(): JsonSchema7NeverType {
-  return {
-    not: {},
-  };
+export function parseNeverDef(refs: Refs): JsonSchema7NeverType | undefined {
+  return refs.target === "openAi"
+    ? undefined
+    : {
+        not: parseAnyDef({
+          ...refs,
+          currentPath: [...refs.currentPath, "not"],
+        }),
+      };
 }

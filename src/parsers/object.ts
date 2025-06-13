@@ -1,4 +1,4 @@
-import { ZodObjectDef, ZodOptional, ZodTypeAny } from "zod";
+import { ZodObjectDef, ZodTypeAny } from "zod";
 import { parseDef } from "../parseDef.js";
 import { JsonSchema7Type } from "../parseTypes.js";
 import { Refs } from "../Refs.js";
@@ -32,7 +32,7 @@ export function parseObjectDef(def: ZodObjectDef, refs: Refs) {
     let propOptional = safeIsOptional(propDef);
 
     if (propOptional && forceOptionalIntoNullable) {
-      if (propDef instanceof ZodOptional) {
+      if (propDef._def.typeName === "ZodOptional") {
         propDef = propDef._def.innerType;
       }
 

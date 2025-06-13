@@ -3,6 +3,7 @@ import { parseDef } from "../parseDef.js";
 import { JsonSchema7Type } from "../parseTypes.js";
 import { Refs } from "../Refs.js";
 import { JsonSchema7RecordType, parseRecordDef } from "./record.js";
+import { parseAnyDef } from "./any.js";
 
 export type JsonSchema7MapType = {
   type: "array";
@@ -27,12 +28,12 @@ export function parseMapDef(
     parseDef(def.keyType._def, {
       ...refs,
       currentPath: [...refs.currentPath, "items", "items", "0"],
-    }) || {};
+    }) || parseAnyDef(refs);
   const values =
     parseDef(def.valueType._def, {
       ...refs,
       currentPath: [...refs.currentPath, "items", "items", "1"],
-    }) || {};
+    }) || parseAnyDef(refs);
   return {
     type: "array",
     maxItems: 125,

@@ -1,5 +1,8 @@
-export type JsonSchema7UnknownType = {};
+import { Refs } from "../Refs";
+import { JsonSchema7AnyType, parseAnyDef } from "./any";
 
-export function parseUnknownDef(): JsonSchema7UnknownType {
-  return {};
+export type JsonSchema7UnknownType = JsonSchema7AnyType;
+
+export function parseUnknownDef(refs: Refs): JsonSchema7UnknownType {
+  return parseAnyDef(refs);
 }

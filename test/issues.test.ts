@@ -7,6 +7,50 @@ import errorMessages from "ajv-errors";
 suite("Issue tests", (test) => {
   const ajv = errorMessages(new Ajv({ allErrors: true }));
 
+  test("@175", (assert) => {
+    const schema = z.object({
+      phoneNumber: z.number().optional(),
+      name: z.string(),
+      never: z.never().optional(),
+      any: z.any().optional(),
+    });
+
+    const output = zodToJsonSchema(schema, { target: "openAi" });
+
+    const expected = {
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      required: ["phoneNumber", "name", "any"],
+      properties: {
+        phoneNumber: { type: ["number", "null"] },
+        name: { type: "string" },
+        any: {
+          $ref: "#/definitions/OpenAiAnyType",
+        },
+      },
+      additionalProperties: false,
+      definitions: {
+        OpenAiAnyType: {
+          type: [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "array",
+            "object",
+            "null",
+          ],
+          items: {
+            $ref: "#/definitions/OpenAiAnyType",
+          },
+          additionalProperties: false,
+        },
+      },
+    };
+
+    assert(output, expected);
+  });
+
   test("@94", (assert) => {
     const topicSchema = z.object({
       topics: z
