@@ -7,6 +7,35 @@ import errorMessages from "ajv-errors";
 suite("Issue tests", (test) => {
   const ajv = errorMessages(new Ajv({ allErrors: true }));
 
+  test("@158", (assert) => {
+    const schema = z.object({
+      test: z
+        .string()
+        .optional()
+        .superRefine(async (value, ctx) => {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          if (value === "fail") {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "This is a test error",
+            });
+          }
+        }),
+    });
+
+    const output = zodToJsonSchema(schema);
+
+    const expected = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      type: "object",
+      properties: { test: { type: "string" } },
+      additionalProperties: false,
+    };
+
+    assert(output, expected)
+    
+  });
+
   test("@175", (assert) => {
     const schema = z.object({
       phoneNumber: z.number().optional(),
@@ -31,14 +60,7 @@ suite("Issue tests", (test) => {
       additionalProperties: false,
       definitions: {
         OpenAiAnyType: {
-          type: [
-            "string",
-            "number",
-            "integer",
-            "boolean",
-            "array",
-            "null",
-          ],
+          type: ["string", "number", "integer", "boolean", "array", "null"],
           items: {
             $ref: "#/definitions/OpenAiAnyType",
           },
