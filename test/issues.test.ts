@@ -37,13 +37,11 @@ suite("Issue tests", (test) => {
             "integer",
             "boolean",
             "array",
-            "object",
             "null",
           ],
           items: {
             $ref: "#/definitions/OpenAiAnyType",
           },
-          additionalProperties: false,
         },
       },
     };

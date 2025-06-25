@@ -76,15 +76,8 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
 
     if (!definitions[refs.openAiAnyTypeName]) {
       definitions[refs.openAiAnyTypeName] = {
-        type: [
-          "string",
-          "number",
-          "integer",
-          "boolean",
-          "array",
-          "object",
-          "null",
-        ],
+        // Skipping "object" as no properties can be defined and additionalProperties must be "false"
+        type: ["string", "number", "integer", "boolean", "array", "null"],
         items: {
           $ref:
             refs.$refStrategy === "relative"
@@ -95,7 +88,6 @@ const zodToJsonSchema = <Target extends Targets = "jsonSchema7">(
                   refs.openAiAnyTypeName,
                 ].join("/"),
         },
-        additionalProperties: false,
       } as JsonSchema7Type;
     }
   }
