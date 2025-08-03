@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from "json-schema";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { parseUnionDef } from "../../src/parsers/union.js";
 import { getRefs } from "../../src/Refs.js";
 import { suite } from "../suite.js";
