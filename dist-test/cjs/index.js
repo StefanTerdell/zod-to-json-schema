@@ -1,4 +1,4 @@
-const z = require("zod");
+const z = require("zod/v3");
 const { zodToJsonSchema } = require("zod-to-json-schema");
 
 const result = zodToJsonSchema(z.string());

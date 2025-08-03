@@ -1,4 +1,4 @@
-import z from "zod/v3"
+import { z }  from "zod/v3"
 import { zodToJsonSchema } from "zod-to-json-schema"
 
 const result = zodToJsonSchema(z.string());
