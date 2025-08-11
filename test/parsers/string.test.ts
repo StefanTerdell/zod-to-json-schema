@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from "json-schema";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { JsonSchema7Type } from "../../src/index.js";
 import {
   JsonSchema7StringType,

@@ -1,6 +1,6 @@
 import { JSONSchema7Type } from "json-schema";
 import { parseReadonlyDef } from "../../src/parsers/readonly.js";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { getRefs } from "../../src/Refs.js";
 import { suite } from "../suite.js";
 suite("readonly", (test) => {
