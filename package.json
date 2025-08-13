@@ -73,7 +73,7 @@
   },
   "license": "ISC",
   "peerDependencies": {
-    "zod": "^4.0.14"
+    "zod": "^3.25 || ^4.0.14"
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.9",
