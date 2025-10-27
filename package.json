@@ -1,5 +1,5 @@
 {
-  "name": "@finom/zod-to-json-schema",
+  "name": "zod-to-json-schema",
   "version": "3.24.11",
   "description": "Converts Zod schemas to Json Schemas",
   "types": "./dist/types/index.d.ts",
