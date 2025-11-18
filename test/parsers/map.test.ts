@@ -1,5 +1,5 @@
 import { JSONSchema7Type } from "json-schema";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { parseMapDef } from "../../src/parsers/map.js";
 import Ajv from "ajv";
 import { getRefs } from "../../src/Refs.js";

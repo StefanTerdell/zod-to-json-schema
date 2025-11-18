@@ -4,7 +4,7 @@ import zodToJsonSchema, {
   ignoreOverride,
   jsonDescription,
 } from "../src";
-import { z } from "zod";
+import { z } from "zod/v3";
 
 suite("override", (test) => {
   test("the readme example", (assert) => {

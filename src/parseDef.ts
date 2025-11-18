@@ -1,4 +1,4 @@
-import { ZodTypeDef } from "zod";
+import { ZodTypeDef } from "zod/v3";
 import { Refs, Seen } from "./Refs.js";
 import { ignoreOverride } from "./Options.js";
 import { JsonSchema7Type } from "./parseTypes.js";

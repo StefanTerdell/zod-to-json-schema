@@ -1,4 +1,4 @@
-import { ZodFirstPartyTypeKind } from "zod";
+import { ZodFirstPartyTypeKind } from "zod/v3";
 import { parseAnyDef } from "./parsers/any.js";
 import { parseArrayDef } from "./parsers/array.js";
 import { parseBigintDef } from "./parsers/bigint.js";
