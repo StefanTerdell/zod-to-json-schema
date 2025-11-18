@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "build:test": "npm --prefix ./dist-test test",
+    "build:test": "npm --prefix ./dist-test-v3 test && npm --prefix ./dist-test-v4 test",
     "build:types": "tsc -p tsconfig.types.json",
     "build:cjs": "tsc -p tsconfig.cjs.json && tsx postcjs.ts",
     "build:esm": "tsc -p tsconfig.esm.json && tsx postesm.ts",
