@@ -27,9 +27,6 @@
     "test": "tsx test/index.ts",
     "gen": "tsx createIndex.ts"
   },
-  "c8": {
-    "exclude": ["createIndex.ts", "postcjs.ts", "postesm.ts", "test"]
-  },
   "keywords": ["zod", "json", "schema", "open", "api", "conversion"],
   "author": "Stefan Terdell",
   "contributors": [

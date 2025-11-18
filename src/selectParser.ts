@@ -109,7 +109,6 @@ export const selectParser = (
     case ZodFirstPartyTypeKind.ZodSymbol:
       return undefined;
     default:
-      /* c8 ignore next */
       return ((_: never) => undefined)(typeName);
   }
 };

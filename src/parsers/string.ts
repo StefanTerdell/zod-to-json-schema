@@ -277,7 +277,6 @@ export function parseStringDef(
         case "trim":
           break;
         default:
-          /* c8 ignore next */
           ((_: never) => {})(check);
       }
     }
