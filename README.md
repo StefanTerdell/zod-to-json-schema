@@ -3,7 +3,11 @@
 [![NPM Version](https://img.shields.io/npm/v/zod-to-json-schema.svg)](https://npmjs.org/package/zod-to-json-schema)
 [![NPM Downloads](https://img.shields.io/npm/dw/zod-to-json-schema.svg)](https://npmjs.org/package/zod-to-json-schema)
 
-_Looking for the exact opposite? Check out [json-schema-to-zod](https://npmjs.org/package/json-schema-to-zod)_
+## Notice of deprecation
+
+As of November 2025, this project will no longer be receiving updates. Zod v4 natively supports generating JSON schemas, so I recommend you switch to the new major, or better yet, a [decent language](https://rust-lang.org/) ;)
+
+Thank you to all the contributors and sponsors throughout the years! So long, and thanks for all the fish.
 
 ## Summary
 
@@ -13,10 +17,13 @@ Does what it says on the tin; converts [Zod schemas](https://github.com/colinhac
 - Resolves recursive and recurring schemas with internal `$ref`s.
 - Supports targeting legacy Open API 3.0 specification (3.1 supports regular Json Schema).
 - Supports Open AI strict mode schemas (Optional object properties are replaced with required but nullable ones).
+- As of v3.25 you can use Zod v4 as a peer-dependency, so long as you still provide v3-schemas.
+
+_Looking for the exact opposite? Check out [json-schema-to-zod](https://npmjs.org/package/json-schema-to-zod)_
 
 ## Sponsors
 
-A great big thank you to our amazing sponsors! Please consider joining them through my [GitHub Sponsors page](https://github.com/sponsors/StefanTerdell). Every cent helps, but these fellas have really gone above and beyond 💚:
+As this project will no longer be receiving updates I am no longer accepting new partnerships. Huge shout-out to CodeRabbit for keeping it real to the end <3
 
 <table align="center" style="justify-content: center;align-items: center;display: flex;">
   <tr>
@@ -39,24 +46,6 @@ A great big thank you to our amazing sponsors! Please consider joining them thro
       <p></p>
     </td>
   </tr>
-  <tr>
-    <td align="center">
-      <p></p>
-      <p>
-      <a href="https://retool.com/?ref=stefanterdell&utm_source=github&utm_medium=referral&utm_campaign=stefanterdell">
-        <picture height="45px">
-          <source media="(prefers-color-scheme: dark)" srcset="https://github.com/colinhacks/zod/assets/3084745/ac65013f-aeb4-48dd-a2ee-41040b69cbe6">
-          <img alt="stainless" height="45px" src="https://github.com/colinhacks/zod/assets/3084745/5ef4c11b-efeb-4495-90a8-41b83f798600">
-        </picture>
-      </a>
-      <br  />   
-      Build AI apps and workflows with <a href="https://retool.com/products/ai?ref=stefanterdell&utm_source=github&utm_medium=referral&utm_campaign=stefanterdell">Retool AI</a>
-      <br/>
-      <a href="https://retool.com/?ref=stefanterdell&utm_source=github&utm_medium=referral&utm_campaign=stefanterdell" style="text-decoration:none;">retool.com</a>
-      </p>
-      <p></p>
-    </td>
-  </tr>
 </table>
 
 ## Usage
@@ -64,7 +53,7 @@ A great big thank you to our amazing sponsors! Please consider joining them thro
 ### Basic example
 
 ```typescript
-import { z } from "zod/v3";
+import { z } from "zod"; // Or, using v3.25 or v4, "zod/v3"
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 const mySchema = z
@@ -393,6 +382,8 @@ Expected output:
 This package _does not_ follow semantic versioning. The major and minor versions of this package instead reflects feature parity with the [Zod package](http://npmjs.com/package/zod).
 
 I will do my best to keep API-breaking changes to an absolute minimum, but new features may appear as "patches", such as introducing the options pattern in 3.9.1.
+
+While v3.25 supports Zod v4 as a peer-dependency, it does _not_ mean it supports v4 schemas. Use `import { z } from "zod/v3"` and refer to the Zod documentation.
 
 ## Changelog
 
