@@ -2,4 +2,4 @@ src
 tsconfig*
 test
 coverage
-dist-test
+dist-test*
