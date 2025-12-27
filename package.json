@@ -1,6 +1,6 @@
 {
   "name": "zod-to-json-schema",
-  "version": "3.25.0",
+  "version": "3.25.1",
   "description": "Converts Zod schemas to Json Schemas",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/cjs/index.js",
@@ -51,7 +51,8 @@
     "Mitchell Merry (https://github.com/mitchell-merry)",
     "Enzo Monjardín (https://github.com/enzomonjardin)",
     "Víctor Hernández (https://github.com/NanezX)",
-    "Faïz Hernawan Abdillah (https://github.com/Abdillah)"
+    "Faïz Hernawan Abdillah (https://github.com/Abdillah)",
+    "Felix Mosheev (https://github.com/felixmosh)"
   ],
   "repository": {
     "type": "git",
