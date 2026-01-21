@@ -5,7 +5,7 @@
 
 ## Notice of deprecation
 
-As of November 2025, this project will no longer be receiving updates. Zod v4 natively supports generating JSON schemas, so I recommend you switch to the new major, or better yet, a [decent language](https://rust-lang.org/) ;)
+As of November 2025, this project will no longer be receiving updates. [Zod v4 natively supports generating JSON schemas](https://zod.dev/json-schema#ztojsonschema), so I recommend you switch to the new major, or better yet, a [decent language](https://rust-lang.org/) ;)
 
 Thank you to all the contributors and sponsors throughout the years! So long, and thanks for all the fish.
 
